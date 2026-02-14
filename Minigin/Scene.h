@@ -13,7 +13,8 @@ namespace dae
 		void Remove(const GameObject& object);
 		void RemoveAll();
 
-		void Update();
+		void FixedUpdate(float fixedFrameTime);
+		void Update(float deltaTime);
 		void Render() const;
 
 		~Scene() = default;

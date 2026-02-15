@@ -9,7 +9,7 @@
 
 void dae::FpsCounterComponent::Update([[maybe_unused]] float deltaTime)
 {
-	constexpr float updateDelay{ 0.5f };
+	constexpr float updateDelay{ 0.75f };
 
 	if (typeid(GetOwner()) != typeid(TextObject)) return;
 	
@@ -24,15 +24,5 @@ void dae::FpsCounterComponent::Update([[maybe_unused]] float deltaTime)
 
 	m_UntilTextUpdate = updateDelay;
 
-	if (m_UpdateTimes <= 0)
-	{
-		static_cast<TextObject&>(GetOwner()).SetText("destroyed");
-		Destroy();
-	}
-	else
-	{
-		static_cast<TextObject&>(GetOwner()).SetText(ss.str());
-	}
-
-	--m_UpdateTimes;
+	static_cast<TextObject&>(GetOwner()).SetText(ss.str());
 }

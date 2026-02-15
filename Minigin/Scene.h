@@ -9,7 +9,7 @@ namespace dae
 	class Scene final
 	{
 	public:
-		void Add(std::unique_ptr<GameObject> object);
+		void Add(std::shared_ptr<GameObject> object);
 		void Remove(const GameObject& object);
 		void RemoveAll();
 
@@ -27,7 +27,7 @@ namespace dae
 		friend class SceneManager;
 		explicit Scene() = default;
 
-		std::vector < std::unique_ptr<GameObject>> m_objects{};
+		std::vector < std::shared_ptr<GameObject>> m_objects{};
 	};
 
 }

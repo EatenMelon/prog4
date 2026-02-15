@@ -1,7 +1,10 @@
 #include <string>
+#include <type_traits>
+
 #include "GameObject.h"
 #include "ResourceManager.h"
 #include "Renderer.h"
+#include "Component.h"
 
 dae::GameObject::~GameObject() = default;
 

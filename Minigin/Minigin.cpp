@@ -5,6 +5,8 @@
 #if WIN32
 #define WIN32_LEAN_AND_MEAN 
 #include <windows.h>
+#include <mmsystem.h>
+#pragma comment(lib, "winmm.lib")
 #endif
 
 #include <SDL3/SDL.h>
@@ -94,6 +96,10 @@ void dae::Minigin::Run(const std::function<void()>& load)
 
 	load();
 #ifndef __EMSCRIPTEN__
+
+	// need the highest timer resolution
+	timeBeginPeriod(1);
+
 	while (!m_quit)
 		RunOneFrame();
 #else
@@ -106,7 +112,7 @@ void dae::Minigin::RunOneFrame()
 	m_Timer.Stop();
 	m_Timer.Start();
 
-	m_Lag += m_Timer.GetDuration();
+	m_Lag += m_Timer.GetDeltaTime();
 
 	m_quit = !InputManager::GetInstance().ProcessInput();
 
@@ -118,7 +124,7 @@ void dae::Minigin::RunOneFrame()
 		m_Lag -= m_Timer.GetFixedFrameTime();
 	}
 
-	SceneManager::GetInstance().Update(m_Timer.GetDuration());
+	SceneManager::GetInstance().Update(m_Timer.GetDeltaTime());
 	Renderer::GetInstance().Render();
 
 	m_Timer.WaitUntilNextFrame();

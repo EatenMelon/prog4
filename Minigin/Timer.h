@@ -1,33 +1,36 @@
 #pragma once
 #include <chrono>
 
-class Timer
+namespace dae
 {
-public:
-	Timer() = default;
-	~Timer() = default;
+	class Timer
+	{
+	public:
+		Timer() = default;
+		~Timer() = default;
 
-	Timer(const Timer& other) = delete;
-	Timer& operator=(const Timer& other) = delete;
-	Timer(Timer&& other) = delete;
-	Timer& operator=(Timer&& other) = delete;
+		Timer(const Timer& other) = delete;
+		Timer& operator=(const Timer& other) = delete;
+		Timer(Timer&& other) = delete;
+		Timer& operator=(Timer&& other) = delete;
 
-	void SetFPS(int fps);
+		void SetFPS(int fps);
 
-	void Start();
-	void Stop();
+		void Start();
+		void Stop();
 
-	void WaitUntilNextFrame() const;
+		void WaitUntilNextFrame() const;
 
-	float GetDuration() const;
-	float GetFixedFrameTime() const;
+		float GetDeltaTime() const;
+		float GetFixedFrameTime() const;
 
-private:
+	private:
 
-	float m_FixedFrameTime{};
-	float m_Duration{};
-	
-	std::chrono::steady_clock::time_point m_LastTime{};
-	std::chrono::steady_clock::time_point m_CurrentTime{};
+		float m_FixedFrameTime{};
+		float m_DeltaTime{};
 
-};
+		std::chrono::high_resolution_clock::time_point m_LastTime{};
+		std::chrono::high_resolution_clock::time_point m_CurrentTime{};
+
+	};
+}

@@ -61,6 +61,17 @@ namespace dae
 			return false;
 		}
 
+		template<typename T>
+		std::shared_ptr<Component> GetComponent()
+		{
+			if (m_Components.find(typeid(T)) == m_Components.end())
+			{
+				return m_Components[typeid(T)];
+			}
+
+			return std::shared_ptr<Component>{};
+		}
+
 		GameObject() = default;
 		virtual ~GameObject();
 		GameObject(const GameObject& other) = delete;

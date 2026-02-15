@@ -28,6 +28,7 @@ namespace dae
 		template<typename T>
 		bool AddComponent()
 		{
+			// works for now, make this cleaner later
 			if (!std::is_base_of_v<Component, T>)
 			{
 				throw std::runtime_error("Cannot add non-component classes as a component!");
@@ -62,14 +63,14 @@ namespace dae
 		}
 
 		template<typename T>
-		std::shared_ptr<Component> GetComponent()
+		std::shared_ptr<T> GetComponent()
 		{
 			if (m_Components.find(typeid(T)) == m_Components.end())
 			{
 				return m_Components[typeid(T)];
 			}
 
-			return std::shared_ptr<Component>{};
+			return std::shared_ptr<T>{};
 		}
 
 		GameObject() = default;

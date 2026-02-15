@@ -1,6 +1,5 @@
 #include "FpsCounterComponent.h"
 
-#include <string>
 #include <iomanip>
 #include <sstream>
 

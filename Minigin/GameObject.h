@@ -1,7 +1,11 @@
 #pragma once
 #include <string>
 #include <memory>
-#include <vector>
+
+#include <iostream>
+#include <unordered_map>
+#include <typeindex>
+
 #include <stdexcept>
 
 #include "Component.h"
@@ -34,12 +38,27 @@ namespace dae
 				throw std::runtime_error("Cannot add the base component class as a component!");
 			}
 
-			std::shared_ptr<T> newComponent{};
-			newComponent = std::make_shared<T>(weak_from_this());
+			if (m_Components.find(typeid(T)) != m_Components.end())
+			{
+				std::cerr << "Error: GameObject already ahs this component!\n";
+				return false;
+			}
 
-			m_Components.push_back(newComponent);
+			try
+			{
+				std::shared_ptr<T> newComponent{};
+				newComponent = std::make_shared<T>(weak_from_this());
 
-			return true;
+				m_Components.emplace(typeid(T), newComponent);
+
+				return true;
+			}
+			catch (const std::exception& e)
+			{
+				std::cerr << "Error: " << e.what() << "\n";
+			}
+
+			return false;
 		}
 
 		GameObject() = default;
@@ -53,7 +72,7 @@ namespace dae
 		Transform m_transform{};
 		std::shared_ptr<Texture2D> m_texture{};
 
-		std::vector<std::shared_ptr<Component>> m_Components{};
+		std::unordered_map<std::type_index, std::shared_ptr<Component>> m_Components{};
 	};
 
 }

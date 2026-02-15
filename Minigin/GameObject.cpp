@@ -11,7 +11,7 @@ void dae::GameObject::FixedUpdate([[maybe_unused]] float fixedFrameTime)
 {
 	for (auto& comp : m_Components)
 	{
-		comp->FixedUpdate(fixedFrameTime);
+		comp.second->FixedUpdate(fixedFrameTime);
 	}
 }
 
@@ -19,7 +19,7 @@ void dae::GameObject::Update([[maybe_unused]] float deltaTime)
 {
 	for (auto& comp : m_Components)
 	{
-		comp->Update(deltaTime);
+		comp.second->Update(deltaTime);
 	}
 }
 
@@ -31,18 +31,13 @@ void dae::GameObject::Render() const
 
 void dae::GameObject::Cleanup()
 {
-	m_Components.erase
+	std::erase_if
 	(
-		std::remove_if
-		(
-			m_Components.begin(),
-			m_Components.end(),
-			[](const std::shared_ptr<Component>& c)
-			{
-				return c->WillBeDestroyed();
-			}
-		),
-		m_Components.end()
+		m_Components,
+		[](const auto& c)
+		{
+			return c.second->WillBeDestroyed();
+		}
 	);
 }
 

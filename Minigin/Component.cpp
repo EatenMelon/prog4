@@ -8,9 +8,9 @@ dae::Component::Component(std::weak_ptr<GameObject> owner)
 
 }
 
-void dae::Component::FixedUpdate([[maybe_unused]] float fixedFrameTime) { }
+void dae::Component::FixedUpdate([[maybe_unused]] float fixedFrameTime) {  }
 
-void dae::Component::Update([[maybe_unused]] float deltaTime) { }
+void dae::Component::Update([[maybe_unused]] float deltaTime) {  }
 
 void dae::Component::Destroy()
 {

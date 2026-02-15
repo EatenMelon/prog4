@@ -41,9 +41,8 @@ static void load()
 	fpsCounter->SetColor({ 255, 255, 255 });
 	fpsCounter->SetPosition(20, 20);
 	fpsCounter->AddComponent<dae::FpsCounterComponent>();
+	fpsCounter->AddComponent<dae::FpsCounterComponent>();
 	scene.Add(std::move(fpsCounter));
-
-
 }
 
 int main(int, char*[]) {

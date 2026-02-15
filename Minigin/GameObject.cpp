@@ -4,13 +4,24 @@
 #include "GameObject.h"
 #include "ResourceManager.h"
 #include "Renderer.h"
-#include "Component.h"
 
 dae::GameObject::~GameObject() = default;
 
-void dae::GameObject::FixedUpdate([[maybe_unused]] float fixedFrameTime) {}
+void dae::GameObject::FixedUpdate([[maybe_unused]] float fixedFrameTime)
+{
+	for (auto& comp : m_Components)
+	{
+		comp->FixedUpdate(fixedFrameTime);
+	}
+}
 
-void dae::GameObject::Update([[maybe_unused]] float deltaTime) {}
+void dae::GameObject::Update([[maybe_unused]] float deltaTime)
+{
+	for (auto& comp : m_Components)
+	{
+		comp->Update(deltaTime);
+	}
+}
 
 void dae::GameObject::Render() const
 {

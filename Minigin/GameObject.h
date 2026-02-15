@@ -4,13 +4,13 @@
 #include <vector>
 #include <stdexcept>
 
-#include "Transform.h"
 #include "Component.h"
+#include "Transform.h"
 
 namespace dae
 {
 	class Texture2D;
-	class GameObject : private std::enable_shared_from_this<GameObject> // has to be enabled to use shared_from_this()
+	class GameObject : public std::enable_shared_from_this<GameObject> // has to be enabled to use shared_from_this()
 	{
 	public:
 		virtual void FixedUpdate([[maybe_unused]] float fixedFrameTime);
@@ -33,8 +33,8 @@ namespace dae
 				throw std::runtime_error("Cannot add the base component class as a component!");
 			}
 
-			std::shared_ptr<T> newComponent{  };
-			newComponent = std::make_shared<Component>(weak_from_this());
+			std::shared_ptr<T> newComponent{};
+			newComponent = std::make_shared<T>(weak_from_this());
 
 			m_Components.push_back(newComponent);
 		}

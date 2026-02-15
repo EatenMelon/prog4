@@ -96,10 +96,6 @@ void dae::Minigin::Run(const std::function<void()>& load)
 
 	load();
 #ifndef __EMSCRIPTEN__
-
-	// need the highest timer resolution
-	timeBeginPeriod(1);
-
 	while (!m_quit)
 		RunOneFrame();
 #else

@@ -11,6 +11,8 @@ dae::TextObject::TextObject(const std::string& text, std::shared_ptr<Font> font,
 
 void dae::TextObject::Update([[maybe_unused]] float deltaTime)
 {
+	GameObject::Update(deltaTime);
+
 	if (m_needsUpdate)
 	{
 		const auto surf = TTF_RenderText_Blended(m_font->GetFont(), m_text.c_str(), m_text.length(), m_color);

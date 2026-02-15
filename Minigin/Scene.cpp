@@ -50,3 +50,11 @@ void Scene::Render() const
 	}
 }
 
+void Scene::Cleanup()
+{
+	for (auto& object : m_objects)
+	{
+		object->Cleanup();
+	}
+}
+

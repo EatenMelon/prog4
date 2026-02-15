@@ -123,5 +123,7 @@ void dae::Minigin::RunOneFrame()
 	SceneManager::GetInstance().Update(m_Timer.GetDeltaTime());
 	Renderer::GetInstance().Render();
 
+	SceneManager::GetInstance().Cleanup();
+
 	m_Timer.WaitUntilNextFrame();
 }

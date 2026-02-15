@@ -16,12 +16,13 @@ namespace dae
 		virtual void FixedUpdate([[maybe_unused]] float fixedFrameTime);
 		virtual void Update([[maybe_unused]] float deltaTime);
 		virtual void Render() const;
+		void Cleanup();
 
 		void SetTexture(const std::string& filename);
 		void SetPosition(float x, float y);
 
 		template<typename T>
-		void AddComponent()
+		bool AddComponent()
 		{
 			if (!std::is_base_of_v<Component, T>)
 			{
@@ -37,6 +38,8 @@ namespace dae
 			newComponent = std::make_shared<T>(weak_from_this());
 
 			m_Components.push_back(newComponent);
+
+			return true;
 		}
 
 		GameObject() = default;

@@ -3,21 +3,27 @@
 
 dae::Component::Component(std::weak_ptr<GameObject> owner)
 	: m_Owner{ owner }
+	, m_Destroyed{ false }
 {
 
 }
 
-void dae::Component::FixedUpdate([[maybe_unused]] float fixedFrameTime)
+void dae::Component::FixedUpdate([[maybe_unused]] float fixedFrameTime) { }
+
+void dae::Component::Update([[maybe_unused]] float deltaTime) { }
+
+void dae::Component::Destroy()
 {
-	// empty, because i want to keep it optional
+	m_Destroyed = true;
 }
 
-void dae::Component::Update([[maybe_unused]] float deltaTime)
+bool dae::Component::WillBeDestroyed() const
 {
-	// empty, because i want to keep it optional
+	return m_Destroyed;
 }
 
 dae::GameObject& dae::Component::GetOwner() const
 {
 	return *m_Owner.lock().get();
 }
+

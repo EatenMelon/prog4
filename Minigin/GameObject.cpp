@@ -29,6 +29,23 @@ void dae::GameObject::Render() const
 	Renderer::GetInstance().RenderTexture(*m_texture, pos.x, pos.y);
 }
 
+void dae::GameObject::Cleanup()
+{
+	m_Components.erase
+	(
+		std::remove_if
+		(
+			m_Components.begin(),
+			m_Components.end(),
+			[](const std::shared_ptr<Component>& c)
+			{
+				return c->WillBeDestroyed();
+			}
+		),
+		m_Components.end()
+	);
+}
+
 void dae::GameObject::SetTexture(const std::string& filename)
 {
 	m_texture = ResourceManager::GetInstance().LoadTexture(filename);

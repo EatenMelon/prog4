@@ -22,7 +22,17 @@ void dae::FpsCounterComponent::Update([[maybe_unused]] float deltaTime)
 	std::stringstream ss{};
 	ss << std::fixed << std::setprecision(1) << 1.f / deltaTime << " FPS";
 
-	static_cast<TextObject&>(GetOwner()).SetText(ss.str());
-
 	m_UntilTextUpdate = updateDelay;
+
+	if (m_UpdateTimes <= 0)
+	{
+		static_cast<TextObject&>(GetOwner()).SetText("destroyed");
+		Destroy();
+	}
+	else
+	{
+		static_cast<TextObject&>(GetOwner()).SetText(ss.str());
+	}
+
+	--m_UpdateTimes;
 }

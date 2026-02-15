@@ -12,9 +12,15 @@ namespace dae
 		virtual void FixedUpdate(float fixedFrameTime);
 		virtual void Update(float deltaTime);
 
+		void Destroy();
+
+		bool WillBeDestroyed() const;
+
+	protected:
 		GameObject& GetOwner() const;
 
 	private:
 		std::weak_ptr<GameObject> m_Owner;
+		bool m_Destroyed;
 	};
 }

@@ -14,5 +14,7 @@ namespace dae
 	private:
 
 		float m_UntilTextUpdate{ 0.f };
+
+		int m_UpdateTimes{ 12 };
 	};
 }

@@ -25,6 +25,14 @@ void dae::SceneManager::Render()
 	}
 }
 
+void dae::SceneManager::Cleanup()
+{
+	for (const auto& scene : m_scenes)
+	{
+		scene->Cleanup();
+	}
+}
+
 dae::Scene& dae::SceneManager::CreateScene()
 {
 	m_scenes.emplace_back(new Scene());

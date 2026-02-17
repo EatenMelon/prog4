@@ -25,14 +25,30 @@ static void load()
 
 	// adding the background image to the scene
 	{
-		auto bg = std::make_shared<dae::GameObject>();
-		bg->AddComponent<dae::Transform>();
-		auto bgTexture = bg->AddComponent<dae::RenderComponent>();
+		auto background = std::make_shared<dae::GameObject>();
+		background->AddComponent<dae::Transform>();
+		auto bgTexture = background->AddComponent<dae::RenderComponent>();
 
 		// set the texture when a texture has been added
 		if (bgTexture != nullptr) bgTexture->SetTexture("background.png");
 
-		scene.Add(std::move(bg));
+		scene.Add(std::move(background));
+	}
+
+	// adding the logo image to the scene
+	{
+		auto logo = std::make_shared<dae::GameObject>();
+		auto pos = logo->AddComponent<dae::Transform>();
+
+		// set the position when one has been added
+		if (pos != nullptr) pos->SetPosition(358.f, 180.f);
+
+		auto bgTexture = logo->AddComponent<dae::RenderComponent>();
+
+		// set the texture when a texture has been added
+		if (bgTexture != nullptr) bgTexture->SetTexture("logo.png");
+
+		scene.Add(std::move(logo));
 	}
 
 	// adding the title text to the scene
@@ -71,6 +87,8 @@ static void load()
 		}
 		scene.Add(std::move(fpsCounter));
 	}
+
+	
 }
 
 int main(int, char*[]) {

@@ -22,21 +22,9 @@ namespace dae
 		template<typename T>
 		T* AddComponent()
 		{
-			// works for now, make this cleaner later
-			if (!std::is_base_of_v<Component, T>)
-			{
-				throw std::runtime_error("Cannot add non-component classes as a component!");
-			}
-			if (typeid(T) == typeid(Component))
-			{
-				throw std::runtime_error("Cannot add the base component class as a component!");
-			}
-
-			if (m_Components.find(typeid(T)) != m_Components.end())
-			{
-				std::cerr << "Error: GameObject already ahs this component!\n";
-				return nullptr;
-			}
+			if (!std::is_base_of_v<Component, T>) return nullptr;
+			if (typeid(T) == typeid(Component)) return nullptr;
+			if (m_Components.find(typeid(T)) != m_Components.end()) return nullptr;
 
 			try
 			{

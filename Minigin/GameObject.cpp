@@ -2,8 +2,6 @@
 #include <type_traits>
 
 #include "GameObject.h"
-#include "ResourceManager.h"
-#include "Renderer.h"
 
 dae::GameObject::~GameObject() = default;
 
@@ -25,8 +23,10 @@ void dae::GameObject::Update([[maybe_unused]] float deltaTime)
 
 void dae::GameObject::Render() const
 {
-	const auto& pos = m_transform.GetPosition();
-	Renderer::GetInstance().RenderTexture(*m_texture, pos.x, pos.y);
+	for (auto& comp : m_Components)
+	{
+		comp.second->Render();
+	}
 }
 
 void dae::GameObject::Cleanup()
@@ -41,12 +41,12 @@ void dae::GameObject::Cleanup()
 	);
 }
 
-void dae::GameObject::SetTexture(const std::string& filename)
+void dae::GameObject::SetTexture([[maybe_unused]] const std::string& filename)
 {
-	m_texture = ResourceManager::GetInstance().LoadTexture(filename);
+	//m_texture = ResourceManager::GetInstance().LoadTexture(filename);
 }
 
-void dae::GameObject::SetPosition(float x, float y)
+void dae::GameObject::SetPosition([[maybe_unused]] float x, [[maybe_unused]] float y)
 {
-	m_transform.SetPosition(x, y, 0.0f);
+	//m_transform.SetPosition(x, y, 0.0f);
 }

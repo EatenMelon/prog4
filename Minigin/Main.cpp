@@ -8,11 +8,11 @@
 #include "Minigin.h"
 #include "SceneManager.h"
 #include "ResourceManager.h"
-#include "TextObject.h"
 #include "Scene.h"
 
 #include "Component.h"
 #include "FpsCounterComponent.h"
+#include "RenderComponent.h"
 
 #include <filesystem>
 namespace fs = std::filesystem;
@@ -22,26 +22,11 @@ static void load()
 	auto& scene = dae::SceneManager::GetInstance().CreateScene();
 
 	auto go = std::make_shared<dae::GameObject>();
-	go->SetTexture("background.png");
+
+	go->AddComponent<dae::Transform>();
+	go->AddComponent<dae::RenderComponent>()->SetTexture("background.png");
+
 	scene.Add(std::move(go));
-
-	go = std::make_shared<dae::GameObject>();
-	go->SetTexture("logo.png");
-	go->SetPosition(358, 180);
-	scene.Add(std::move(go));
-
-	auto font = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
-	auto to = std::make_shared<dae::TextObject>("Programming 4 Assignment", font);
-	to->SetColor({ 255, 255, 0, 255 });
-	to->SetPosition(292, 20);
-	scene.Add(std::move(to));
-
-	// testing the fps counter
-	auto fpsCounter = std::make_shared<dae::TextObject>("...", font);
-	fpsCounter->SetColor({ 255, 255, 255 });
-	fpsCounter->SetPosition(20, 20);
-	fpsCounter->AddComponent<dae::FpsCounterComponent>();
-	scene.Add(std::move(fpsCounter));
 }
 
 int main(int, char*[]) {

@@ -1,5 +1,11 @@
 #include "Transform.h"
 
+dae::Transform::Transform(std::weak_ptr<GameObject> owner)
+	: Component(owner)
+	, m_position{ 0.f, 0.f, 0.f }
+{
+}
+
 void dae::Transform::SetPosition(const float x, const float y, const float z)
 {
 	m_position.x = x;

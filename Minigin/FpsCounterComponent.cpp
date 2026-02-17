@@ -8,8 +8,6 @@
 void dae::FpsCounterComponent::Update([[maybe_unused]] float deltaTime)
 {
 	constexpr float updateDelay{ 0.75f };
-
-	//if (typeid(GetOwner()) != typeid(TextObject)) return;
 	
 	if (m_UntilTextUpdate > 0.f)
 	{
@@ -22,5 +20,7 @@ void dae::FpsCounterComponent::Update([[maybe_unused]] float deltaTime)
 
 	m_UntilTextUpdate = updateDelay;
 
-	//static_cast<TextObject&>(GetOwner()).SetText(ss.str());
+	SetText(ss.str());
+	
+	TextComponent::Update(deltaTime);
 }

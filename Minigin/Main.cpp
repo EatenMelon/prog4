@@ -10,10 +10,10 @@
 #include "ResourceManager.h"
 #include "Scene.h"
 
-#include "Component.h"
 #include "FpsCounterComponent.h"
 #include "RenderComponent.h"
 #include "TextComponent.h"
+#include "Transform.h"
 
 #include <filesystem>
 namespace fs = std::filesystem;
@@ -24,32 +24,53 @@ static void load()
 	auto font = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
 
 	// adding the background image to the scene
-	auto bg = std::make_shared<dae::GameObject>();
-	bg->AddComponent<dae::Transform>();
-	auto bgTexture = bg->AddComponent<dae::RenderComponent>();
+	{
+		auto bg = std::make_shared<dae::GameObject>();
+		bg->AddComponent<dae::Transform>();
+		auto bgTexture = bg->AddComponent<dae::RenderComponent>();
 
-	// set the texture when a texture has been added
-	if (bgTexture != nullptr) bgTexture->SetTexture("background.png");
+		// set the texture when a texture has been added
+		if (bgTexture != nullptr) bgTexture->SetTexture("background.png");
 
-	scene.Add(std::move(bg));
+		scene.Add(std::move(bg));
+	}
 
 	// adding the title text to the scene
-
-	auto title = std::make_shared<dae::GameObject>();
-	auto titlePos = title->AddComponent<dae::Transform>();
-
-	// set the position when one has been added
-	if (titlePos != nullptr) titlePos->SetPosition(292.f, 20.f);
-
-	auto titleText = title->AddComponent<dae::TextComponent>();
-
-	if (titleText != nullptr)
 	{
-		titleText->SetFont(font);
-		titleText->SetColor({ 255, 255, 0 });
-		titleText->SetText("Programming 4 Assignment");
+		auto title = std::make_shared<dae::GameObject>();
+		auto pos = title->AddComponent<dae::Transform>();
+
+		// set the position when one has been added
+		if (pos != nullptr) pos->SetPosition(292.f, 20.f);
+
+		auto text = title->AddComponent<dae::TextComponent>();
+
+		if (text != nullptr)
+		{
+			text->SetFont(font);
+			text->SetColor({ 255, 255, 0 });
+			text->SetText("Programming 4 Assignment");
+		}
+		scene.Add(std::move(title));
 	}
-	scene.Add(std::move(title));
+
+	// adding the fps counter to the screen
+	{
+		auto fpsCounter = std::make_shared<dae::GameObject>();
+		auto pos = fpsCounter->AddComponent<dae::Transform>();
+
+		// set the position when one has been added
+		if (pos != nullptr) pos->SetPosition(20.f, 20.f);
+
+		auto text = fpsCounter->AddComponent<dae::FpsCounterComponent>();
+
+		if (text != nullptr)
+		{
+			text->SetFont(font);
+			text->SetColor({ 255, 255, 0 });
+		}
+		scene.Add(std::move(fpsCounter));
+	}
 }
 
 int main(int, char*[]) {

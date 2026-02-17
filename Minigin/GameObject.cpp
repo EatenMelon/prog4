@@ -1,9 +1,4 @@
-#include <string>
-#include <type_traits>
-
 #include "GameObject.h"
-
-dae::GameObject::~GameObject() = default;
 
 void dae::GameObject::FixedUpdate([[maybe_unused]] float fixedFrameTime)
 {
@@ -39,14 +34,4 @@ void dae::GameObject::Cleanup()
 			return c.second->WillBeDestroyed();
 		}
 	);
-}
-
-void dae::GameObject::SetTexture([[maybe_unused]] const std::string& filename)
-{
-	//m_texture = ResourceManager::GetInstance().LoadTexture(filename);
-}
-
-void dae::GameObject::SetPosition([[maybe_unused]] float x, [[maybe_unused]] float y)
-{
-	//m_transform.SetPosition(x, y, 0.0f);
 }

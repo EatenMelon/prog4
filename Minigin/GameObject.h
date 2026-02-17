@@ -1,29 +1,23 @@
 #pragma once
-#include <string>
 #include <memory>
 
 #include <iostream>
 #include <unordered_map>
 #include <typeindex>
-
 #include <stdexcept>
 
 #include "Component.h"
-#include "Transform.h"
 
 namespace dae
 {
 	class Texture2D;
-	class GameObject : public std::enable_shared_from_this<GameObject> // has to be enabled to use shared_from_this()
+	class GameObject final : public std::enable_shared_from_this<GameObject> // has to be enabled to use shared_from_this()
 	{
 	public:
 		virtual void FixedUpdate([[maybe_unused]] float fixedFrameTime);
 		virtual void Update([[maybe_unused]] float deltaTime);
 		virtual void Render() const;
 		void Cleanup();
-
-		void SetTexture(const std::string& filename);
-		void SetPosition(float x, float y);
 
 		template<typename T>
 		T* AddComponent()
@@ -78,7 +72,7 @@ namespace dae
 		}
 
 		GameObject() = default;
-		virtual ~GameObject();
+		~GameObject() = default;
 		GameObject(const GameObject& other) = delete;
 		GameObject(GameObject&& other) = delete;
 		GameObject& operator=(const GameObject& other) = delete;

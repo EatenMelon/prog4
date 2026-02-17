@@ -1,13 +1,12 @@
 #pragma once
-#include "Component.h"
+#include "TextComponent.h"
 
 namespace dae
 {
-	class FpsCounterComponent final : public Component
+	class FpsCounterComponent final : public TextComponent
 	{
 	public:
-		// reuse the constructor of the base component class
-		using Component::Component;
+		using TextComponent::TextComponent;
 
 		void Update(float deltaTime) override;
 

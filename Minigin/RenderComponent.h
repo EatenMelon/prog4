@@ -9,6 +9,7 @@ namespace dae
 	class RenderComponent final: public Component
 	{
 	public:
+		// reuse the constructor of the base component class
 		using Component::Component;
 
 		void Render() const override;

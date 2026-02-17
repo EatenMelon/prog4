@@ -13,7 +13,7 @@ namespace dae
 	public:
 		using Component::Component;
 
-		void Update(float deltaTime) override;
+		virtual void Update(float deltaTime) override;
 		void Render() const override;
 
 		void SetText(const std::string& text);

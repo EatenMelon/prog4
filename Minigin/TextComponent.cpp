@@ -8,6 +8,8 @@
 #include "Renderer.h"
 #include "Font.h"
 
+#include "Transform.h"
+
 void dae::TextComponent::Update([[maybe_unused]] float deltaTime)
 {
 	if (m_needsUpdate)

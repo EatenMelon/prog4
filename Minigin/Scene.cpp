@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <cassert>
 #include "Scene.h"
 
 using namespace dae;

@@ -6,7 +6,7 @@
 namespace dae
 {
 	class Texture2D;
-	class RenderComponent : public Component
+	class RenderComponent final: public Component
 	{
 	public:
 		using Component::Component;

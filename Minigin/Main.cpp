@@ -87,8 +87,6 @@ static void load()
 		}
 		scene.Add(std::move(fpsCounter));
 	}
-
-	
 }
 
 int main(int, char*[]) {

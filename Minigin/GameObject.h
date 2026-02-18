@@ -14,9 +14,9 @@ namespace dae
 	class GameObject final : public std::enable_shared_from_this<GameObject> // has to be enabled to use shared_from_this()
 	{
 	public:
-		virtual void FixedUpdate([[maybe_unused]] float fixedFrameTime);
-		virtual void Update([[maybe_unused]] float deltaTime);
-		virtual void Render() const;
+		void FixedUpdate([[maybe_unused]] float fixedFrameTime);
+		void Update([[maybe_unused]] float deltaTime);
+		void Render() const;
 		void Cleanup();
 
 		template<typename T>

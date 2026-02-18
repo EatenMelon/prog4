@@ -1,6 +1,6 @@
 #include "Transform.h"
 
-dae::Transform::Transform(std::weak_ptr<GameObject> owner)
+dae::Transform::Transform(GameObject* const owner)
 	: Component(owner)
 	, m_position{ 0.f, 0.f, 0.f }
 {

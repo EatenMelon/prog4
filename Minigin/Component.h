@@ -7,7 +7,7 @@ namespace dae
 	class Component
 	{
 	public:
-		Component(std::weak_ptr<GameObject> owner);
+		Component(GameObject* const owner);
 
 		virtual void FixedUpdate(float fixedFrameTime);
 		virtual void Update(float deltaTime);
@@ -21,7 +21,7 @@ namespace dae
 		GameObject& GetOwner() const;
 
 	private:
-		std::weak_ptr<GameObject> m_Owner;
+		GameObject *const m_Owner;
 		bool m_Destroyed;
 	};
 }

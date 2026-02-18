@@ -25,7 +25,7 @@ static void load()
 
 	// adding the background image to the scene
 	{
-		auto background = std::make_shared<dae::GameObject>();
+		auto background = std::make_unique<dae::GameObject>();
 		background->AddComponent<dae::Transform>();
 		auto bgTexture = background->AddComponent<dae::RenderComponent>();
 
@@ -37,7 +37,7 @@ static void load()
 
 	// adding the logo image to the scene
 	{
-		auto logo = std::make_shared<dae::GameObject>();
+		auto logo = std::make_unique<dae::GameObject>();
 		auto pos = logo->AddComponent<dae::Transform>();
 
 		// set the position when one has been added
@@ -53,7 +53,7 @@ static void load()
 
 	// adding the title text to the scene
 	{
-		auto title = std::make_shared<dae::GameObject>();
+		auto title = std::make_unique<dae::GameObject>();
 		auto pos = title->AddComponent<dae::Transform>();
 
 		// set the position when one has been added
@@ -72,7 +72,7 @@ static void load()
 
 	// adding the fps counter to the screen
 	{
-		auto fpsCounter = std::make_shared<dae::GameObject>();
+		auto fpsCounter = std::make_unique<dae::GameObject>();
 		auto pos = fpsCounter->AddComponent<dae::Transform>();
 
 		// set the position when one has been added

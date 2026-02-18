@@ -46,7 +46,7 @@ void dae::TextComponent::Render() const
 
 void dae::TextComponent::SetText(const std::string& text)
 {
-	m_text = text;
+	m_text = text;			// why vld
 	m_needsUpdate = true;
 }
 

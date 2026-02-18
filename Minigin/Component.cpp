@@ -1,7 +1,7 @@
 #include "Component.h"
 #include "GameObject.h"
 
-dae::Component::Component(std::weak_ptr<GameObject> owner)
+dae::Component::Component(GameObject *const owner)
 	: m_Owner{ owner }
 	, m_Destroyed{ false }
 {
@@ -26,6 +26,6 @@ bool dae::Component::WillBeDestroyed() const
 
 dae::GameObject& dae::Component::GetOwner() const
 {
-	return *m_Owner.lock().get();
+	return *m_Owner;
 }
 

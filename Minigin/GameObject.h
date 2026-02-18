@@ -11,7 +11,7 @@
 namespace dae
 {
 	class Texture2D;
-	class GameObject final : public std::enable_shared_from_this<GameObject> // has to be enabled to use shared_from_this()
+	class GameObject final // has to be enabled to use shared_from_this()
 	{
 	public:
 		void FixedUpdate([[maybe_unused]] float fixedFrameTime);
@@ -29,10 +29,10 @@ namespace dae
 			try
 			{
 				// add new component
-				std::shared_ptr<T> newComponent{};
-				newComponent = std::make_shared<T>(weak_from_this());
+				std::unique_ptr<T> newComponent{};
+				newComponent = std::make_unique<T>(this);
 
-				m_Components.emplace(typeid(T), newComponent);
+				m_Components.emplace(typeid(T), std::move(newComponent));
 
 				// return component
 				auto comp = m_Components.find(typeid(T));
@@ -68,7 +68,7 @@ namespace dae
 
 	private:
 
-		std::unordered_map<std::type_index, std::shared_ptr<Component>> m_Components{};
+		std::unordered_map<std::type_index, std::unique_ptr<Component>> m_Components{};
 	};
 
 }

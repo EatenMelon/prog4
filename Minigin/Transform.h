@@ -7,7 +7,7 @@ namespace dae
 	class Transform final : public Component
 	{
 	public:
-		Transform(std::weak_ptr<GameObject> owner);
+		Transform(GameObject* const owner);
 
 		const glm::vec3& GetPosition() const { return m_position; }
 		void SetPosition(float x, float y, float z = 0);

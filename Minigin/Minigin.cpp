@@ -65,8 +65,9 @@ dae::Minigin::Minigin(const std::filesystem::path& dataPath)
 		throw std::runtime_error(std::string("SDL_Init Error: ") + SDL_GetError());
 	}
 
-	g_window = SDL_CreateWindow(
-		"Programming 4 assignment",
+	g_window = SDL_CreateWindow
+	(
+		"Programming 4 assignment",		// sometimes a leak happens here!
 		1024,
 		576,
 		SDL_WINDOW_OPENGL

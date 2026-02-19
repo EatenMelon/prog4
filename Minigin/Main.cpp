@@ -25,10 +25,10 @@ static void load()
 	// adding the background image to the scene
 	{
 		auto background = std::make_unique<dae::GameObject>();
-		auto bgTexture = background->AddComponent<dae::RenderComponent>();
+		auto renderComponent = background->AddComponent<dae::RenderComponent>();
 
 		// set the texture when a texture has been added
-		if (bgTexture != nullptr) bgTexture->SetTexture("background.png");
+		if (renderComponent != nullptr) renderComponent->SetTexture("background.png");
 
 		scene.Add(std::move(background));
 	}
@@ -38,10 +38,10 @@ static void load()
 		auto logo = std::make_unique<dae::GameObject>();
 		logo->SetPosition(358.f, 180.f);
 
-		auto bgTexture = logo->AddComponent<dae::RenderComponent>();
+		auto renderComp = logo->AddComponent<dae::RenderComponent>();
 
 		// set the texture when a texture has been added
-		if (bgTexture != nullptr) bgTexture->SetTexture("logo.png");
+		if (renderComp != nullptr) renderComp->SetTexture("logo.png");
 
 		scene.Add(std::move(logo));
 	}
@@ -51,13 +51,18 @@ static void load()
 		auto title = std::make_unique<dae::GameObject>();
 		title->SetPosition(292.f, 20.f);
 
-		auto text = title->AddComponent<dae::TextComponent>();
+		auto renderComp = title->AddComponent<dae::RenderComponent>();
 
-		if (text != nullptr)
+		if(renderComp != nullptr)
 		{
-			text->SetFont(font);
-			text->SetColor({ 255, 255, 0, 255 });
-			text->SetText("Programming 4 Assignment");
+			auto text = title->AddComponent<dae::TextComponent>();
+
+			if (text != nullptr)
+			{
+				text->SetFont(font);
+				text->SetColor({ 255, 255, 0, 255 });
+				text->SetText("Programming 4 Assignment");
+			}
 		}
 		scene.Add(std::move(title));
 	}
@@ -67,15 +72,20 @@ static void load()
 		auto fpsCounter = std::make_unique<dae::GameObject>();
 		fpsCounter->SetPosition(20.f, 20.f);
 
-		auto text = fpsCounter->AddComponent<dae::TextComponent>();
+		auto renderComp = fpsCounter->AddComponent<dae::RenderComponent>();
 
-		if (text)
+		if (renderComp != nullptr)
 		{
-			text->SetText("...");
-			text->SetFont(font);
-			text->SetColor({ 255, 255, 0, 255 });
+			auto text = fpsCounter->AddComponent<dae::TextComponent>();
 
-			fpsCounter->AddComponent<dae::FpsCounterComponent>();
+			if (text != nullptr)
+			{
+				text->SetText("...");
+				text->SetFont(font);
+				text->SetColor({ 255, 255, 0, 255 });
+
+				fpsCounter->AddComponent<dae::FpsCounterComponent>();
+			}
 		}
 
 		scene.Add(std::move(fpsCounter));

@@ -1,7 +1,7 @@
 #include "Component.h"
 #include "GameObject.h"
 
-dae::Component::Component(GameObject *const owner)
+dae::Component::Component(GameObject* owner)
 	: m_Owner{ owner }
 	, m_Destroyed{ false }
 {

@@ -1,5 +1,4 @@
 #pragma once
-#include <memory>
 
 namespace dae
 {
@@ -7,7 +6,7 @@ namespace dae
 	class Component
 	{
 	public:
-		Component(GameObject* const owner);
+		Component(GameObject* owner);
 
 		virtual ~Component() = default;
 		Component(const Component& other) = delete;
@@ -28,7 +27,7 @@ namespace dae
 		GameObject& GetOwner() const;
 
 	private:
-		GameObject *const m_Owner;
+		GameObject* m_Owner;
 		bool m_Destroyed;
 	};
 }

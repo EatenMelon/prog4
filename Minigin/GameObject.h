@@ -4,7 +4,6 @@
 #include <iostream>
 #include <unordered_map>
 #include <typeindex>
-#include <stdexcept>
 
 #include "Component.h"
 

@@ -31,7 +31,7 @@ void dae::GameObject::Cleanup()
 		m_Components,
 		[](const auto& c)
 		{
-			return c.second->WillBeDestroyed();
+			return c.second->MarkedForDestruction();
 		}
 	);
 }
@@ -44,4 +44,14 @@ const glm::vec3& dae::GameObject::GetPosition()
 void dae::GameObject::SetPosition(float x, float y, float z)
 {
 	m_Transform.SetPosition(x, y, z);
+}
+
+void dae::GameObject::Destroy()
+{
+	m_Destroyed = true;
+}
+
+bool dae::GameObject::MarkedForDestruction() const
+{
+	return m_Destroyed;
 }

@@ -53,6 +53,15 @@ void Scene::Render() const
 
 void Scene::Cleanup()
 {
+	std::erase_if
+	(
+		m_objects,
+		[](const auto& obj)
+		{
+			return obj->MarkedForDestruction();
+		}
+	);
+
 	for (auto& object : m_objects)
 	{
 		object->Cleanup();

@@ -22,11 +22,13 @@ void dae::FpsCounterComponent::Update([[maybe_unused]] float deltaTime)
 		m_UntilTextUpdate -= deltaTime;
 		return;
 	}
-	
+
 	m_UntilTextUpdate = updateDelay;
 
 	std::stringstream ss{};
 	ss << std::fixed << std::setprecision(1) << 1.f / deltaTime << " FPS";
 
 	m_TextComponent->SetText(ss.str());
+
+
 }

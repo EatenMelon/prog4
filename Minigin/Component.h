@@ -21,7 +21,7 @@ namespace dae
 
 		void Destroy();
 
-		bool WillBeDestroyed() const;
+		bool MarkedForDestruction() const;
 
 	protected:
 		GameObject& GetOwner() const;

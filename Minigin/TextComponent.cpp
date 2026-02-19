@@ -39,6 +39,8 @@ void dae::TextComponent::Update([[maybe_unused]] float deltaTime)
 
 void dae::TextComponent::SetText(const std::string& text)
 {
+	if (m_Text == text) return;
+
 	m_Text = text;
 	m_NeedsUpdate = true;
 }

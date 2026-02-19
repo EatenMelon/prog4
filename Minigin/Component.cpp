@@ -21,7 +21,7 @@ void dae::Component::Destroy()
 	m_Destroyed = true;
 }
 
-bool dae::Component::WillBeDestroyed() const
+bool dae::Component::MarkedForDestruction() const
 {
 	return m_Destroyed;
 }

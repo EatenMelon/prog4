@@ -5,10 +5,7 @@
 #include <unordered_map>
 #include <typeindex>
 
-#include <glm/glm.hpp>
-
 #include "Component.h"
-#include "FpsCounterComponent.h"
 #include "Transform.h"
 
 namespace dae
@@ -24,6 +21,9 @@ namespace dae
 
 		const glm::vec3& GetPosition();
 		void SetPosition(float x, float y, float z = 0.f);
+
+		void Destroy();
+		bool MarkedForDestruction() const;
 
 		template<typename T>
 		T* AddComponent()
@@ -80,6 +80,7 @@ namespace dae
 		std::unordered_map<std::type_index, std::unique_ptr<Component>> m_Components{};
 
 		Transform m_Transform{ };
+		bool m_Destroyed{  };
 	};
 
 }

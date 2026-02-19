@@ -5,7 +5,11 @@
 #include <unordered_map>
 #include <typeindex>
 
+#include <glm/glm.hpp>
+
 #include "Component.h"
+#include "FpsCounterComponent.h"
+#include "Transform.h"
 
 namespace dae
 {
@@ -17,6 +21,9 @@ namespace dae
 		void Update([[maybe_unused]] float deltaTime);
 		void Render() const;
 		void Cleanup();
+
+		const glm::vec3& GetPosition();
+		void SetPosition(float x, float y, float z = 0.f);
 
 		template<typename T>
 		T* AddComponent()
@@ -35,6 +42,9 @@ namespace dae
 
 				// return component
 				auto comp = m_Components.find(typeid(T));
+
+				comp->second.get()->Init();
+
 				return static_cast<T*>(comp->second.get());
 			}
 			catch (const std::exception& e)
@@ -68,6 +78,8 @@ namespace dae
 	private:
 
 		std::unordered_map<std::type_index, std::unique_ptr<Component>> m_Components{};
+
+		Transform m_Transform{ };
 	};
 
 }

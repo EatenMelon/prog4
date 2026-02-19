@@ -4,9 +4,17 @@
 #include <sstream>
 
 #include "GameObject.h"
+#include "TextComponent.h"
+
+void dae::FpsCounterComponent::Init()
+{
+	m_TextComponent = GetOwner().GetComponent<TextComponent>();
+}
 
 void dae::FpsCounterComponent::Update([[maybe_unused]] float deltaTime)
 {
+	if (m_TextComponent == nullptr) return;
+
 	constexpr float updateDelay{ 0.75f };
 	
 	if (m_UntilTextUpdate > 0.f)
@@ -20,7 +28,5 @@ void dae::FpsCounterComponent::Update([[maybe_unused]] float deltaTime)
 	std::stringstream ss{};
 	ss << std::fixed << std::setprecision(1) << 1.f / deltaTime << " FPS";
 
-	SetText(ss.str());
-	
-	TextComponent::Update(deltaTime);
+	m_TextComponent->SetText(ss.str());
 }

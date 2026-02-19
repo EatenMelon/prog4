@@ -8,7 +8,9 @@
 #include "Renderer.h"
 #include "Font.h"
 
-#include "Transform.h"
+void dae::TextComponent::Init()
+{
+}
 
 void dae::TextComponent::Update([[maybe_unused]] float deltaTime)
 {
@@ -25,28 +27,14 @@ void dae::TextComponent::Update([[maybe_unused]] float deltaTime)
 			throw std::runtime_error(std::string("Create text texture from surface failed: ") + SDL_GetError());
 		}
 		SDL_DestroySurface(surf);
-		m_textTexture = std::make_shared<Texture2D>(texture);
+		//m_texture = std::make_shared<Texture2D>(texture);
 		m_needsUpdate = false;
 	}
 }
 
-void dae::TextComponent::Render() const
-{
-	if (m_textTexture == nullptr) return;
-	
-	const auto& transf = GetOwner().GetComponent<dae::Transform>();
-
-	if (!transf) return;
-
-	auto pos = transf->GetPosition();
-	
-	Renderer::GetInstance().RenderTexture(*m_textTexture, pos.x, pos.y);
-	
-}
-
 void dae::TextComponent::SetText(const std::string& text)
 {
-	m_text = text;			// why vld
+	m_text = text;
 	m_needsUpdate = true;
 }
 

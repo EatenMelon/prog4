@@ -13,7 +13,6 @@
 #include "FpsCounterComponent.h"
 #include "RenderComponent.h"
 #include "TextComponent.h"
-#include "Transform.h"
 
 #include <filesystem>
 namespace fs = std::filesystem;
@@ -26,7 +25,6 @@ static void load()
 	// adding the background image to the scene
 	{
 		auto background = std::make_unique<dae::GameObject>();
-		background->AddComponent<dae::Transform>();
 		auto bgTexture = background->AddComponent<dae::RenderComponent>();
 
 		// set the texture when a texture has been added
@@ -38,10 +36,7 @@ static void load()
 	// adding the logo image to the scene
 	{
 		auto logo = std::make_unique<dae::GameObject>();
-		auto pos = logo->AddComponent<dae::Transform>();
-
-		// set the position when one has been added
-		if (pos != nullptr) pos->SetPosition(358.f, 180.f);
+		logo->SetPosition(358.f, 180.f);
 
 		auto bgTexture = logo->AddComponent<dae::RenderComponent>();
 
@@ -54,17 +49,14 @@ static void load()
 	// adding the title text to the scene
 	{
 		auto title = std::make_unique<dae::GameObject>();
-		auto pos = title->AddComponent<dae::Transform>();
-
-		// set the position when one has been added
-		if (pos != nullptr) pos->SetPosition(292.f, 20.f);
+		title->SetPosition(292.f, 20.f);
 
 		auto text = title->AddComponent<dae::TextComponent>();
 
 		if (text != nullptr)
 		{
 			text->SetFont(font);
-			text->SetColor(SDL_Color{ 255, 255, 0, 255 });
+			text->SetColor({ 255, 255, 0, 255 });
 			text->SetText("Programming 4 Assignment");
 		}
 		scene.Add(std::move(title));
@@ -73,18 +65,19 @@ static void load()
 	// adding the fps counter to the screen
 	{
 		auto fpsCounter = std::make_unique<dae::GameObject>();
-		auto pos = fpsCounter->AddComponent<dae::Transform>();
+		fpsCounter->SetPosition(20.f, 20.f);
 
-		// set the position when one has been added
-		if (pos != nullptr) pos->SetPosition(20.f, 20.f);
+		auto text = fpsCounter->AddComponent<dae::TextComponent>();
 
-		auto text = fpsCounter->AddComponent<dae::FpsCounterComponent>();
-
-		if (text != nullptr)
+		if (text)
 		{
+			text->SetText("...");
 			text->SetFont(font);
-			text->SetColor(SDL_Color{ 255, 255, 0, 255 });
+			text->SetColor({ 255, 255, 0, 255 });
+
+			fpsCounter->AddComponent<dae::FpsCounterComponent>();
 		}
+
 		scene.Add(std::move(fpsCounter));
 	}
 }

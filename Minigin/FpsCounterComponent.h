@@ -1,17 +1,21 @@
 #pragma once
-#include "TextComponent.h"
+#include "Component.h"
 
 namespace dae
 {
-	class FpsCounterComponent final : public TextComponent
+	class TextComponent;
+	class FpsCounterComponent final : public Component
 	{
 	public:
-		using TextComponent::TextComponent;
+		using Component::Component;
 
+		void Init() override;
 		void Update(float deltaTime) override;
 
 	private:
 
 		float m_UntilTextUpdate{ 0.f };
+
+		TextComponent* m_TextComponent{ nullptr };
 	};
 }

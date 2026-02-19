@@ -1,20 +1,20 @@
 #pragma once
 #include <string>
 
-#include "Component.h"
 #include "SDL3/SDL.h"
+#include "Component.h"
 
 namespace dae
 {
 	class Texture2D;
 	class Font;
-	class TextComponent : public Component
+	class TextComponent final : public Component
 	{
 	public:
 		using Component::Component;
 
-		virtual void Update(float deltaTime) override;
-		void Render() const override;
+		void Init() override;
+		void Update(float deltaTime) override;
 
 		void SetText(const std::string& text);
 		void SetColor(const SDL_Color& color);
@@ -26,6 +26,5 @@ namespace dae
 		std::string m_text{};
 		SDL_Color m_color{ 255, 255, 255, 255 };
 		std::shared_ptr<Font> m_font{};
-		std::shared_ptr<Texture2D> m_textTexture{};
 	};
 }

@@ -35,3 +35,13 @@ void dae::GameObject::Cleanup()
 		}
 	);
 }
+
+const glm::vec3& dae::GameObject::GetPosition()
+{
+	return m_Transform.GetPosition();
+}
+
+void dae::GameObject::SetPosition(float x, float y, float z)
+{
+	m_Transform.SetPosition(x, y, z);
+}

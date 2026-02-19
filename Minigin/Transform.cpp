@@ -1,8 +1,7 @@
 #include "Transform.h"
 
-dae::Transform::Transform(GameObject* const owner)
-	: Component(owner)
-	, m_position{ 0.f, 0.f, 0.f }
+dae::Transform::Transform(float x, float y, float z)
+	: m_position{ x, y, z }
 {
 }
 

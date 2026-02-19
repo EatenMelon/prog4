@@ -64,7 +64,7 @@ static void load()
 		if (text != nullptr)
 		{
 			text->SetFont(font);
-			text->SetColor(SDL_Color{ 255, 255, 0 });
+			text->SetColor(SDL_Color{ 255, 255, 0, 255 });
 			text->SetText("Programming 4 Assignment");
 		}
 		scene.Add(std::move(title));
@@ -83,7 +83,7 @@ static void load()
 		if (text != nullptr)
 		{
 			text->SetFont(font);
-			text->SetColor(SDL_Color{ 255, 255, 0 });
+			text->SetColor(SDL_Color{ 255, 255, 0, 255 });
 		}
 		scene.Add(std::move(fpsCounter));
 	}

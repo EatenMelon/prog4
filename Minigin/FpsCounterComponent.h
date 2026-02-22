@@ -14,7 +14,7 @@ namespace dae
 
 	private:
 
-		float m_UntilTextUpdate{ 10.f };
+		float m_UntilTextUpdate{ 0.f };
 
 		TextComponent* m_TextComponent{ nullptr };
 	};

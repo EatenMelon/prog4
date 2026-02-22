@@ -10,9 +10,9 @@ dae::Component::Component(GameObject* owner)
 
 void dae::Component::Init() { }
 
-void dae::Component::FixedUpdate([[maybe_unused]] float fixedFrameTime) {  }
+void dae::Component::FixedUpdate(float) {  }
 
-void dae::Component::Update([[maybe_unused]] float deltaTime) {  }
+void dae::Component::Update(float) {  }
 
 void dae::Component::Render() const {  }
 

@@ -11,7 +11,7 @@ void dae::FpsCounterComponent::Init()
 	m_TextComponent = GetOwner().GetComponent<TextComponent>();
 }
 
-void dae::FpsCounterComponent::Update([[maybe_unused]] float deltaTime)
+void dae::FpsCounterComponent::Update(float deltaTime)
 {
 	if (m_TextComponent == nullptr) return;
 

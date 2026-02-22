@@ -114,7 +114,6 @@ void dae::Minigin::RunOneFrame()
 
 	while (m_Lag >= m_Timer.GetFixedFrameTime())
 	{
-		// add fixed update here!
 		SceneManager::GetInstance().FixedUpdate(m_Timer.GetFixedFrameTime());
 
 		m_Lag -= m_Timer.GetFixedFrameTime();

@@ -14,8 +14,8 @@ namespace dae
 	class GameObject final // has to be enabled to use shared_from_this()
 	{
 	public:
-		void FixedUpdate([[maybe_unused]] float fixedFrameTime);
-		void Update([[maybe_unused]] float deltaTime);
+		void FixedUpdate(float fixedFrameTime);
+		void Update(float deltaTime);
 		void Render() const;
 		void Cleanup();
 

@@ -1,7 +1,7 @@
 #include "SceneManager.h"
 #include "Scene.h"
 
-void dae::SceneManager::FixedUpdate([[maybe_unused]] float fixedFrameTime)
+void dae::SceneManager::FixedUpdate(float fixedFrameTime)
 {
 	for (auto& scene : m_scenes)
 	{
@@ -9,7 +9,7 @@ void dae::SceneManager::FixedUpdate([[maybe_unused]] float fixedFrameTime)
 	}
 }
 
-void dae::SceneManager::Update([[maybe_unused]] float deltaTime)
+void dae::SceneManager::Update(float deltaTime)
 {
 	for(auto& scene : m_scenes)
 	{

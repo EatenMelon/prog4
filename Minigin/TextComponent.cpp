@@ -15,7 +15,7 @@ void dae::TextComponent::Init()
 	m_NeedsUpdate = true;
 }
 
-void dae::TextComponent::Update([[maybe_unused]] float deltaTime)
+void dae::TextComponent::Update(float)
 {
 	if (!m_RenderComponent) return;
 

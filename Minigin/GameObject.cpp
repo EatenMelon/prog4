@@ -1,6 +1,6 @@
 #include "GameObject.h"
 
-void dae::GameObject::FixedUpdate([[maybe_unused]] float fixedFrameTime)
+void dae::GameObject::FixedUpdate(float fixedFrameTime)
 {
 	for (auto& comp : m_Components)
 	{
@@ -8,7 +8,7 @@ void dae::GameObject::FixedUpdate([[maybe_unused]] float fixedFrameTime)
 	}
 }
 
-void dae::GameObject::Update([[maybe_unused]] float deltaTime)
+void dae::GameObject::Update(float deltaTime)
 {
 	for (auto& comp : m_Components)
 	{

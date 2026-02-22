@@ -20,17 +20,26 @@ namespace dae
 		void Render() const;
 		void Cleanup();
 
-		const glm::vec3& GetPosition();
-		void SetPosition(float x, float y, float z = 0.f);
+		const glm::vec3& GetLocalPosition();
+		void SetLocalPosition(float x, float y, float z = 0.f);
+		void SetLocalPosition(const glm::vec3& position);
+
+		const glm::vec3& GetWorldPosition();
+		void SetWorldPosition(float x, float y, float z = 0.f);
+		void SetWorldPosition(const glm::vec3& position);
+
+		void SetPositionDirty();
+		void UpdateWorldPosition();
 
 		void Destroy();
 		bool MarkedForDestruction() const;
 
-		void SetParent(const std::unique_ptr<GameObject>& parent, bool keepWorldTransform = false);
+		void SetParent(GameObject* parent, bool keepWorldTransform = false);
 
 		GameObject* GetParent() const;
 		size_t GetChildCount() const;
 		GameObject* GetChildAt(size_t index) const;
+		bool IsChild(GameObject* parent) const;
 
 		template<typename T>
 		T* AddComponent()
@@ -83,14 +92,19 @@ namespace dae
 		GameObject& operator=(GameObject&& other) = delete;
 
 	private:
+		void AddChild(GameObject* child);
+		void RemoveChild(GameObject* child);
 
 		std::unordered_map<std::type_index, std::unique_ptr<Component>> m_Components{};
 
 		GameObject* m_Parent{ nullptr };
 		std::vector<GameObject*> m_Children;
 
-		Transform m_Transform{ };
-		bool m_Destroyed{  };
+		Transform m_LocalTransform{ };
+		Transform m_WorldTransform{ };
+		bool m_PositionIsDirty{ false };
+
+		bool m_Destroyed{ false };
 	};
 
 }

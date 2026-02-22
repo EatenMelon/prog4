@@ -36,7 +36,7 @@ static void load()
 	// adding the logo image to the scene
 	{
 		auto logo = std::make_unique<dae::GameObject>();
-		logo->SetPosition(358.f, 180.f);
+		logo->SetLocalPosition(358.f, 180.f);
 
 		auto renderComp = logo->AddComponent<dae::RenderComponent>();
 
@@ -49,7 +49,7 @@ static void load()
 	// adding the title text to the scene
 	{
 		auto title = std::make_unique<dae::GameObject>();
-		title->SetPosition(292.f, 20.f);
+		title->SetLocalPosition(292.f, 20.f);
 
 		auto renderComp = title->AddComponent<dae::RenderComponent>();
 
@@ -70,7 +70,7 @@ static void load()
 	// adding the fps counter to the screen
 	{
 		auto fpsCounter = std::make_unique<dae::GameObject>();
-		fpsCounter->SetPosition(20.f, 20.f);
+		fpsCounter->SetLocalPosition(20.f, 20.f);
 
 		auto renderComp = fpsCounter->AddComponent<dae::RenderComponent>();
 

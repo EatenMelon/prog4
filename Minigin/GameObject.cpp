@@ -44,6 +44,7 @@ const glm::vec3& dae::GameObject::GetLocalPosition()
 void dae::GameObject::SetLocalPosition(float x, float y, float z)
 {
 	m_LocalTransform.SetPosition(x, y, z);
+	SetPositionDirty();
 }
 
 void dae::GameObject::SetLocalPosition(const glm::vec3& position)
@@ -62,11 +63,13 @@ const glm::vec3& dae::GameObject::GetWorldPosition()
 void dae::GameObject::SetWorldPosition(float x, float y, float z)
 {
 	m_WorldTransform.SetPosition(x, y, z);
+	SetPositionDirty();
 }
 
 void dae::GameObject::SetWorldPosition(const glm::vec3& position)
 {
 	m_WorldTransform.SetPosition(position);
+	SetPositionDirty();
 }
 
 void dae::GameObject::SetPositionDirty()
@@ -119,11 +122,11 @@ void dae::GameObject::SetParent(GameObject* parent, bool keepWorldTransform)
 		SetPositionDirty();
 	}
 
-	m_Parent->RemoveChild(this);
+	if (m_Parent) m_Parent->RemoveChild(this);
 
 	m_Parent = parent;
 
-	m_Parent->AddChild(this);
+	if (m_Parent) m_Parent->AddChild(this);
 }
 
 dae::GameObject* dae::GameObject::GetParent() const
@@ -157,6 +160,7 @@ void dae::GameObject::AddChild(GameObject* child)
 
 void dae::GameObject::RemoveChild(GameObject* child)
 {
+	if (!IsChild(child)) return;
+
 	std::erase(m_Children, child);
 }
-

@@ -29,6 +29,4 @@ void dae::FpsCounterComponent::Update(float deltaTime)
 	ss << std::fixed << std::setprecision(1) << 1.f / deltaTime << " FPS";
 
 	m_TextComponent->SetText(ss.str());
-
-
 }

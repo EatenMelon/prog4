@@ -13,6 +13,7 @@
 #include "FpsCounterComponent.h"
 #include "RenderComponent.h"
 #include "TextComponent.h"
+#include "RotatorComponent.h"
 
 #include <filesystem>
 namespace fs = std::filesystem;
@@ -22,33 +23,28 @@ static void load()
 	auto& scene = dae::SceneManager::GetInstance().CreateScene();
 	auto font = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
 
-	// adding the background image to the scene
+	
+	auto background = std::make_unique<dae::GameObject>();
 	{
-		auto background = std::make_unique<dae::GameObject>();
 		auto renderComponent = background->AddComponent<dae::RenderComponent>();
-
-		// set the texture when a texture has been added
 		if (renderComponent != nullptr) renderComponent->SetTexture("background.png");
 
 		scene.Add(std::move(background));
 	}
 
-	// adding the logo image to the scene
+	auto logo = std::make_unique<dae::GameObject>();
 	{
-		auto logo = std::make_unique<dae::GameObject>();
 		logo->SetLocalPosition(358.f, 180.f);
 
 		auto renderComp = logo->AddComponent<dae::RenderComponent>();
-
-		// set the texture when a texture has been added
 		if (renderComp != nullptr) renderComp->SetTexture("logo.png");
 
 		scene.Add(std::move(logo));
 	}
 
-	// adding the title text to the scene
+	
+	auto title = std::make_unique<dae::GameObject>();
 	{
-		auto title = std::make_unique<dae::GameObject>();
 		title->SetLocalPosition(292.f, 20.f);
 
 		auto renderComp = title->AddComponent<dae::RenderComponent>();
@@ -67,9 +63,9 @@ static void load()
 		scene.Add(std::move(title));
 	}
 
-	// adding the fps counter to the screen
+	
+	auto fpsCounter = std::make_unique<dae::GameObject>();
 	{
-		auto fpsCounter = std::make_unique<dae::GameObject>();
 		fpsCounter->SetLocalPosition(20.f, 20.f);
 
 		auto renderComp = fpsCounter->AddComponent<dae::RenderComponent>();
@@ -90,6 +86,34 @@ static void load()
 
 		scene.Add(std::move(fpsCounter));
 	}
+
+	auto taizoHori = std::make_unique<dae::GameObject>();
+	{
+		taizoHori->SetLocalPosition(200.f, 200.f);
+
+		auto renderComp = taizoHori->AddComponent<dae::RenderComponent>();
+		if (renderComp != nullptr) renderComp->SetTexture("TaizoHori.png");
+
+		auto rotatorComp = taizoHori->AddComponent<dae::RotatorComponent>();
+		rotatorComp->SetRadius(50.f);
+
+	}
+
+	auto pooka = std::make_unique<dae::GameObject>();
+	pooka->SetParent(taizoHori.get());
+	{
+		auto renderComp = pooka->AddComponent<dae::RenderComponent>();
+		if (renderComp != nullptr) renderComp->SetTexture("Pooka.png");
+
+		auto rotatorComp = pooka->AddComponent<dae::RotatorComponent>();
+		rotatorComp->SetRadius(25.f);
+		rotatorComp->SetSpeed(2.f);
+
+	}
+	scene.Add(std::move(taizoHori));
+	scene.Add(std::move(pooka));
+
+
 }
 
 int main(int, char*[]) {

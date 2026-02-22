@@ -2,8 +2,9 @@
 #include <memory>
 
 #include <iostream>
-#include <unordered_map>
 #include <typeindex>
+#include <unordered_map>
+#include <vector>
 
 #include "Component.h"
 #include "Transform.h"
@@ -24,6 +25,12 @@ namespace dae
 
 		void Destroy();
 		bool MarkedForDestruction() const;
+
+		void SetParent(const std::unique_ptr<GameObject>& parent, bool keepWorldTransform = false);
+
+		GameObject* GetParent() const;
+		size_t GetChildCount() const;
+		GameObject* GetChildAt(size_t index) const;
 
 		template<typename T>
 		T* AddComponent()
@@ -78,6 +85,9 @@ namespace dae
 	private:
 
 		std::unordered_map<std::type_index, std::unique_ptr<Component>> m_Components{};
+
+		GameObject* m_Parent{ nullptr };
+		std::vector<GameObject*> m_Children;
 
 		Transform m_Transform{ };
 		bool m_Destroyed{  };

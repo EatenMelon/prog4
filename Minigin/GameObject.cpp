@@ -55,3 +55,38 @@ bool dae::GameObject::MarkedForDestruction() const
 {
 	return m_Destroyed;
 }
+
+void dae::GameObject::SetParent(const std::unique_ptr<GameObject>& parent, bool keepWorldTransform)
+{
+	// not null, not this gameobject, not current parent
+	if (parent == nullptr) return;
+	if (parent.get() == this) return;
+	if (parent.get() == m_Parent) return;
+
+	if (m_Parent != nullptr)
+	{
+		bool isNewChild = std::find(m_Children.begin(), m_Children.end(), this) == m_Children.end();
+
+		if (isNewChild) m_Children.push_back(this);
+	}
+
+	m_Parent = parent.get();
+
+	// update transform
+}
+
+dae::GameObject* dae::GameObject::GetParent() const
+{
+	return m_Parent;
+}
+
+size_t dae::GameObject::GetChildCount() const
+{
+	return m_Children.size();
+}
+
+dae::GameObject* dae::GameObject::GetChildAt(size_t index) const
+{
+	if (index >= m_Children.size()) return nullptr;
+}
+

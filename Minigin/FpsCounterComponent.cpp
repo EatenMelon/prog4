@@ -15,7 +15,7 @@ void dae::FpsCounterComponent::Update(float deltaTime)
 {
 	if (m_TextComponent == nullptr) return;
 
-	constexpr float updateDelay{ 0.75f };
+	constexpr float updateDelay{ 1.f };
 	
 	if (m_UntilTextUpdate > 0.f)
 	{

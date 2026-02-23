@@ -108,6 +108,7 @@ static void load()
 		auto rotatorComp = pooka->AddComponent<dae::RotatorComponent>();
 		rotatorComp->SetRadius(25.f);
 		rotatorComp->SetSpeed(2.f);
+		rotatorComp->SetDirection(dae::RotationDirection::CCW);
 
 	}
 	scene.Add(std::move(taizoHori));

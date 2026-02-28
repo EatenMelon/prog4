@@ -3,15 +3,29 @@
 
 void dae::RotatorComponent::Init()
 {
-	m_CenterPos = GetOwner().GetWorldPosition();
+
 }
 
 void dae::RotatorComponent::Update(float deltaTime)
 {
-	m_TimePassed += deltaTime;
+	constexpr float dubblePi{ 3.14159f * 2 };
 
-	float x{ m_CenterPos.x + cosf(m_TimePassed * m_RotationVelocity) * m_Radius };
-	float y{ m_CenterPos.y + sinf(m_TimePassed * m_RotationVelocity) * m_Radius };
+	m_Angle += deltaTime * m_RotationVelocity;
+
+	if (abs(m_Angle) >= dubblePi)
+	{
+		if (signbit(m_RotationVelocity))
+		{
+			m_Angle += dubblePi;
+		}
+		else
+		{
+			m_Angle -= dubblePi;
+		}
+	}
+
+	float x{ cosf(m_Angle) * m_Radius };
+	float y{ sinf(m_Angle) * m_Radius };
 
 	GetOwner().SetLocalPosition(x, y);
 }

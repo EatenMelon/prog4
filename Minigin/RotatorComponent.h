@@ -18,10 +18,9 @@ namespace dae
 		void SetDirection(RotationDirection direction);
 
 	private:
-		float m_TimePassed{ 0.f };
+		float m_Angle{ 0.f };
 
 		float m_Radius{ 10.f };
 		float m_RotationVelocity{ 1.f };
-		glm::vec3 m_CenterPos{ };
 	};
 }

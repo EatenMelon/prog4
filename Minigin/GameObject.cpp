@@ -75,6 +75,11 @@ void dae::GameObject::SetWorldPosition(const glm::vec3& position)
 void dae::GameObject::SetPositionDirty()
 {
 	m_PositionIsDirty = true;
+
+	for (auto child : m_Children)
+	{
+		child->SetPositionDirty();
+	}
 }
 
 void dae::GameObject::UpdateWorldPosition()
@@ -96,6 +101,11 @@ void dae::GameObject::UpdateWorldPosition()
 void dae::GameObject::Destroy()
 {
 	m_Destroyed = true;
+
+	for (auto child : m_Children)
+	{
+		child->Destroy();
+	}
 }
 
 bool dae::GameObject::MarkedForDestruction() const
@@ -108,8 +118,6 @@ void dae::GameObject::SetParent(GameObject* parent, bool keepWorldTransform)
 	if (parent == nullptr)
 	{
 		SetLocalPosition(GetWorldPosition());
-		m_Parent = parent;
-		return;
 	}
 
 	if (parent == this) return;
@@ -119,6 +127,9 @@ void dae::GameObject::SetParent(GameObject* parent, bool keepWorldTransform)
 	if (keepWorldTransform)
 	{
 		SetLocalPosition(GetWorldPosition() - parent->GetWorldPosition());
+	}
+	else
+	{
 		SetPositionDirty();
 	}
 
@@ -148,7 +159,7 @@ dae::GameObject* dae::GameObject::GetChildAt(size_t index) const
 
 bool dae::GameObject::IsChild(GameObject* parent) const
 {
-	return std::find(m_Children.begin(), m_Children.end(), parent) != m_Children.end();;
+	return std::find(m_Children.begin(), m_Children.end(), parent) != m_Children.end();
 }
 
 void dae::GameObject::AddChild(GameObject* child)

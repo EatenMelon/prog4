@@ -90,39 +90,6 @@ static void load()
 
 		scene.Add(std::move(fpsCounter));
 	}
-
-	/*
-	auto rotatorOrigin = std::make_unique<dae::GameObject>();
-	{
-		rotatorOrigin->SetLocalPosition(200.f, 200.f);
-	}
-
-	auto taizoHori = std::make_unique<dae::GameObject>();
-	taizoHori->SetParent(rotatorOrigin.get());
-	{
-		auto renderComp = taizoHori->AddComponent<dae::RenderComponent>();
-		if (renderComp != nullptr) renderComp->SetTexture("TaizoHori.png");
-
-		auto rotatorComp = taizoHori->AddComponent<dae::RotatorComponent>();
-		rotatorComp->SetRadius(50.f);
-	}
-
-	auto pooka = std::make_unique<dae::GameObject>();
-	pooka->SetParent(taizoHori.get());
-	{
-		auto renderComp = pooka->AddComponent<dae::RenderComponent>();
-		if (renderComp != nullptr) renderComp->SetTexture("Pooka.png");
-
-		auto rotatorComp = pooka->AddComponent<dae::RotatorComponent>();
-		rotatorComp->SetRadius(25.f);
-		rotatorComp->SetSpeed(2.f);
-		rotatorComp->SetDirection(dae::RotationDirection::CCW);
-
-	}
-	scene.Add(std::move(rotatorOrigin));
-	scene.Add(std::move(taizoHori));
-	scene.Add(std::move(pooka));
-	*/
 }
 
 int main(int, char*[]) {

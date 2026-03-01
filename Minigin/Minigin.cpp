@@ -91,7 +91,7 @@ dae::Minigin::~Minigin()
 
 void dae::Minigin::Run(const std::function<void()>& load)
 {
-	m_Timer.SetFPS(60);
+	m_Timer.SetFPS(120);
 	m_Timer.Start();
 
 	load();

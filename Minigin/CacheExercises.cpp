@@ -56,7 +56,7 @@ void ThrashTheCache(TestResults& results)
 	results.samples.clear();
 	results.steps.clear();
 
-	for (int stepSize = 1; stepSize <= 1024; stepSize *= 2)
+	for (unsigned int stepSize = 1; stepSize <= 1024; stepSize *= 2)
 	{
 		long long totalTime = 0;
 
@@ -64,7 +64,7 @@ void ThrashTheCache(TestResults& results)
 		{
 			const auto start = std::chrono::steady_clock::now();
 
-			for (int i = 0; i < arr.size(); i += stepSize)
+			for (unsigned int i = 0; i < arr.size(); i += stepSize)
 			{
 				if constexpr (requires(T x) { x.ID; })
 				{

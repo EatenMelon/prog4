@@ -91,14 +91,17 @@ dae::Minigin::~Minigin()
 
 void dae::Minigin::Run(const std::function<void()>& load)
 {
+	load();
+#ifndef __EMSCRIPTEN__
 	m_Timer.SetFPS(120);
 	m_Timer.Start();
 
-	load();
-#ifndef __EMSCRIPTEN__
 	while (!m_quit)
 		RunOneFrame();
 #else
+	m_Timer.SetFPS(60);		// browser doesn't go faster
+	m_Timer.Start();
+
 	emscripten_set_main_loop_arg(&LoopCallback, this, 0, true);
 #endif
 }

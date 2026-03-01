@@ -41,21 +41,20 @@ void dae::Renderer::Render() const
 	// imgui
 	ImGui_ImplSDLRenderer3_NewFrame();
 	ImGui_ImplSDL3_NewFrame();
+
 	ImGui::NewFrame();
 
-	ImGui::ShowDemoWindow(); // For demonstration purposes, do not keep this in your engine
+	//ImGui::ShowDemoWindow(); // For demonstration purposes, do not keep this in your engine
+	ExecuteImGuiRenderFunctions();
 
 	ImGui::Render();
 
-	//
 	const auto& color = GetBackgroundColor();
 	SDL_SetRenderDrawColor(m_renderer, color.r, color.g, color.b, color.a);
 	SDL_RenderClear(m_renderer);
 
 	SceneManager::GetInstance().Render();
 
-
-	// imgui
 	ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), m_renderer);
 	SDL_RenderPresent(m_renderer);
 }
@@ -93,4 +92,23 @@ void dae::Renderer::RenderTexture(const Texture2D& texture, const float x, const
 	SDL_RenderTexture(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst);
 }
 
+void dae::Renderer::AddImguiRenderFunction(const std::function<void()>& function)
+{
+	m_ImGuiRenderFunctions.push_back(function);
+}
+
+void dae::Renderer::ClearImguiRenderFunctions()
+{
+	m_ImGuiRenderFunctions.clear();
+}
+
 SDL_Renderer* dae::Renderer::GetSDLRenderer() const { return m_renderer; }
+
+void dae::Renderer::ExecuteImGuiRenderFunctions() const
+{
+	for (const auto& function : m_ImGuiRenderFunctions)
+	{
+		function();
+	}
+
+}

@@ -9,20 +9,24 @@
 #include "SceneManager.h"
 #include "ResourceManager.h"
 #include "Scene.h"
+#include "Renderer.h"
 
 #include "FpsCounterComponent.h"
 #include "RenderComponent.h"
 #include "TextComponent.h"
-#include "RotatorComponent.h"
 
 #include <filesystem>
 namespace fs = std::filesystem;
 
+#include"CacheExercises.h"
+
 static void load()
 {
+	dae::Renderer::GetInstance().AddImguiRenderFunction(dae::ImGuiTestExercise1);
+	dae::Renderer::GetInstance().AddImguiRenderFunction(dae::ImGuiTestExercise2);
+
 	auto& scene = dae::SceneManager::GetInstance().CreateScene();
 	auto font = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
-
 	
 	auto background = std::make_unique<dae::GameObject>();
 	{
@@ -87,6 +91,7 @@ static void load()
 		scene.Add(std::move(fpsCounter));
 	}
 
+	/*
 	auto rotatorOrigin = std::make_unique<dae::GameObject>();
 	{
 		rotatorOrigin->SetLocalPosition(200.f, 200.f);
@@ -117,8 +122,7 @@ static void load()
 	scene.Add(std::move(rotatorOrigin));
 	scene.Add(std::move(taizoHori));
 	scene.Add(std::move(pooka));
-
-
+	*/
 }
 
 int main(int, char*[]) {

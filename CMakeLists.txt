@@ -31,7 +31,7 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
     "Minigin/FpsCounterComponent.cpp"
     "Minigin/RenderComponent.cpp"
     "Minigin/TextComponent.cpp"
-    "Minigin/RotatorComponent.cpp"
+    "Minigin/CacheExercises.cpp"
 )
 
 # enable c++20 features
@@ -136,6 +136,18 @@ add_library(imgui STATIC
 target_include_directories(imgui PUBLIC ${imgui_SOURCE_DIR} ${sdl3_SOURCE_DIR}/include)
 target_link_libraries(imgui PUBLIC SDL3::SDL3)
 
+# Optional: Set IMGUI_INCLUDE_DIR to the path of imgui sources, if different from the default. 
+set(IMGUI_INCLUDE_DIR ${imgui_SOURCE_DIR})
+FetchContent_Declare(
+    imgui_plot
+    GIT_REPOSITORY https://github.com/soulthreads/imgui-plot.git
+    GIT_TAG master      # this feels kind of dangerous but i don't have other branches
+    EXCLUDE_FROM_ALL
+)
+FetchContent_MakeAvailable(imgui_plot)
+
+target_compile_definitions(imgui_plot PUBLIC IMGUI_DEFINE_MATH_OPERATORS)
+
 # enable c++20 features
 target_compile_features(imgui PUBLIC cxx_std_20)
 
@@ -163,6 +175,7 @@ target_link_libraries("${TARGET_NAME}" PUBLIC
   SDL3_ttf::SDL3_ttf
   glm::glm
   imgui
+  imgui_plot
   ${VLD_LIBRARIES}
 )
 

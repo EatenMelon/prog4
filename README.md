@@ -2,10 +2,10 @@
 
 Minigin is a very small project using [SDL3](https://www.libsdl.org/) and [glm](https://github.com/g-truc/glm) for 2D c++ game projects. It is in no way a game engine, only a barebone start project where everything sdl related has been set up. It contains glm for vector math, to aleviate the need to write custom vector and matrix classes.
 
-[![Build Status](https://github.com/avadae/minigin/actions/workflows/cmake.yml/badge.svg)](https://github.com/avadae/cmake/actions)
-[![Build Status](https://github.com/avadae/minigin/actions/workflows/emscripten.yml/badge.svg)](https://github.com/avadae/emscripten/actions)
-[![GitHub Release](https://img.shields.io/github/v/release/avadae/minigin?logo=github&sort=semver)](https://github.com/avadae/minigin/releases/latest)
-
+[![Build Status](https://github.com/EatenMelon/prog4/actions/workflows/cmake.yml/badge.svg)](https://github.com/EatenMelon/cmake/actions)
+[![Build Status](https://github.com/EatenMelon/prog4/actions/workflows/emscripten.yml/badge.svg)](https://github.com/EatenMelon/emscripten/actions)
+[![GitHub Release](https://img.shields.io/github/v/release/EatenMelon/prog4?logo=github&sort=semver)](https://github.com/EatenMelon/prog4/releases/latest)
+[Click here](https://EatenMelon.github.io/prog4/) for the Emscripten build page
 # Goal
 
 Minigin can/may be used as a start project for the exam assignment in the course [Programming 4](https://youtu.be/j96Oh6vzhmg) at DAE. In that assignment students need to recreate a popular 80's arcade game with a game engine they need to program themselves. During the course we discuss several game programming patterns, using the book '[Game Programming Patterns](https://gameprogrammingpatterns.com/)' by [Robert Nystrom](https://github.com/munificent) as reading material. 
@@ -80,9 +80,9 @@ Then browse to http://localhost:8000 and you're good to go.
 
 This project is build with github actions.
 - The CMake workflow builds the project in Debug and Release for Windows and serves as a check that the project builds on that platform.
-- The Emscripten workflow generates a web version of the project and publishes it as a [github page](https://avadae.github.io/minigin/). 
-  - The url of that page will be `https://<username>.github.io/<repository>/`
+- The Emscripten workflow generates a web version of the project and publishes it as a [github page](https://EatenMelon.github.io/prog4/). 
+  - The url of that page will be `https://EatenMelon.github.io/prog4/`
 - You can embed this page with 
 
-```<iframe style="position: absolute; top: 0px; left: 0px; width: 1024px; height: 576px;" src="https://<username>.github.io/<repository>/" loading="lazy"></iframe>```
+```<iframe style="position: absolute; top: 0px; left: 0px; width: 1024px; height: 576px;" src="https://EatenMelon.github.io/prog4/" loading="lazy"></iframe>```
 

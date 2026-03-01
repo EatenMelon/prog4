@@ -5,6 +5,7 @@ Minigin is a very small project using [SDL3](https://www.libsdl.org/) and [glm](
 [![Build Status](https://github.com/EatenMelon/prog4/actions/workflows/cmake.yml/badge.svg)](https://github.com/EatenMelon/cmake/actions)
 [![Build Status](https://github.com/EatenMelon/prog4/actions/workflows/emscripten.yml/badge.svg)](https://github.com/EatenMelon/emscripten/actions)
 [![GitHub Release](https://img.shields.io/github/v/release/EatenMelon/prog4?logo=github&sort=semver)](https://github.com/EatenMelon/prog4/releases/latest)
+
 [Click here](https://EatenMelon.github.io/prog4/) for the Emscripten build page
 # Goal
 

@@ -43,6 +43,14 @@ void Scene::Update(float deltaTime)
 	}
 }
 
+void dae::Scene::GuiRender() const
+{
+	for (const auto& object : m_objects)
+	{
+		object->GuiRender();
+	}
+}
+
 void Scene::Render() const
 {
 	for (const auto& object : m_objects)

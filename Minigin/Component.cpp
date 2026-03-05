@@ -10,11 +10,13 @@ dae::Component::Component(GameObject* owner)
 
 void dae::Component::Init() { }
 
-void dae::Component::FixedUpdate(float) {  }
+void dae::Component::FixedUpdate(float) { }
 
-void dae::Component::Update(float) {  }
+void dae::Component::Update(float) { }
 
-void dae::Component::Render() const {  }
+void dae::Component::GuiRender() const { }
+
+void dae::Component::Render() const { }
 
 void dae::Component::Destroy()
 {

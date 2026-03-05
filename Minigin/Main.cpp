@@ -14,17 +14,13 @@
 #include "FpsCounterComponent.h"
 #include "RenderComponent.h"
 #include "TextComponent.h"
+#include "CacheTestComponent.h"
 
 #include <filesystem>
 namespace fs = std::filesystem;
 
-#include"CacheExercises.h"
-
 static void load()
 {
-	dae::Renderer::GetInstance().AddImguiRenderFunction(dae::ImGuiTestExercise1);
-	dae::Renderer::GetInstance().AddImguiRenderFunction(dae::ImGuiTestExercise2);
-
 	auto& scene = dae::SceneManager::GetInstance().CreateScene();
 	auto font = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
 	
@@ -46,14 +42,20 @@ static void load()
 		scene.Add(std::move(logo));
 	}
 
-	
+	auto test = std::make_unique<dae::GameObject>();
+	{
+		test->AddComponent<dae::CacheTestComponent>();
+
+		scene.Add(std::move(test));
+	}
+
 	auto title = std::make_unique<dae::GameObject>();
 	{
 		title->SetLocalPosition(292.f, 20.f);
 
 		auto renderComp = title->AddComponent<dae::RenderComponent>();
 
-		if(renderComp != nullptr)
+		if (renderComp != nullptr)
 		{
 			auto text = title->AddComponent<dae::TextComponent>();
 

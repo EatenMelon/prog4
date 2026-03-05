@@ -20,22 +20,16 @@ namespace dae
 		void RenderTexture(const Texture2D& texture, float x, float y) const;
 		void RenderTexture(const Texture2D& texture, float x, float y, float width, float height) const;
 
-		void AddImguiRenderFunction(const std::function<void()>& function);
-		void ClearImguiRenderFunctions();
-
 		SDL_Renderer* GetSDLRenderer() const;
 
 		const SDL_Color& GetBackgroundColor() const { return m_clearColor; }
 		void SetBackgroundColor(const SDL_Color& color) { m_clearColor = color; }
 
 	private:
-		void ExecuteImGuiRenderFunctions() const;
 
 		SDL_Renderer* m_renderer{};
 		SDL_Window* m_window{};
 		SDL_Color m_clearColor{};
-
-		std::vector<std::function<void()>> m_ImGuiRenderFunctions{};
 	};
 }
 

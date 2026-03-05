@@ -15,7 +15,8 @@ namespace dae
 
 		void FixedUpdate(float fixedFrameTime);
 		void Update(float deltaTime);
-		void Render();
+		void GuiRender() const;
+		void Render() const;
 		void Cleanup();
 
 	private:

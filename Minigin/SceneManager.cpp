@@ -17,7 +17,15 @@ void dae::SceneManager::Update(float deltaTime)
 	}
 }
 
-void dae::SceneManager::Render()
+void dae::SceneManager::GuiRender() const
+{
+	for (const auto& scene : m_scenes)
+	{
+		scene->GuiRender();
+	}
+}
+
+void dae::SceneManager::Render() const
 {
 	for (const auto& scene : m_scenes)
 	{

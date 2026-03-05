@@ -17,6 +17,7 @@ namespace dae
 		virtual void Init();
 		virtual void FixedUpdate(float fixedFrameTime);
 		virtual void Update(float deltaTime);
+		virtual void GuiRender() const;
 		virtual void Render() const;
 
 		void Destroy();

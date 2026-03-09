@@ -1,5 +1,6 @@
 #pragma once
 #include "Component.h"
+#include "Controller.h"
 
 namespace dae
 {
@@ -17,5 +18,6 @@ namespace dae
 		float m_UntilTextUpdate{ 0.f };
 
 		TextComponent* m_TextComponent{ nullptr };
+		Gamepad m_Controller{};
 	};
 }

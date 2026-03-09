@@ -9,12 +9,10 @@
 #include "SceneManager.h"
 #include "ResourceManager.h"
 #include "Scene.h"
-#include "Renderer.h"
 
 #include "FpsCounterComponent.h"
 #include "RenderComponent.h"
 #include "TextComponent.h"
-#include "CacheTestComponent.h"
 
 #include <filesystem>
 namespace fs = std::filesystem;
@@ -42,13 +40,6 @@ static void load()
 		scene.Add(std::move(logo));
 	}
 
-	auto test = std::make_unique<dae::GameObject>();
-	{
-		test->AddComponent<dae::CacheTestComponent>();
-
-		scene.Add(std::move(test));
-	}
-
 	auto title = std::make_unique<dae::GameObject>();
 	{
 		title->SetLocalPosition(292.f, 20.f);
@@ -68,7 +59,6 @@ static void load()
 		}
 		scene.Add(std::move(title));
 	}
-
 	
 	auto fpsCounter = std::make_unique<dae::GameObject>();
 	{

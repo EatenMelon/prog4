@@ -1,9 +1,12 @@
 #include <Controller.h>
+#include <unordered_map>
+#include <SDL3/SDL_oldnames.h>
+
+#pragma region Xinput
 
 class dae::Gamepad::XinputImpl
 {
 public:
-
 	void ProcessInput();
 
 	bool IsDownThisFrame(unsigned int button) const;
@@ -58,8 +61,80 @@ bool dae::Gamepad::XinputImpl::IsPressed(unsigned int button) const
 	return m_CurrentState.Gamepad.wButtons & button;
 }
 
+#pragma endregion
+
+#pragma region SDL
+
+class dae::Gamepad::SDLImpl
+{
+public:
+	SDLImpl();
+	~SDLImpl();
+
+	void ProcessInput();
+
+	bool IsDownThisFrame(unsigned int button) const;
+	bool IsUpThisFrame(unsigned int button) const;
+	bool IsPressed(unsigned int button) const;
+
+private:
+	SDL_Gamepad* m_Controller{};
+	int m_Index{};
+
+	std::unordered_map<unsigned int, bool> m_CurrentState{};
+	std::unordered_map<unsigned int, bool> m_PreviousState{};
+};
+
+dae::Gamepad::SDLImpl::SDLImpl()
+{
+
+}
+
+dae::Gamepad::SDLImpl::~SDLImpl()
+{
+	m_Controller = nullptr;
+}
+
+void dae::Gamepad::SDLImpl::ProcessInput()
+{
+	if (!m_Controller) return;
+
+	// Copy previous button states
+	m_PreviousState = m_CurrentState;
+
+	// Update buttons
+	for (int b = SDL_GAMEPAD_BUTTON_SOUTH; b < SDL_GAMEPAD_BUTTON_COUNT; ++b)
+	{
+		bool pressed = SDL_GetGamepadButton(m_Controller, static_cast<SDL_GamepadButton>(b)) != 0;
+		m_CurrentState[static_cast<SDL_GamepadButton>(b)] = pressed;
+	}
+}
+
+bool dae::Gamepad::SDLImpl::IsDownThisFrame(unsigned int button) const
+{
+	bool curr = m_CurrentState.count(button) ? m_CurrentState.at(button) : false;
+	bool prev = m_PreviousState.count(button) ? m_PreviousState.at(button) : false;
+	return curr && !prev;
+}
+
+bool dae::Gamepad::SDLImpl::IsUpThisFrame(unsigned int button) const
+{
+	bool curr = m_CurrentState.count(button) ? m_CurrentState.at(button) : false;
+	bool prev = m_PreviousState.count(button) ? m_PreviousState.at(button) : false;
+	return !curr && prev;
+}
+
+bool dae::Gamepad::SDLImpl::IsPressed(unsigned int button) const
+{
+	auto it = m_CurrentState.find(button);
+	return it != m_CurrentState.end() && it->second;
+}
+
+#pragma endregion
+
 dae::Gamepad::Gamepad()
 	: m_pImpl{ std::make_unique<XinputImpl>() }
+	, m_pImpl1{ std::make_unique<SDLImpl>() }
 {
 }
 
@@ -67,20 +142,20 @@ dae::Gamepad::~Gamepad() = default;
 
 void dae::Gamepad::ProcessInput()
 {
-	m_pImpl->ProcessInput();
+	m_pImpl1->ProcessInput();
 }
 
 bool dae::Gamepad::IsDownThisFrame(unsigned int button) const
 {
-	return m_pImpl->IsDownThisFrame(button);
+	return m_pImpl1->IsDownThisFrame(button);
 }
 
 bool dae::Gamepad::IsUpThisFrame(unsigned int button) const
 {
-	return m_pImpl->IsUpThisFrame(button);
+	return m_pImpl1->IsUpThisFrame(button);
 }
 
 bool dae::Gamepad::IsPressed(unsigned int button) const
 {
-	return m_pImpl->IsPressed(button);
+	return m_pImpl1->IsPressed(button);
 }

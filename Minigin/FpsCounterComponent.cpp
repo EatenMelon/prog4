@@ -15,7 +15,7 @@ void dae::FpsCounterComponent::Update(float deltaTime)
 {
 	m_Controller.ProcessInput();
 
-	if (m_Controller.IsPressed(XINPUT_GAMEPAD_DPAD_RIGHT))
+	if (m_Controller.IsPressed(SDL_GAMEPAD_BUTTON_DPAD_RIGHT))
 	{
 		auto pos = GetOwner().GetLocalPosition();
 

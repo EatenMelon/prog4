@@ -81,10 +81,10 @@ public:
 private:
 	SDL_Gamepad* m_Controller{};
 
-	uint16_t m_ButtonsPressedThisFrame{};
-	uint16_t m_ButtonsReleasedThisFrame{};
-	uint16_t m_CurrentState{};
-	uint16_t m_PreviousState{};
+	uint32_t m_ButtonsPressedThisFrame{};
+	uint32_t m_ButtonsReleasedThisFrame{};
+	uint32_t m_CurrentState{};
+	uint32_t m_PreviousState{};
 };
 
 dae::Gamepad::SDLImpl::SDLImpl()

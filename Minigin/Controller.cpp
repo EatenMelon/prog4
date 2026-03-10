@@ -87,7 +87,20 @@ private:
 
 dae::Gamepad::SDLImpl::SDLImpl()
 {
+	// get the fist controller that is currently connected
+	int num_joysticks = 0;
+	SDL_JoystickID* joysticks = SDL_GetJoysticks(&num_joysticks);
 
+	if (joysticks && num_joysticks <= 0) return;
+	
+	// Check if the first joystick is a supported gamepad
+	if (!SDL_IsGamepad(joysticks[0])) return;
+	
+	m_Controller = SDL_OpenGamepad(joysticks[0]);
+
+	// Free the array returned by SDL_GetJoysticks
+	SDL_free(joysticks);
+	
 }
 
 dae::Gamepad::SDLImpl::~SDLImpl()

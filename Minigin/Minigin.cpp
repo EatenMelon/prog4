@@ -9,7 +9,6 @@
 #endif
 
 #include <SDL3/SDL.h>
-//#include <SDL3_image/SDL_image.h>
 #include <SDL3_ttf/SDL_ttf.h>
 #include "Minigin.h"
 #include "InputManager.h"
@@ -21,7 +20,7 @@ SDL_Window* g_window{};
 
 void LogSDLVersion(const std::string& message, int major, int minor, int patch)
 {
-#if WIN32
+#ifdef WIN32
 	std::stringstream ss;
 	ss << message << major << "." << minor << "." << patch << "\n";
 	OutputDebugString(ss.str().c_str());

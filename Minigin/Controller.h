@@ -4,10 +4,11 @@
 #include <Xinput.h>
 #include "SDL3/SDL.h"
 #include <memory>
+#include <SDL3/SDL_gamepad.h>
+#include <unordered_map>
 
 namespace dae
 {
-
 	class Gamepad
 	{
 	public:
@@ -15,15 +16,19 @@ namespace dae
 		~Gamepad();
 		void ProcessInput();
 
-		bool IsDownThisFrame(unsigned int button) const;
-		bool IsUpThisFrame(unsigned int button) const;
-		bool IsPressed(unsigned int button) const;
+		bool IsDownThisFrame(SDL_GamepadButton button) const;
+		bool IsUpThisFrame(SDL_GamepadButton button) const;
+		bool IsPressed(SDL_GamepadButton button) const;
 
 	private:
-		class XinputImpl;
-		std::unique_ptr<XinputImpl> m_pImpl;
 
+#ifdef WIN32
+		class XinputImpl;
+		std::unique_ptr<XinputImpl> m_pImpl{};
+#else
 		class SDLImpl;
-		std::unique_ptr<SDLImpl> m_pImpl1;
+		std::unique_ptr<SDLImpl> m_pImpl1{};
+#endif
+
 	};
 }

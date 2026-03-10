@@ -1,5 +1,6 @@
 #include <Controller.h>
 #include <unordered_map>
+#include <cstdint>
 
 #ifdef WIN32
 
@@ -80,10 +81,10 @@ public:
 private:
 	SDL_Gamepad* m_Controller{};
 
-	WORD m_ButtonsPressedThisFrame{};
-	WORD m_ButtonsReleasedThisFrame{};
-	WORD m_CurrentState{};
-	WORD m_PreviousState{};
+	uint16_t m_ButtonsPressedThisFrame{};
+	uint16_t m_ButtonsReleasedThisFrame{};
+	uint16_t m_CurrentState{};
+	uint16_t m_PreviousState{};
 };
 
 dae::Gamepad::SDLImpl::SDLImpl()
@@ -150,6 +151,7 @@ bool dae::Gamepad::SDLImpl::IsUpThisFrame(unsigned int button) const
 }
 #endif
 
+#ifdef WIN32
 const std::unordered_map<SDL_GamepadButton, uint32_t> dae::Gamepad::m_InputMap
 {
 	{ SDL_GAMEPAD_BUTTON_SOUTH,				XINPUT_GAMEPAD_A },
@@ -165,6 +167,7 @@ const std::unordered_map<SDL_GamepadButton, uint32_t> dae::Gamepad::m_InputMap
 	{ SDL_GAMEPAD_BUTTON_LEFT_SHOULDER,		XINPUT_GAMEPAD_LEFT_SHOULDER },
 	{ SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER,	XINPUT_GAMEPAD_RIGHT_SHOULDER },
 };
+#endif
 
 dae::Gamepad::Gamepad()
 {

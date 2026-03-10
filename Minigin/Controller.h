@@ -21,14 +21,14 @@ namespace dae
 	private:
 		unsigned int GetButton(SDL_GamepadButton button) const;
 
+#ifdef WIN32
 		static const std::unordered_map<SDL_GamepadButton, unsigned int> m_InputMap;
 
-#ifdef WIN32
 		class XinputImpl;
 		std::unique_ptr<XinputImpl> m_pImpl{};
 #else
 		class SDLImpl;
-		std::unique_ptr<SDLImpl> m_pImpl1{};
+		std::unique_ptr<SDLImpl> m_pImpl{};
 #endif
 
 	};

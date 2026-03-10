@@ -176,7 +176,6 @@ target_link_libraries("${TARGET_NAME}" PUBLIC
   imgui
   imgui_plot
   ${VLD_LIBRARIES}
-  Xinput9_1_0
 )
 
 if(MSVC)
@@ -207,6 +206,8 @@ if(EMSCRIPTEN)
   set(CMAKE_EXECUTABLE_SUFFIX ".html")
 
 elseif(WIN32)
+  target_link_libraries("${TARGET_NAME}" PUBLIC Xinput9_1_0)
+
   # Set minigin as the default startup project
   set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${TARGET_NAME})
   # Set working directory to output folder

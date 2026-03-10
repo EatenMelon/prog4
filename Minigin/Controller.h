@@ -21,7 +21,7 @@ namespace dae
 	private:
 		unsigned int GetButton(SDL_GamepadButton button) const;
 
-#ifdef WIN32
+#ifdef _WIN32
 		static const std::unordered_map<SDL_GamepadButton, unsigned int> m_InputMap;
 
 		class XinputImpl;

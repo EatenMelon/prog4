@@ -2,7 +2,7 @@
 #include <unordered_map>
 #include <cstdint>
 
-#ifdef WIN32
+#ifdef _WIN32
 
 #include <Windows.h>
 #include <Xinput.h>
@@ -151,7 +151,7 @@ bool dae::Gamepad::SDLImpl::IsUpThisFrame(unsigned int button) const
 }
 #endif
 
-#ifdef WIN32
+#ifdef _WIN32
 const std::unordered_map<SDL_GamepadButton, uint32_t> dae::Gamepad::m_InputMap
 {
 	{ SDL_GAMEPAD_BUTTON_SOUTH,				XINPUT_GAMEPAD_A },
@@ -171,7 +171,7 @@ const std::unordered_map<SDL_GamepadButton, uint32_t> dae::Gamepad::m_InputMap
 
 dae::Gamepad::Gamepad()
 {
-#ifdef WIN32
+#ifdef _WIN32
 	m_pImpl = std::make_unique<XinputImpl>();
 #else
 	m_pImpl = std::make_unique<SDLImpl>();
@@ -202,7 +202,7 @@ bool dae::Gamepad::IsPressed(SDL_GamepadButton button) const
 
 unsigned int dae::Gamepad::GetButton(SDL_GamepadButton button) const
 {
-#ifdef WIN32
+#ifdef _WIN32
 
 	auto it = m_InputMap.find(button);
 

@@ -3,6 +3,9 @@
 
 #ifdef WIN32
 
+#include <Windows.h>
+#include <Xinput.h>
+
 class dae::Gamepad::XinputImpl
 {
 public:
@@ -147,6 +150,22 @@ bool dae::Gamepad::SDLImpl::IsUpThisFrame(unsigned int button) const
 }
 #endif
 
+const std::unordered_map<SDL_GamepadButton, uint32_t> dae::Gamepad::m_InputMap
+{
+	{ SDL_GAMEPAD_BUTTON_SOUTH,				XINPUT_GAMEPAD_A },
+	{ SDL_GAMEPAD_BUTTON_EAST,				XINPUT_GAMEPAD_B },
+	{ SDL_GAMEPAD_BUTTON_WEST,				XINPUT_GAMEPAD_X },
+	{ SDL_GAMEPAD_BUTTON_NORTH,				XINPUT_GAMEPAD_Y },
+
+	{ SDL_GAMEPAD_BUTTON_DPAD_UP,			XINPUT_GAMEPAD_DPAD_UP },
+	{ SDL_GAMEPAD_BUTTON_DPAD_DOWN,			XINPUT_GAMEPAD_DPAD_DOWN },
+	{ SDL_GAMEPAD_BUTTON_DPAD_LEFT,			XINPUT_GAMEPAD_DPAD_LEFT },
+	{ SDL_GAMEPAD_BUTTON_DPAD_RIGHT,		XINPUT_GAMEPAD_DPAD_RIGHT },
+
+	{ SDL_GAMEPAD_BUTTON_LEFT_SHOULDER,		XINPUT_GAMEPAD_LEFT_SHOULDER },
+	{ SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER,	XINPUT_GAMEPAD_RIGHT_SHOULDER },
+};
+
 dae::Gamepad::Gamepad()
 {
 #ifdef WIN32
@@ -165,21 +184,31 @@ void dae::Gamepad::ProcessInput()
 
 bool dae::Gamepad::IsDownThisFrame(SDL_GamepadButton button) const
 {
-
-
-	return m_pImpl->IsDownThisFrame(button);
+	return m_pImpl->IsDownThisFrame(GetButton(button));
 }
 
 bool dae::Gamepad::IsUpThisFrame(SDL_GamepadButton button) const
 {
-
-
-	return m_pImpl->IsUpThisFrame(button);
+	return m_pImpl->IsUpThisFrame(GetButton(button));
 }
 
 bool dae::Gamepad::IsPressed(SDL_GamepadButton button) const
 {
+	return m_pImpl->IsPressed(GetButton(button));
+}
 
+unsigned int dae::Gamepad::GetButton(SDL_GamepadButton button) const
+{
+#ifdef WIN32
 
-	return m_pImpl->IsPressed(button);
+	auto it = m_InputMap.find(button);
+
+	if (it != m_InputMap.end())
+	{
+		return it->second;
+	}
+
+#endif
+
+	return static_cast<unsigned int>(button);
 }

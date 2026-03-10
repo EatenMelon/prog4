@@ -1,14 +1,12 @@
 #pragma once
-
-#include <Windows.h>
-#include <Xinput.h>
-#include "SDL3/SDL.h"
-#include <memory>
-#include <SDL3/SDL_gamepad.h>
 #include <unordered_map>
+#include <memory>
+
+#include "SDL3/SDL.h"
 
 namespace dae
 {
+
 	class Gamepad
 	{
 	public:
@@ -21,6 +19,9 @@ namespace dae
 		bool IsPressed(SDL_GamepadButton button) const;
 
 	private:
+		unsigned int GetButton(SDL_GamepadButton button) const;
+
+		static const std::unordered_map<SDL_GamepadButton, unsigned int> m_InputMap;
 
 #ifdef WIN32
 		class XinputImpl;

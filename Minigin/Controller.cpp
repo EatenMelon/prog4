@@ -174,7 +174,7 @@ dae::Gamepad::Gamepad()
 #ifdef WIN32
 	m_pImpl = std::make_unique<XinputImpl>();
 #else
-	m_pImpl = std::make_unique<SDLImpl>()
+	m_pImpl = std::make_unique<SDLImpl>();
 #endif
 }
 

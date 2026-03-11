@@ -90,7 +90,7 @@ private:
 dae::Gamepad::SDLImpl::SDLImpl()
 {
 	// get the fist controller that is currently connected
-	int num_joysticks = 0;
+	int num_joysticks{ 0 };
 	SDL_JoystickID* joysticks = SDL_GetJoysticks(&num_joysticks);
 
 	if (!joysticks || num_joysticks <= 0) return;
@@ -114,10 +114,29 @@ void dae::Gamepad::SDLImpl::ProcessInput()
 {
 	if (!m_Controller) return;
 
+	// need this function for the emscripten build
+	SDL_PumpEvents();
+
 	SDL_UpdateGamepads();
 
 	m_PreviousState = m_CurrentState;
 	m_CurrentState = 0;
+
+	// seach for a controller when you currently don't have one
+	if (!m_Controller)
+	{
+		int num_joysticks{ 0 };
+		SDL_JoystickID* joysticks = SDL_GetJoysticks(&num_joysticks);
+
+		if (!joysticks || num_joysticks <= 0) return;
+
+		if (SDL_IsGamepad(joysticks[0]))
+		{
+			m_Controller = SDL_OpenGamepad(joysticks[0]);
+		}
+
+		SDL_free(joysticks);
+	}
 
 	// trying a similar approach as XInput
 	// but XInput uses bitmasks while SDL uses enums

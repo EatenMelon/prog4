@@ -13,17 +13,6 @@ void dae::FpsCounterComponent::Init()
 
 void dae::FpsCounterComponent::Update(float deltaTime)
 {
-	m_Controller.ProcessInput();
-
-	if (m_Controller.IsPressed(SDL_GAMEPAD_BUTTON_DPAD_RIGHT))
-	{
-		auto pos = GetOwner().GetLocalPosition();
-
-		pos.x += 100.f * deltaTime;
-
-		GetOwner().SetLocalPosition(pos);
-	}
-
 	if (m_TextComponent == nullptr) return;
 
 	constexpr float updateDelay{ 1.f };

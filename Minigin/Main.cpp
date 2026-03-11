@@ -13,6 +13,10 @@
 #include "FpsCounterComponent.h"
 #include "RenderComponent.h"
 #include "TextComponent.h"
+#include "CharacterController.h"
+
+#include "InputManager.h"
+#include "Command.h"
 
 #include <filesystem>
 namespace fs = std::filesystem;
@@ -21,6 +25,7 @@ static void load()
 {
 	auto& scene = dae::SceneManager::GetInstance().CreateScene();
 	auto font = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
+	auto smallFont = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 18);
 	
 	auto background = std::make_unique<dae::GameObject>();
 	{
@@ -81,6 +86,94 @@ static void load()
 		}
 
 		scene.Add(std::move(fpsCounter));
+	}
+
+	auto contolsTaizoHori = std::make_unique<dae::GameObject>();
+	{
+		contolsTaizoHori->SetLocalPosition(15.f, 80.f);
+
+		auto renderComp = contolsTaizoHori->AddComponent<dae::RenderComponent>();
+
+		if (renderComp != nullptr)
+		{
+			auto text = contolsTaizoHori->AddComponent<dae::TextComponent>();
+
+			if (text != nullptr)
+			{
+				text->SetFont(smallFont);
+				text->SetColor({ 255, 255, 0, 255 });
+				text->SetText("Use WASD to move Taizo Hori");
+			}
+		}
+		scene.Add(std::move(contolsTaizoHori));
+	}
+
+	auto contolsPooka = std::make_unique<dae::GameObject>();
+	{
+		contolsPooka->SetLocalPosition(15.f, 110.f);
+
+		auto renderComp = contolsPooka->AddComponent<dae::RenderComponent>();
+
+		if (renderComp != nullptr)
+		{
+			auto text = contolsPooka->AddComponent<dae::TextComponent>();
+
+			if (text != nullptr)
+			{
+				text->SetFont(smallFont);
+				text->SetColor({ 255, 255, 0, 255 });
+				text->SetText("Use the D-Pad to move Pooka");
+			}
+		}
+		scene.Add(std::move(contolsPooka));
+	}
+
+	auto TaizoHori = std::make_unique<dae::GameObject>();
+	{
+		TaizoHori->SetLocalPosition(300.f, 200.f);
+
+		auto controller = TaizoHori->AddComponent<dae::CharacterController>();
+
+		if (controller != nullptr)
+		{
+			controller->SetMovementSpeed(500.f);
+
+			auto moveCommand = std::make_shared<dae::MoveCommand>(controller);
+
+			dae::InputManager::GetInstance().BindInput("Move", SDLK_W, dae::KeyState::Pressed, moveCommand, dae::Direction::Up);
+			dae::InputManager::GetInstance().BindInput("Move", SDLK_A, dae::KeyState::Pressed, moveCommand, dae::Direction::Left);
+			dae::InputManager::GetInstance().BindInput("Move", SDLK_S, dae::KeyState::Pressed, moveCommand, dae::Direction::Down);
+			dae::InputManager::GetInstance().BindInput("Move", SDLK_D, dae::KeyState::Pressed, moveCommand, dae::Direction::Right);
+		}
+
+		auto renderComp = TaizoHori->AddComponent<dae::RenderComponent>();
+		if (renderComp != nullptr) renderComp->SetTexture("TaizoHori.png");
+
+		scene.Add(std::move(TaizoHori));
+	}
+
+	auto Pooka = std::make_unique<dae::GameObject>();
+	{
+		Pooka->SetLocalPosition(200.f, 200.f);
+
+		auto controller = Pooka->AddComponent<dae::CharacterController>();
+
+		if (controller != nullptr)
+		{
+			controller->SetMovementSpeed(250.f);
+
+			auto moveCommand = std::make_shared<dae::MoveCommand>(controller);
+
+			dae::InputManager::GetInstance().BindInput("Move", SDL_GAMEPAD_BUTTON_DPAD_UP, dae::KeyState::Pressed, moveCommand, dae::Direction::Up);
+			dae::InputManager::GetInstance().BindInput("Move", SDL_GAMEPAD_BUTTON_DPAD_LEFT, dae::KeyState::Pressed, moveCommand, dae::Direction::Left);
+			dae::InputManager::GetInstance().BindInput("Move", SDL_GAMEPAD_BUTTON_DPAD_DOWN, dae::KeyState::Pressed, moveCommand, dae::Direction::Down);
+			dae::InputManager::GetInstance().BindInput("Move", SDL_GAMEPAD_BUTTON_DPAD_RIGHT, dae::KeyState::Pressed, moveCommand, dae::Direction::Right);
+		}
+
+		auto renderComp = Pooka->AddComponent<dae::RenderComponent>();
+		if (renderComp != nullptr) renderComp->SetTexture("Pooka.png");
+
+		scene.Add(std::move(Pooka));
 	}
 }
 

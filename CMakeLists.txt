@@ -13,27 +13,38 @@ else()
   set(TARGET_PARAM WIN32)
 endif()
 
+# added directory variables to i can change the folder stucture more easily later
+set(CORE_SOURCE_DIR "Minigin/Core/src")
+set(COMPONENTS_SOURCE_DIR "Minigin/Components/src")
+set(INPUT_SOURCE_DIR "Minigin/Input/src")
+
 # list source files here
 add_executable(${TARGET_NAME} ${TARGET_PARAM}
-    "Minigin/Font.cpp"
-    "Minigin/GameObject.cpp"
-    "Minigin/InputManager.cpp"
     "Minigin/Main.cpp"
-    "Minigin/Minigin.cpp"
-    "Minigin/Renderer.cpp"
-    "Minigin/ResourceManager.cpp"
-    "Minigin/Scene.cpp"
-    "Minigin/SceneManager.cpp"
-    "Minigin/Texture2D.cpp"
-    "Minigin/Transform.cpp"
-    "Minigin/Timer.cpp"
-    "Minigin/Component.cpp"
-    "Minigin/FpsCounterComponent.cpp"
-    "Minigin/RenderComponent.cpp"
-    "Minigin/TextComponent.cpp"
-    "Minigin/Gamepad.cpp"
-    "Minigin/Command.cpp"
-    "Minigin/CharacterController.cpp"
+    "${CORE_SOURCE_DIR}/Font.cpp"
+    "${CORE_SOURCE_DIR}/GameObject.cpp"
+    "${CORE_SOURCE_DIR}/Command.cpp"
+    "${CORE_SOURCE_DIR}/Minigin.cpp"
+    "${CORE_SOURCE_DIR}/Renderer.cpp"
+    "${CORE_SOURCE_DIR}/ResourceManager.cpp"
+    "${CORE_SOURCE_DIR}/Scene.cpp"
+    "${CORE_SOURCE_DIR}/SceneManager.cpp"
+    "${CORE_SOURCE_DIR}/Texture2D.cpp"
+    "${CORE_SOURCE_DIR}/Transform.cpp"
+    "${CORE_SOURCE_DIR}/Timer.cpp"
+    "${COMPONENTS_SOURCE_DIR}/Component.cpp"
+    "${COMPONENTS_SOURCE_DIR}/TextComponent.cpp"
+    "${COMPONENTS_SOURCE_DIR}/RenderComponent.cpp"
+    "${COMPONENTS_SOURCE_DIR}/FpsCounterComponent.cpp"
+    "${COMPONENTS_SOURCE_DIR}/CharacterController.cpp"
+    "${INPUT_SOURCE_DIR}/Gamepad.cpp"
+    "${INPUT_SOURCE_DIR}/InputManager.cpp"
+)
+
+target_include_directories(${TARGET_NAME} PUBLIC 
+    "Minigin/Core/inc"
+    "Minigin/Components/inc"
+    "Minigin/Input/inc"
 )
 
 # enable c++20 features

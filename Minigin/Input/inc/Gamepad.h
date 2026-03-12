@@ -6,7 +6,6 @@
 
 namespace dae
 {
-
 	class Gamepad
 	{
 	public:
@@ -24,8 +23,8 @@ namespace dae
 #ifdef _WIN32
 		static const std::unordered_map<SDL_GamepadButton, unsigned int> m_InputMap;
 
-		class XinputImpl;
-		std::unique_ptr<XinputImpl> m_pImpl{};
+		class Impl;
+		std::unique_ptr<Impl> m_pImpl{};
 #else
 		class SDLImpl;
 		std::unique_ptr<SDLImpl> m_pImpl{};

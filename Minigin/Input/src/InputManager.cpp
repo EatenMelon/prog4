@@ -2,6 +2,7 @@
 #include "InputManager.h"
 
 #include <backends/imgui_impl_sdl3.h>
+#include <wtypes.h>
 
 bool dae::InputManager::ProcessInput()
 {
@@ -35,19 +36,23 @@ bool dae::InputManager::ProcessInput()
 	// handle controller events
 	m_Gamepad.ProcessInput();
 
-	for (int button{ 0 }; button < SDL_GAMEPAD_BUTTON_COUNT; ++button)
+#ifdef _WIN321
+	for(DWORD button = 1; button <= 0x8000; button <<= 1)
+#else
+	for (int button{ 0 }; button <= 14; ++button)
+#endif
 	{
-		auto sdlButton = static_cast<SDL_GamepadButton>(button);
+		auto gamepadButton = static_cast<GamepadButton>(button);
 
-		if (m_Gamepad.IsDownThisFrame(sdlButton))
+		if (m_Gamepad.IsDownThisFrame(gamepadButton))
 		{
 			m_KeysDown[button] = dae::KeyState::OnDown;
 		}
-		else if (m_Gamepad.IsUpThisFrame(sdlButton))
+		else if (m_Gamepad.IsUpThisFrame(gamepadButton))
 		{
 			m_KeysDown[button] = dae::KeyState::OnRelease;
 		}
-		else if(m_Gamepad.IsPressed(sdlButton))
+		else if(m_Gamepad.IsPressed(gamepadButton))
 		{
 			m_KeysDown[button] = dae::KeyState::Pressed;
 		}
@@ -115,6 +120,19 @@ void dae::InputManager::BindInput
 
 {
 	m_InputBindings.push_back(InputBinding{ name, button, state, command, axisDirection });
+}
+
+void dae::InputManager::BindInput
+(
+	const std::string& name,
+	dae::GamepadButton button,
+	dae::KeyState state,
+	std::shared_ptr<dae::Command> command,
+	Direction axisDirection
+)
+
+{
+	m_InputBindings.push_back(InputBinding{ name, static_cast<unsigned int>(button), state, command, axisDirection });
 }
 
 void dae::InputManager::UnBindInput(const std::string& actionName)

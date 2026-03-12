@@ -7,7 +7,7 @@
 #include <Windows.h>
 #include <Xinput.h>
 
-class dae::Gamepad::XinputImpl
+class dae::Gamepad::Impl
 {
 public:
 	void ProcessInput();
@@ -25,7 +25,7 @@ private:
 	XINPUT_STATE m_PreviousState{};
 };
 
-void dae::Gamepad::XinputImpl::ProcessInput()
+void dae::Gamepad::Impl::ProcessInput()
 {
 	// get the first controller you can find
 	for (DWORD i = 0; i < 4; i++)
@@ -49,17 +49,17 @@ void dae::Gamepad::XinputImpl::ProcessInput()
 	m_ButtonsReleasedThisFrame = buttonChanges & (~m_CurrentState.Gamepad.wButtons);
 }
 
-bool dae::Gamepad::XinputImpl::IsDownThisFrame(unsigned int button) const
+bool dae::Gamepad::Impl::IsDownThisFrame(unsigned int button) const
 {
 	return m_ButtonsPressedThisFrame & button;
 }
 
-bool dae::Gamepad::XinputImpl::IsUpThisFrame(unsigned int button) const
+bool dae::Gamepad::Impl::IsUpThisFrame(unsigned int button) const
 {
 	return m_ButtonsReleasedThisFrame & button;
 }
 
-bool dae::Gamepad::XinputImpl::IsPressed(unsigned int button) const
+bool dae::Gamepad::Impl::IsPressed(unsigned int button) const
 {
 	return m_CurrentState.Gamepad.wButtons & button;
 }
@@ -191,7 +191,7 @@ const std::unordered_map<SDL_GamepadButton, uint32_t> dae::Gamepad::m_InputMap
 dae::Gamepad::Gamepad()
 {
 #ifdef _WIN32
-	m_pImpl = std::make_unique<XinputImpl>();
+	m_pImpl = std::make_unique<Impl>();
 #else
 	m_pImpl = std::make_unique<SDLImpl>();
 #endif

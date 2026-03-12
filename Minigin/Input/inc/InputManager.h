@@ -3,7 +3,7 @@
 #include <string>
 #include <memory>
 #include "Command.h"
-#include "Gamepad.h"
+#include "GamepadSDL.h"
 
 #include "Singleton.h"
 #include <unordered_map>
@@ -20,6 +20,10 @@ namespace dae
 
 		void BindInput(const std::string& name, unsigned int button, KeyState state, 
 			std::shared_ptr<Command> command, Direction axisDirection = Direction::None);
+
+		void BindInput(const std::string& name, GamepadButton button, KeyState state,
+			std::shared_ptr<Command> command, Direction axisDirection = Direction::None);
+
 		void UnBindInput(const std::string& actionName);
 
 	private:

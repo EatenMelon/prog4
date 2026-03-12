@@ -37,7 +37,7 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
     "${COMPONENTS_SOURCE_DIR}/RenderComponent.cpp"
     "${COMPONENTS_SOURCE_DIR}/FpsCounterComponent.cpp"
     "${COMPONENTS_SOURCE_DIR}/CharacterController.cpp"
-    "${INPUT_SOURCE_DIR}/Gamepad.cpp"
+    "${INPUT_SOURCE_DIR}/GamepadXinput.cpp"
     "${INPUT_SOURCE_DIR}/InputManager.cpp"
 )
 

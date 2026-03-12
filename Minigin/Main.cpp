@@ -164,10 +164,10 @@ static void load()
 
 			auto moveCommand = std::make_shared<dae::MoveCommand>(controller);
 
-			dae::InputManager::GetInstance().BindInput("Move", SDL_GAMEPAD_BUTTON_DPAD_UP, dae::KeyState::Pressed, moveCommand, dae::Direction::Up);
-			dae::InputManager::GetInstance().BindInput("Move", SDL_GAMEPAD_BUTTON_DPAD_LEFT, dae::KeyState::Pressed, moveCommand, dae::Direction::Left);
-			dae::InputManager::GetInstance().BindInput("Move", SDL_GAMEPAD_BUTTON_DPAD_DOWN, dae::KeyState::Pressed, moveCommand, dae::Direction::Down);
-			dae::InputManager::GetInstance().BindInput("Move", SDL_GAMEPAD_BUTTON_DPAD_RIGHT, dae::KeyState::Pressed, moveCommand, dae::Direction::Right);
+			dae::InputManager::GetInstance().BindInput("Move", dae::GamepadButton::DPAD_UP, dae::KeyState::Pressed, moveCommand, dae::Direction::Up);
+			dae::InputManager::GetInstance().BindInput("Move", dae::GamepadButton::DPAD_LEFT, dae::KeyState::Pressed, moveCommand, dae::Direction::Left);
+			dae::InputManager::GetInstance().BindInput("Move", dae::GamepadButton::DPAD_DOWN, dae::KeyState::Pressed, moveCommand, dae::Direction::Down);
+			dae::InputManager::GetInstance().BindInput("Move", dae::GamepadButton::DPAD_RIGHT, dae::KeyState::Pressed, moveCommand, dae::Direction::Right);
 		}
 
 		auto renderComp = Pooka->AddComponent<dae::RenderComponent>();

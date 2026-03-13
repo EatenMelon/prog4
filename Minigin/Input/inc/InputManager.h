@@ -3,7 +3,7 @@
 #include <string>
 #include <memory>
 #include "Command.h"
-#include "GamepadSDL.h"
+#include "Gamepad.h"
 
 #include "Singleton.h"
 #include <unordered_map>

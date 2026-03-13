@@ -1,4 +1,5 @@
 #include "Gamepad.h"
+#include "SDL3/SDL.h"
 
 #ifdef WIN32
 

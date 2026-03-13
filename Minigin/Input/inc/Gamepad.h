@@ -2,7 +2,9 @@
 #include <unordered_map>
 #include <memory>
 
-#include "SDL3/SDL.h"
+#ifdef WIN32
+#include <wtypes.h>
+#endif
 
 namespace dae
 {

@@ -2,7 +2,6 @@
 #include "InputManager.h"
 
 #include <backends/imgui_impl_sdl3.h>
-#include <wtypes.h>
 
 bool dae::InputManager::ProcessInput()
 {
@@ -36,7 +35,7 @@ bool dae::InputManager::ProcessInput()
 	// handle controller events
 	m_Gamepad.ProcessInput();
 
-#ifdef _WIN32
+#ifdef WIN32
 	for(DWORD button = 1; button <= 0x8000; button <<= 1)
 #else
 	for (int button{ 0 }; button < static_cast<int>(dae::GamepadButton::COUNT); ++button)

@@ -23,6 +23,12 @@ namespace dae
 	{
 	public:
 		ActorCommand(GameObject* pActor) : m_Actor{ pActor } {};
+
+		ActorCommand(const ActorCommand& other) = delete;
+		ActorCommand& operator=(const ActorCommand& other) = delete;
+		ActorCommand(ActorCommand&& other) = delete;
+		ActorCommand& operator=(ActorCommand&& other) = delete;
+
 		virtual ~ActorCommand() { m_Actor = nullptr; }
 
 	protected:
@@ -33,22 +39,14 @@ namespace dae
 
 	};
 
-	class CharacterController;
 	class MoveCommand final : public ActorCommand
 	{
 	public:
 		MoveCommand(GameObject* pActor, float movementSpeed);
 
-		MoveCommand(const MoveCommand& other) = delete;
-		MoveCommand& operator=(const MoveCommand& other) = delete;
-		MoveCommand(MoveCommand&& other) = delete;
-		MoveCommand& operator=(MoveCommand&& other) = delete;
-
 		void Execute(const InputContext& context, float deltaTime) override;
 
 	private:
 		float m_MovementSpeed;
-		
-
 	};
 }

@@ -3,7 +3,7 @@
 
 #include <backends/imgui_impl_sdl3.h>
 
-bool dae::InputManager::ProcessInput()
+bool dae::InputManager::ProcessInput(float deltaTime)
 {
 	// process keyboard input
 	SDL_Event e;
@@ -94,7 +94,7 @@ bool dae::InputManager::ProcessInput()
 	// execute all necessary commands
 	for (auto& [command, context] : commandContexts)
 	{
-		command->Execute(context);
+		command->Execute(context, deltaTime);
 	}
 
 	// make sure on down & on release are single time events

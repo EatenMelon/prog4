@@ -16,7 +16,7 @@ namespace dae
 	class InputManager final : public Singleton<InputManager>
 	{
 	public:
-		bool ProcessInput();
+		bool ProcessInput(float deltaTime);
 
 		void BindInput(const std::string& name, unsigned int button, KeyState state, 
 			std::shared_ptr<Command> command, Direction axisDirection = Direction::None);

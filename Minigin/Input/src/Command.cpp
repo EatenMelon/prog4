@@ -1,18 +1,20 @@
 #include "Command.h"
-#include "CharacterController.h"
+#include "GameObject.h"
 
-dae::MoveCommand::MoveCommand(CharacterController* pController)
-	: m_pController{ pController }
+dae::MoveCommand::MoveCommand(GameObject* pActor, float movementSpeed)
+	: ActorCommand(pActor)
+	, m_MovementSpeed{ movementSpeed }
 {
 
 }
 
-dae::MoveCommand::~MoveCommand()
+void dae::MoveCommand::Execute(const InputContext& context, float deltaTime)
 {
-	m_pController = nullptr;
-}
 
-void dae::MoveCommand::Execute(const InputContext& context)
-{
-	m_pController->OnMove(context.axis);
+	glm::vec3 pos = GetActor().GetLocalPosition();
+
+	pos.x += context.axis.x * m_MovementSpeed * deltaTime;
+	pos.y += context.axis.y * m_MovementSpeed * deltaTime;
+
+	GetActor().SetLocalPosition(pos);
 }

@@ -92,7 +92,7 @@ void dae::Minigin::Run(const std::function<void()>& load)
 {
 	load();
 #ifndef __EMSCRIPTEN__
-	m_Timer.SetFPS(120);
+	m_Timer.SetFPS(60);
 	m_Timer.Start();
 
 	while (!m_quit)
@@ -112,7 +112,7 @@ void dae::Minigin::RunOneFrame()
 
 	m_Lag += m_Timer.GetDeltaTime();
 
-	m_quit = !InputManager::GetInstance().ProcessInput();
+	m_quit = !InputManager::GetInstance().ProcessInput(m_Timer.GetDeltaTime());
 
 	while (m_Lag >= m_Timer.GetFixedFrameTime())
 	{

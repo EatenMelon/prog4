@@ -18,6 +18,7 @@
 #include "HealthDisplay.h"
 #include "ScoreComponent.h"
 #include "ScoreDisplay.h"
+#include "Achievement.h"
 
 #include "InputManager.h"
 #include "Command.h"
@@ -187,7 +188,7 @@ static void load()
 		if (renderComp != nullptr) renderComp->SetTexture("TaizoHori.png");
 
 		auto health = TaizoHori->AddComponent<dae::HealthComponent>();
-		if (health != nullptr)
+		if (health != nullptr && healthDisplayTaizoHori != nullptr)
 		{
 			health->Subscrube(healthDisplayTaizoHori);
 			healthDisplayTaizoHori->SetHealthComponent(health);
@@ -197,10 +198,19 @@ static void load()
 		dae::InputManager::GetInstance().BindInput("Damage", SDLK_C, dae::KeyState::OnDown, damageCommand);
 
 		auto score = TaizoHori->AddComponent<dae::ScoreComponent>();
-		if (score != nullptr)
+		if (score != nullptr && scoreDisplayTaizoHori != nullptr)
 		{
 			score->Subscrube(scoreDisplayTaizoHori);
 			scoreDisplayTaizoHori->SetScoreComponent(score);
+
+			// steam achievement
+			auto Achievement = ScoreTaizoHori->AddComponent<dae::Achievement>();
+			if (Achievement != nullptr)
+			{
+				score->Subscrube(Achievement);
+				Achievement->SetScoreComponent(score);
+			}
+
 		}
 
 		auto scoreCommand = std::make_shared<dae::ScoreCommand>(TaizoHori.get(), score);

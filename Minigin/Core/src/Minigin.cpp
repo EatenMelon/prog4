@@ -16,6 +16,15 @@
 #include "Renderer.h"
 #include "ResourceManager.h"
 
+// steamworks
+
+#if USE_STEAMWORKS
+#pragma warning (push)
+#pragma warning (disable:4996)
+#include <steam_api.h>
+#pragma warning (pop)
+#endif
+
 SDL_Window* g_window{};
 
 void LogSDLVersion(const std::string& message, int major, int minor, int patch)
@@ -78,6 +87,14 @@ dae::Minigin::Minigin(const std::filesystem::path& dataPath)
 
 	Renderer::GetInstance().Init(g_window);
 	ResourceManager::GetInstance().Init(dataPath);
+
+	// steamworks
+#if USE_STEAMWORKS
+	if (!SteamAPI_Init())
+	{
+		throw std::runtime_error(std::string("Fatal Error - Steam must be running to play this game (SteamAPI_Init() failed)."));
+	}
+#endif
 }
 
 dae::Minigin::~Minigin()
@@ -86,6 +103,11 @@ dae::Minigin::~Minigin()
 	SDL_DestroyWindow(g_window);
 	g_window = nullptr;
 	SDL_Quit();
+
+	// steamworks
+#if USE_STEAMWORKS
+	SteamAPI_Shutdown();
+#endif
 }
 
 void dae::Minigin::Run(const std::function<void()>& load)
@@ -94,6 +116,10 @@ void dae::Minigin::Run(const std::function<void()>& load)
 
 	SceneManager::GetInstance().Init();
 
+	// quick test
+	//ISteamUserStats* pStats = SteamUserStats();
+	//pStats->SetAchievement("ACH_WIN_ONE_GAME");
+		
 #ifndef __EMSCRIPTEN__
 	m_Timer.SetFPS(60);
 	m_Timer.Start();
@@ -126,6 +152,10 @@ void dae::Minigin::RunOneFrame()
 
 	SceneManager::GetInstance().Update(m_Timer.GetDeltaTime());
 	Renderer::GetInstance().Render();
+
+#if USE_STEAMWORKS
+	SteamAPI_RunCallbacks();
+#endif 
 
 	SceneManager::GetInstance().Cleanup();
 

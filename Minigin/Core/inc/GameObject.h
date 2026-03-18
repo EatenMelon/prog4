@@ -15,6 +15,7 @@ namespace dae
 	class GameObject final // has to be enabled to use shared_from_this()
 	{
 	public:
+		void Init();
 		void FixedUpdate(float fixedFrameTime);
 		void Update(float deltaTime);
 		void GuiRender() const;
@@ -59,8 +60,6 @@ namespace dae
 
 				// return component
 				auto comp = m_Components.find(typeid(T));
-
-				comp->second.get()->Init();
 
 				return static_cast<T*>(comp->second.get());
 			}

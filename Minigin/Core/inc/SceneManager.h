@@ -13,6 +13,7 @@ namespace dae
 	public:
 		Scene& CreateScene();
 
+		void Init();
 		void FixedUpdate(float fixedFrameTime);
 		void Update(float deltaTime);
 		void GuiRender() const;

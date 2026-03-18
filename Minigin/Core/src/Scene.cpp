@@ -27,6 +27,14 @@ void Scene::RemoveAll()
 	m_objects.clear();
 }
 
+void Scene::Init()
+{
+	for (auto& object : m_objects)
+	{
+		object->Init();
+	}
+}
+
 void Scene::FixedUpdate(float fixedFrameTime)
 {
 	for (auto& object : m_objects)

@@ -17,6 +17,7 @@ endif()
 set(CORE_SOURCE_DIR "Minigin/Core/src")
 set(COMPONENTS_SOURCE_DIR "Minigin/Components/src")
 set(INPUT_SOURCE_DIR "Minigin/Input/src")
+set(INTERFACES_SOURCE_DIR "Minigin/Interfaces/src")
 
 # list source files here
 add_executable(${TARGET_NAME} ${TARGET_PARAM}
@@ -31,20 +32,26 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
     "${CORE_SOURCE_DIR}/Texture2D.cpp"
     "${CORE_SOURCE_DIR}/Transform.cpp"
     "${CORE_SOURCE_DIR}/Timer.cpp"
+
     "${COMPONENTS_SOURCE_DIR}/Component.cpp"
     "${COMPONENTS_SOURCE_DIR}/TextComponent.cpp"
     "${COMPONENTS_SOURCE_DIR}/RenderComponent.cpp"
     "${COMPONENTS_SOURCE_DIR}/FpsCounterComponent.cpp"
+    "${COMPONENTS_SOURCE_DIR}/ScoreDisplay.cpp"
+    "${COMPONENTS_SOURCE_DIR}/HealthDisplay.cpp"
     
     "${INPUT_SOURCE_DIR}/InputManager.cpp"
     "${INPUT_SOURCE_DIR}/Gamepad.cpp"
     "${INPUT_SOURCE_DIR}/Command.cpp"
+
+    "${INTERFACES_SOURCE_DIR}/Subject.cpp"
 )
 
 target_include_directories(${TARGET_NAME} PUBLIC 
     "Minigin/Core/inc"
     "Minigin/Components/inc"
     "Minigin/Input/inc"
+    "Minigin/Interfaces/inc"
 )
 
 # enable c++20 features
@@ -143,7 +150,7 @@ add_library(imgui STATIC
   ${imgui_SOURCE_DIR}/imgui_widgets.cpp
   ${imgui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp
   ${imgui_SOURCE_DIR}/backends/imgui_impl_sdlrenderer3.cpp
-)
+ "Minigin/Interfaces/inc/Events.h")
 
 target_include_directories(imgui PUBLIC ${imgui_SOURCE_DIR} ${sdl3_SOURCE_DIR}/include)
 target_link_libraries(imgui PUBLIC SDL3::SDL3)

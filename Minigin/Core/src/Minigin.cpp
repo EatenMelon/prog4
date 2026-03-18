@@ -91,6 +91,9 @@ dae::Minigin::~Minigin()
 void dae::Minigin::Run(const std::function<void()>& load)
 {
 	load();
+
+	SceneManager::GetInstance().Init();
+
 #ifndef __EMSCRIPTEN__
 	m_Timer.SetFPS(60);
 	m_Timer.Start();

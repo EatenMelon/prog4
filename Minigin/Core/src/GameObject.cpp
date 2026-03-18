@@ -1,5 +1,13 @@
 #include "GameObject.h"
 
+void dae::GameObject::Init()
+{
+	for (auto& comp : m_Components)
+	{
+		comp.second->Init();
+	}
+}
+
 void dae::GameObject::FixedUpdate(float fixedFrameTime)
 {
 	for (auto& comp : m_Components)

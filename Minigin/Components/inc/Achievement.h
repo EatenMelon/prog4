@@ -5,7 +5,6 @@
 #pragma warning (disable:4996)
 #include <steam_api.h>
 #pragma warning (pop)
-#endif
 
 #include "ScoreComponent.h"
 #include "Observer.h"
@@ -52,3 +51,5 @@ namespace dae
 		bool m_HasAquiredAchivement{ false };
 	};
 }
+
+#endif

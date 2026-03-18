@@ -203,6 +203,7 @@ static void load()
 			score->Subscrube(scoreDisplayTaizoHori);
 			scoreDisplayTaizoHori->SetScoreComponent(score);
 
+#if USE_STEAMWORKS
 			// steam achievement
 			auto Achievement = ScoreTaizoHori->AddComponent<dae::Achievement>();
 			if (Achievement != nullptr)
@@ -210,6 +211,7 @@ static void load()
 				score->Subscrube(Achievement);
 				Achievement->SetScoreComponent(score);
 			}
+#endif
 
 		}
 

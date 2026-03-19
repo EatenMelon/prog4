@@ -35,11 +35,7 @@ bool dae::InputManager::ProcessInput(float deltaTime)
 	// handle controller events
 	m_Gamepad.ProcessInput();
 
-#ifdef WIN32
-	for(DWORD button = 1; button <= 0x8000; button <<= 1)
-#else
 	for (int button{ 0 }; button < static_cast<int>(dae::GamepadButton::COUNT); ++button)
-#endif
 	{
 		auto gamepadButton = static_cast<GamepadButton>(button);
 

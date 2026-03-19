@@ -13,9 +13,6 @@ else()
   set(TARGET_PARAM WIN32)
 endif()
 
-# the steamworks folder should be next to the cmake root
-set(STEAMWORKS_ROOT "${CMAKE_CURRENT_LIST_DIR}/../steamworks_sdk_163")
-
 # added directory variables to i can change the folder stucture more easily later
 set(CORE_SOURCE_DIR "Minigin/Core/src")
 set(COMPONENTS_SOURCE_DIR "Minigin/Components/src")

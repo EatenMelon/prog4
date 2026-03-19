@@ -6,6 +6,24 @@
 #include <Windows.h>
 #include <Xinput.h>
 
+std::unordered_map<dae::GamepadButton, unsigned int> g_ButtonMap
+{
+	{dae::GamepadButton::SOUTH,				XINPUT_GAMEPAD_A},
+	{dae::GamepadButton::EAST,				XINPUT_GAMEPAD_B},
+	{dae::GamepadButton::WEST,				XINPUT_GAMEPAD_X},
+	{dae::GamepadButton::NORTH,				XINPUT_GAMEPAD_Y},
+	{dae::GamepadButton::BACK,				XINPUT_GAMEPAD_BACK},
+	{dae::GamepadButton::START,				XINPUT_GAMEPAD_START},
+	{dae::GamepadButton::LEFT_THUMB,		XINPUT_GAMEPAD_LEFT_THUMB},
+	{dae::GamepadButton::RIGHT_THUMB,		XINPUT_GAMEPAD_RIGHT_THUMB},
+	{dae::GamepadButton::LEFT_SHOULDER,		XINPUT_GAMEPAD_LEFT_SHOULDER},
+	{dae::GamepadButton::RIGHT_SHOULDER,	XINPUT_GAMEPAD_RIGHT_SHOULDER},
+	{dae::GamepadButton::DPAD_UP,			XINPUT_GAMEPAD_DPAD_UP},
+	{dae::GamepadButton::DPAD_DOWN,			XINPUT_GAMEPAD_DPAD_DOWN},
+	{dae::GamepadButton::DPAD_LEFT,			XINPUT_GAMEPAD_DPAD_LEFT},
+	{dae::GamepadButton::DPAD_RIGHT,		XINPUT_GAMEPAD_DPAD_RIGHT}
+};
+
 class dae::Gamepad::Impl
 {
 public:
@@ -184,15 +202,36 @@ void dae::Gamepad::ProcessInput()
 
 bool dae::Gamepad::IsDownThisFrame(GamepadButton button) const
 {
+#ifdef WIN32
+	auto itr = g_ButtonMap.find(button);
+	if (itr == g_ButtonMap.end()) return false;
+
+	return m_pImpl->IsDownThisFrame(itr->second);
+#else
 	return m_pImpl->IsDownThisFrame(static_cast<unsigned int>(button));
+#endif
 }
 
 bool dae::Gamepad::IsUpThisFrame(GamepadButton button) const
 {
+#ifdef WIN32
+	auto itr = g_ButtonMap.find(button);
+	if (itr == g_ButtonMap.end()) return false;
+
+	return m_pImpl->IsUpThisFrame(itr->second);
+#else
 	return m_pImpl->IsUpThisFrame(static_cast<unsigned int>(button));
+#endif
 }
 
 bool dae::Gamepad::IsPressed(GamepadButton button) const
 {
+#ifdef WIN32
+	auto itr = g_ButtonMap.find(button);
+	if (itr == g_ButtonMap.end()) return false;
+
+	return m_pImpl->IsPressed(itr->second);
+#else
 	return m_pImpl->IsPressed(static_cast<unsigned int>(button));
+#endif
 }

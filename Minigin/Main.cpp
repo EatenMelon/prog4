@@ -18,7 +18,6 @@
 #include "HealthDisplay.h"
 #include "ScoreComponent.h"
 #include "ScoreDisplay.h"
-#include "Achievement.h"
 
 #include "InputManager.h"
 #include "Command.h"
@@ -202,16 +201,6 @@ static void load()
 		{
 			score->Subscrube(scoreDisplayTaizoHori);
 			scoreDisplayTaizoHori->SetScoreComponent(score);
-
-#if USE_STEAMWORKS
-			// steam achievement
-			auto Achievement = ScoreTaizoHori->AddComponent<dae::Achievement>();
-			if (Achievement != nullptr)
-			{
-				score->Subscrube(Achievement);
-				Achievement->SetScoreComponent(score);
-			}
-#endif
 
 		}
 

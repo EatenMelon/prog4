@@ -223,13 +223,22 @@ if(EMSCRIPTEN)
   set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/cmake/EmscriptenToolchain.cmake)
 
   # Additional settings for Emscripten build
-  set_target_properties(${GAME_NAME} PROPERTIES
+  set_target_properties(${ENGINE_NAME} PROPERTIES
       COMPILE_FLAGS "${EMSCRIPTEN_COMPILE_FLAGS}"
       LINK_FLAGS "${EMSCRIPTEN_LINK_FLAGS}"
   )
 
   add_custom_command(TARGET ${ENGINE_NAME} POST_BUILD
     COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/web" "$<TARGET_FILE_DIR:${ENGINE_NAME}>/"
+  )
+
+  target_compile_options(${GAME_NAME} PRIVATE -g)
+  target_link_options(${GAME_NAME} PRIVATE
+    -g
+    -sUSE_FREETYPE=1
+    -sUSE_HARFBUZZ=1
+    -sALLOW_MEMORY_GROWTH
+    "--preload-file" "${CMAKE_SOURCE_DIR}/Data@/"
   )
 
   # Have emscripten generate a html page too.

@@ -217,7 +217,7 @@ endif()
 if(EMSCRIPTEN)
 
   set_target_properties(${GAME_NAME} PROPERTIES
-    #OUTPUT_NAME "minigin_web"
+    OUTPUT_NAME "minigin_web"
     SUFFIX ".html"
   )
 

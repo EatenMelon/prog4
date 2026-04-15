@@ -62,7 +62,6 @@ target_compile_features(${ENGINE_NAME} PUBLIC cxx_std_20)
 add_executable(${GAME_NAME} ${TARGET_PARAM}
     "Game/Main.cpp"
 )
-
 target_compile_features(${GAME_NAME} PUBLIC cxx_std_20)
 
 include(FetchContent)
@@ -228,10 +227,6 @@ if(EMSCRIPTEN)
       LINK_FLAGS "${EMSCRIPTEN_LINK_FLAGS}"
   )
 
-  add_custom_command(TARGET ${ENGINE_NAME} POST_BUILD
-    COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/web" "$<TARGET_FILE_DIR:${ENGINE_NAME}>/"
-  )
-
   set_target_properties(${GAME_NAME} PROPERTIES
       COMPILE_FLAGS "${EMSCRIPTEN_COMPILE_FLAGS}"
       LINK_FLAGS "${EMSCRIPTEN_LINK_FLAGS}"
@@ -239,6 +234,10 @@ if(EMSCRIPTEN)
 
   # Have emscripten generate a html page too.
   set(CMAKE_EXECUTABLE_SUFFIX ".html")
+
+  add_custom_command(TARGET ${GAME_NAME} POST_BUILD
+    COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/web" "$<TARGET_FILE_DIR:${GAME_NAME}>/"
+  )
 
 elseif(WIN32)
   target_link_libraries("${ENGINE_NAME}" PUBLIC Xinput9_1_0)

@@ -212,7 +212,7 @@ if(MSVC)
   target_compile_options(${GAME_NAME} PRIVATE /W4 /WX)
 else()
   target_compile_options(${ENGINE_NAME} PRIVATE -Wall -Wextra -Werror)
-  target_compile_options(${Game_NAME} PRIVATE -Wall -Wextra -Werror)
+  target_compile_options(${GAME_NAME} PRIVATE -Wall -Wextra -Werror)
 endif()
 
 if(EMSCRIPTEN)

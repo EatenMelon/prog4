@@ -32,14 +32,10 @@ add_library(${ENGINE_NAME} STATIC
     "${CORE_DIR}/Texture2D.cpp"
     "${CORE_DIR}/Transform.cpp"
     "${CORE_DIR}/Timer.cpp"
-    "${CORE_DIR}/Singleton.cpp"
 
     "${COMPONENTS_DIR}/Component.cpp"
     "${COMPONENTS_DIR}/TextComponent.cpp"
     "${COMPONENTS_DIR}/RenderComponent.cpp"
-    "${COMPONENTS_DIR}/FpsCounterComponent.cpp"
-    "${COMPONENTS_DIR}/ScoreDisplay.cpp"
-    "${COMPONENTS_DIR}/HealthDisplay.cpp"
     
     "${INPUT_DIR}/InputManager.cpp"
     "${INPUT_DIR}/Gamepad.cpp"
@@ -58,11 +54,30 @@ target_include_directories(${ENGINE_NAME} PUBLIC
 # enable c++20 features
 target_compile_features(${ENGINE_NAME} PUBLIC cxx_std_20)
 
+# change directories
+set(COMPONENTS_DIR "Game/Components")
+set(INPUT_DIR "Game/Input")
+set(INTERFACES_DIR "Game/Interfaces")
+
 # list source files here
 add_executable(${GAME_NAME} ${TARGET_PARAM}
     "Game/Main.cpp"
+
+    "${COMPONENTS_DIR}/FpsCounterComponent.cpp"
+    "${COMPONENTS_DIR}/ScoreDisplay.cpp"
+    "${COMPONENTS_DIR}/HealthDisplay.cpp"
+
+    "${INPUT_DIR}/DamageCommand.cpp"
+    "${INPUT_DIR}/ScoreCommand.cpp"
 )
+
 target_compile_features(${GAME_NAME} PUBLIC cxx_std_20)
+
+target_include_directories(${GAME_NAME} PUBLIC 
+    ${COMPONENTS_DIR}
+    ${INPUT_DIR}
+    ${INTERFACES_DIR}
+)
 
 include(FetchContent)
 # add glm

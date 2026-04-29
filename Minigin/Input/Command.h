@@ -39,6 +39,7 @@ namespace dae
 
 	};
 
+	// standard move command, so i'll keep it in the engine
 	class MoveCommand final : public ActorCommand
 	{
 	public:
@@ -48,31 +49,5 @@ namespace dae
 
 	private:
 		float m_MovementSpeed;
-	};
-
-	class HealthComponent;
-	class DamageCommand final : public ActorCommand
-	{
-	public:
-		DamageCommand(GameObject* pActor, HealthComponent* pHealth);
-
-		void Execute(const InputContext& context, float deltaTime) override;
-	
-	private:
-		HealthComponent* m_pHealth;
-
-	};
-
-	class ScoreComponent;
-	class ScoreCommand final : public ActorCommand
-	{
-	public:
-		ScoreCommand(GameObject* pActor, ScoreComponent* pScore);
-
-		void Execute(const InputContext& context, float deltaTime) override;
-
-	private:
-		ScoreComponent* m_pScore;
-
 	};
 }

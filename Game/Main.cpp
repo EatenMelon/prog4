@@ -5,22 +5,27 @@
 #include <vld.h>
 #endif
 
-#include "Minigin.h"
-#include "SceneManager.h"
-#include "ResourceManager.h"
-#include "Scene.h"
+// engine core
+#include <Minigin.h>
+#include <Scene.h>
+#include <SceneManager.h>
+#include <ResourceManager.h>
 
-#include "FpsCounterComponent.h"
-#include "RenderComponent.h"
-#include "TextComponent.h"
+// engine components
+#include <RenderComponent.h>
+#include <TextComponent.h>
 
-#include "HealthComponent.h"
-#include "HealthDisplay.h"
-#include "ScoreComponent.h"
-#include "ScoreDisplay.h"
+// my components
+#include <FpsCounterComponent.h>
+#include <HealthComponent.h>
+#include <HealthDisplay.h>
+#include <ScoreComponent.h>
+#include <ScoreDisplay.h>
 
+// input
 #include "InputManager.h"
-#include "Command.h"
+#include <DamageCommand.h>
+#include <ScoreCommand.h>
 
 #include <filesystem>
 namespace fs = std::filesystem;

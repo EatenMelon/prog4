@@ -58,7 +58,12 @@ void dae::MiniginSoundSystem::Impl::Play(const std::string& file, const float vo
 
 void dae::MiniginSoundSystem::Impl::Init()
 {
-	m_Mixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, nullptr);
+	SDL_AudioSpec spec = {};
+	spec.freq = 44100;
+	spec.format = SDL_AUDIO_S16;
+	spec.channels = 2;
+
+	m_Mixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec);
 
 	if (m_Mixer == nullptr)
 	{

@@ -23,6 +23,6 @@ void dae::DamageCommand::Execute(const InputContext&, float)
 	}
 
 	m_pHealth->Damage(1);
-	
-	ServiceLocator::GetSoundSystem()->Play("sound.wav", 100.f);
+
+	ServiceLocator::GetSoundSystem()->Play("Sound/GameOver.mp3", 1.f);
 }

@@ -45,6 +45,7 @@ add_library(${ENGINE_NAME} STATIC
     "${INTERFACES_DIR}/Subject.cpp"
 
     "${AUDIO_DIR}/MiniginSoundSystem.cpp"
+    "${AUDIO_DIR}/MiniginLoggingSoundSystem.cpp"
 )
 
 target_include_directories(${ENGINE_NAME} PUBLIC 

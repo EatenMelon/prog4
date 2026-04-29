@@ -1,4 +1,4 @@
-#include "MiniginSoundSystem.h"
+#include "MiniginLoggingSoundSystem.h"
 
 #include <SDL3/SDL.h>
 #include <SDL3_mixer/SDL_mixer.h>
@@ -7,9 +7,11 @@
 #include <thread>
 #include <mutex>
 
+#include <iostream>
+
 // ref: https://github.com/libsdl-org/SDL_mixer/blob/main/examples/basics/01-load-and-play/load-and-play.c
 
-class dae::MiniginSoundSystem::Impl final
+class dae::MiniginLoggingSoundSystem::Impl final
 {
 public:
 	Impl(const std::string& root) : m_Root{ root } {}
@@ -39,7 +41,7 @@ private:
 	MIX_Mixer* m_Mixer{ nullptr };
 };
 
-void dae::MiniginSoundSystem::Impl::Play(const std::string& file, const float volume)
+void dae::MiniginLoggingSoundSystem::Impl::Play(const std::string& file, const float volume)
 {
 	if (file.empty() || volume <= 0) return;
 
@@ -51,13 +53,20 @@ void dae::MiniginSoundSystem::Impl::Play(const std::string& file, const float vo
 		newSound.volume = std::max(volume, 1.f);
 
 		m_SoundQueue.push(newSound);
+		std::cout << m_Root << newSound.file << " has been added to the sound queue.\n";
 	}
 
 	m_Condition.notify_one();
 }
 
-void dae::MiniginSoundSystem::Impl::Init()
+void dae::MiniginLoggingSoundSystem::Impl::Init()
 {
+	// posible way to fix my all white emscripten
+	//SDL_AudioSpec spec = {};
+	//spec.freq = 44100;
+	//spec.format = SDL_AUDIO_S16;
+	//spec.channels = 2;
+
 	m_Mixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, nullptr);
 
 	if (m_Mixer == nullptr)
@@ -69,7 +78,7 @@ void dae::MiniginSoundSystem::Impl::Init()
 	m_Thread = std::jthread{ &Impl::PlaySoundQueue, this };
 }
 
-void dae::MiniginSoundSystem::Impl::Quit()
+void dae::MiniginLoggingSoundSystem::Impl::Quit()
 {
 	{
 		std::scoped_lock<std::mutex> lock{ m_Mutex };
@@ -78,10 +87,9 @@ void dae::MiniginSoundSystem::Impl::Quit()
 	m_Condition.notify_one();
 
 	MIX_DestroyMixer(m_Mixer);
-	
 }
 
-void dae::MiniginSoundSystem::Impl::PlaySoundQueue()
+void dae::MiniginLoggingSoundSystem::Impl::PlaySoundQueue()
 {
 	while (m_PlaySounds)
 	{
@@ -98,7 +106,7 @@ void dae::MiniginSoundSystem::Impl::PlaySoundQueue()
 	}
 }
 
-void dae::MiniginSoundSystem::Impl::PlaySound(const SoundEvent& sound)
+void dae::MiniginLoggingSoundSystem::Impl::PlaySound(const SoundEvent& sound)
 {
 	std::string path{ m_Root + sound.file };
 
@@ -106,15 +114,19 @@ void dae::MiniginSoundSystem::Impl::PlaySound(const SoundEvent& sound)
 
 	if (!audio)
 	{
-		throw std::runtime_error(std::string("Failed to open file: ") + std::string(SDL_GetError()));
+		std::cout << std::string("Failed to open file: ") + SDL_GetError();
+		return;
 	}
 
 	MIX_Track* track = MIX_CreateTrack(m_Mixer);
 
 	if (!track)
 	{
-		throw std::runtime_error(std::string("Failed to create track: ") + SDL_GetError());
+		std::cout << std::string("Failed to create track: ") + SDL_GetError();
+		return;
 	}
+
+	std::cout << "Successfully loaded " << path << ", the sound will be played at " << sound.volume * 100 << "% volume.\n";
 
 	MIX_SetTrackGain(track, sound.volume);
 	MIX_SetTrackAudio(track, audio);
@@ -126,6 +138,7 @@ void dae::MiniginSoundSystem::Impl::PlaySound(const SoundEvent& sound)
 	auto onTrackStopped = [](void*, MIX_Track* track)
 		{
 			MIX_DestroyTrack(track);
+			std::cout << "Sound has been released.\n";
 		};
 
 	MIX_SetTrackStoppedCallback(track, onTrackStopped, nullptr);
@@ -134,8 +147,10 @@ void dae::MiniginSoundSystem::Impl::PlaySound(const SoundEvent& sound)
 	MIX_DestroyAudio(audio);
 }
 
-dae::MiniginSoundSystem::MiniginSoundSystem(const std::string& root) : m_pImpl{ std::make_unique<dae::MiniginSoundSystem::Impl>(root) } {}
-dae::MiniginSoundSystem::~MiniginSoundSystem() = default;
-void dae::MiniginSoundSystem::Play(const std::string& file, const float volume) { m_pImpl->Play(file, volume); }
-void dae::MiniginSoundSystem::Init() { m_pImpl->Init(); }
-void dae::MiniginSoundSystem::Quit() { m_pImpl->Quit(); }
+dae::MiniginLoggingSoundSystem::MiniginLoggingSoundSystem(const std::string& root) 
+	: m_pImpl{ std::make_unique<dae::MiniginLoggingSoundSystem::Impl>(root) } {}
+
+dae::MiniginLoggingSoundSystem::~MiniginLoggingSoundSystem() = default;
+void dae::MiniginLoggingSoundSystem::Play(const std::string& file, const float volume) { m_pImpl->Play(file, volume); }
+void dae::MiniginLoggingSoundSystem::Init() { m_pImpl->Init(); }
+void dae::MiniginLoggingSoundSystem::Quit() { m_pImpl->Quit(); }

@@ -1,6 +1,7 @@
 ﻿#include <stdexcept>
 #include <sstream>
 #include <iostream>
+#include <memory>
 
 #if WIN32
 #define WIN32_LEAN_AND_MEAN 
@@ -10,15 +11,20 @@
 
 #include <SDL3/SDL.h>
 #include <SDL3_ttf/SDL_ttf.h>
+#include <SDL3_mixer/SDL_mixer.h>
+
 #include "Minigin.h"
 #include "InputManager.h"
 #include "SceneManager.h"
 #include "Renderer.h"
 #include "ResourceManager.h"
 #include "ServiceLocator.h"
+
+#ifdef _DEBUG
+#include <MiniginLoggingSoundSystem.h>
+#else
 #include <MiniginSoundSystem.h>
-#include <memory>
-#include <SDL3_mixer/SDL_mixer.h>
+#endif
 
 SDL_Window* g_window{};
 
@@ -88,7 +94,12 @@ dae::Minigin::Minigin(const std::filesystem::path& dataPath)
 
 	Renderer::GetInstance().Init(g_window);
 	ResourceManager::GetInstance().Init(dataPath);
+
+#ifdef _DEBUG
+	ServiceLocator::RegisterSoundSystem(std::make_unique<MiniginLoggingSoundSystem>(dataPath.string()));
+#else
 	ServiceLocator::RegisterSoundSystem(std::make_unique<MiniginSoundSystem>(dataPath.string()));
+#endif
 
 	ServiceLocator::GetSoundSystem()->Init();
 }

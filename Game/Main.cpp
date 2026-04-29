@@ -28,18 +28,19 @@
 #include <ScoreCommand.h>
 
 #include <filesystem>
+
 namespace fs = std::filesystem;
 
 static void load()
 {
 	auto& scene = dae::SceneManager::GetInstance().CreateScene();
-	auto font = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
-	auto smallFont = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 18);
+	auto font = dae::ResourceManager::GetInstance().LoadFont("Fonts/Lingua.otf", 36);
+	auto smallFont = dae::ResourceManager::GetInstance().LoadFont("Fonts/Lingua.otf", 18);
 	
 	auto background = std::make_unique<dae::GameObject>();
 	{
 		auto renderComponent = background->AddComponent<dae::RenderComponent>();
-		if (renderComponent != nullptr) renderComponent->SetTexture("background.png");
+		if (renderComponent != nullptr) renderComponent->SetTexture("Sprites/background.png");
 
 		scene.Add(std::move(background));
 	}
@@ -49,7 +50,7 @@ static void load()
 		logo->SetLocalPosition(358.f, 180.f);
 
 		auto renderComp = logo->AddComponent<dae::RenderComponent>();
-		if (renderComp != nullptr) renderComp->SetTexture("logo.png");
+		if (renderComp != nullptr) renderComp->SetTexture("Sprites/logo.png");
 
 		scene.Add(std::move(logo));
 	}
@@ -189,7 +190,7 @@ static void load()
 		dae::InputManager::GetInstance().BindInput("Move", SDLK_D, dae::KeyState::Pressed, moveCommand, dae::Direction::Right);
 
 		auto renderComp = TaizoHori->AddComponent<dae::RenderComponent>();
-		if (renderComp != nullptr) renderComp->SetTexture("TaizoHori.png");
+		if (renderComp != nullptr) renderComp->SetTexture("Sprites/TaizoHori.png");
 
 		auto health = TaizoHori->AddComponent<dae::HealthComponent>();
 		if (health != nullptr && healthDisplayTaizoHori != nullptr)
@@ -269,7 +270,7 @@ static void load()
 		dae::InputManager::GetInstance().BindInput("Move", dae::GamepadButton::DPAD_RIGHT, dae::KeyState::Pressed, moveCommand, dae::Direction::Right);
 
 		auto renderComp = Pooka->AddComponent<dae::RenderComponent>();
-		if (renderComp != nullptr) renderComp->SetTexture("Pooka.png");
+		if (renderComp != nullptr) renderComp->SetTexture("Sprites/Pooka.png");
 
 		auto health = Pooka->AddComponent<dae::HealthComponent>();
 		if (health != nullptr)
@@ -297,7 +298,19 @@ static void load()
 	}
 }
 
-int main(int, char*[]) {
+int main(int, char*[])
+{
+#if defined(WIN32) && defined(_DEBUG)
+	// open console window in debug mode on windows
+	AllocConsole();
+
+	// assinging the correct steams to the console
+	FILE* fp;
+	freopen_s(&fp, "CONOUT$", "w", stdout);
+	freopen_s(&fp, "CONOUT$", "w", stderr);
+	freopen_s(&fp, "CONIN$", "r", stdin);
+#endif
+
 #if __EMSCRIPTEN__
 	fs::path data_location = "";
 #else
@@ -307,5 +320,6 @@ int main(int, char*[]) {
 #endif
 	dae::Minigin engine(data_location);
 	engine.Run(load);
+
     return 0;
 }

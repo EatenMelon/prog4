@@ -20,6 +20,7 @@ set(CORE_DIR "Minigin/Core")
 set(COMPONENTS_DIR "Minigin/Components")
 set(INPUT_DIR "Minigin/Input")
 set(INTERFACES_DIR "Minigin/Interfaces")
+set(AUDIO_DIR "Minigin/Audio")
 
 add_library(${ENGINE_NAME} STATIC
     "${CORE_DIR}/Font.cpp"
@@ -42,6 +43,8 @@ add_library(${ENGINE_NAME} STATIC
     "${INPUT_DIR}/Command.cpp"
 
     "${INTERFACES_DIR}/Subject.cpp"
+
+    "${AUDIO_DIR}/MiniginSoundSystem.cpp"
 )
 
 target_include_directories(${ENGINE_NAME} PUBLIC 
@@ -49,6 +52,7 @@ target_include_directories(${ENGINE_NAME} PUBLIC
     ${COMPONENTS_DIR}
     ${INPUT_DIR}
     ${INTERFACES_DIR}
+    ${AUDIO_DIR}
 )
 
 # enable c++20 features
@@ -151,6 +155,31 @@ if(NOT SDL3_ttf_FOUND)
   endif()
 endif()
 
+# add SDL_Mixer
+find_package(SDL3_mixer 3.2.0 CONFIG QUIET)
+if(NOT SDL3_mixer_FOUND)
+  if (WIN32)
+    FetchContent_Declare(
+      SDL3_mixer
+      URL https://www.libsdl.org/projects/SDL_mixer/release/SDL3_mixer-devel-3.2.0-VC.zip
+      DOWNLOAD_NO_PROGRESS ON
+      DOWNLOAD_DIR ${CMAKE_BINARY_DIR}/downloads
+    )
+    FetchContent_MakeAvailable(SDL3_mixer)
+    list(PREPEND CMAKE_PREFIX_PATH "${sdl3_mixer_SOURCE_DIR}")
+    find_package(SDL3_mixer CONFIG REQUIRED)
+  else()
+    FetchContent_Declare(
+      SDL3_mixer
+      GIT_REPOSITORY https://github.com/libsdl-org/SDL_mixer.git
+      GIT_TAG release-3.2.0
+      GIT_SHALLOW TRUE
+      GIT_PROGRESS TRUE
+    )
+    FetchContent_MakeAvailable(SDL3_mixer)
+  endif()
+endif()
+
 if (WIN32)
   # Add VLD (Visual Leak Detector) for memory leak detection on Windows
   find_package(VLD CONFIG)
@@ -198,6 +227,7 @@ target_include_directories("${ENGINE_NAME}" PUBLIC
   ${sdl3_SOURCE_DIR}/include
   ${sdl3_image_SOURCE_DIR}/include
   ${sdl3_ttf_SOURCE_DIR}/include
+  ${sdl_mixer_SOURCE_DIR}/include
   ${imgui_SOURCE_DIR}
   ${VLD_INCLUDE_DIR}
 )
@@ -214,6 +244,7 @@ target_include_directories("${ENGINE_NAME}" PUBLIC
 target_link_libraries("${ENGINE_NAME}" PUBLIC
   SDL3::SDL3
   SDL3_ttf::SDL3_ttf
+  SDL3_mixer::SDL3_mixer
   glm::glm
   imgui
   imgui_plot
@@ -261,6 +292,7 @@ elseif(WIN32)
   set(SDL_RUNTIME_DLLS
     SDL3::SDL3
     SDL3_ttf::SDL3_ttf
+    SDL3_mixer::SDL3_mixer
   )
 
   foreach(dllTarget IN LISTS SDL_RUNTIME_DLLS)

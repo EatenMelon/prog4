@@ -15,6 +15,9 @@
 #include "SceneManager.h"
 #include "Renderer.h"
 #include "ResourceManager.h"
+#include "ServiceLocator.h"
+#include <MiniginSoundSystem.h>
+#include <memory>
 
 SDL_Window* g_window{};
 
@@ -78,10 +81,15 @@ dae::Minigin::Minigin(const std::filesystem::path& dataPath)
 
 	Renderer::GetInstance().Init(g_window);
 	ResourceManager::GetInstance().Init(dataPath);
+	ServiceLocator::RegisterSoundSystem(std::make_unique<MiniginSoundSystem>(dataPath.string()));
+
+	ServiceLocator::GetSoundSystem()->Init();
 }
 
 dae::Minigin::~Minigin()
 {
+	ServiceLocator::GetSoundSystem()->Quit();
+
 	Renderer::GetInstance().Destroy();
 	SDL_DestroyWindow(g_window);
 	g_window = nullptr;

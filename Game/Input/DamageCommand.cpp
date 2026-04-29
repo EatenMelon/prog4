@@ -2,6 +2,7 @@
 
 #include <GameObject.h>
 #include <HealthComponent.h>
+#include <ServiceLocator.h>
 
 dae::DamageCommand::DamageCommand(GameObject* pActor, HealthComponent* pHealth)
 	: ActorCommand(pActor)
@@ -22,4 +23,6 @@ void dae::DamageCommand::Execute(const InputContext&, float)
 	}
 
 	m_pHealth->Damage(1);
+	
+	ServiceLocator::GetSoundSystem()->Play("sound.wav", 100.f);
 }

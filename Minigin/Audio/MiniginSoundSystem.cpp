@@ -58,8 +58,6 @@ void dae::MiniginSoundSystem::Impl::Play(const std::string& file, const float vo
 
 void dae::MiniginSoundSystem::Impl::Init()
 {
-	MIX_Init();
-
 	m_Mixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, nullptr);
 
 	if (m_Mixer == nullptr)
@@ -80,7 +78,7 @@ void dae::MiniginSoundSystem::Impl::Quit()
 	m_Condition.notify_one();
 
 	MIX_DestroyMixer(m_Mixer);
-	MIX_Quit();
+	
 }
 
 void dae::MiniginSoundSystem::Impl::PlaySoundQueue()

@@ -18,6 +18,7 @@
 #include "ServiceLocator.h"
 #include <MiniginSoundSystem.h>
 #include <memory>
+#include <SDL3_mixer/SDL_mixer.h>
 
 SDL_Window* g_window{};
 
@@ -61,9 +62,15 @@ dae::Minigin::Minigin(const std::filesystem::path& dataPath)
 {
 	PrintSDLVersion();
 	
-	if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD | SDL_INIT_JOYSTICK))
+	if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMEPAD | SDL_INIT_JOYSTICK))
 	{
 		SDL_Log("Renderer error: %s", SDL_GetError());
+		throw std::runtime_error(std::string("SDL_Init Error: ") + SDL_GetError());
+	}
+
+	if (!MIX_Init())
+	{
+		SDL_Log("Audio error: %s", SDL_GetError());
 		throw std::runtime_error(std::string("SDL_Init Error: ") + SDL_GetError());
 	}
 
@@ -93,6 +100,7 @@ dae::Minigin::~Minigin()
 	Renderer::GetInstance().Destroy();
 	SDL_DestroyWindow(g_window);
 	g_window = nullptr;
+	MIX_Quit();
 	SDL_Quit();
 }
 

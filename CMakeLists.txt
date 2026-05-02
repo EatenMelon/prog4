@@ -263,10 +263,10 @@ endif()
 
 if(EMSCRIPTEN)
 
-  set_target_properties(${GAME_NAME} PROPERTIES
-    OUTPUT_NAME "minigin_web"
-    SUFFIX ".html"
-  )
+#  set_target_properties(${GAME_NAME} PROPERTIES
+#    OUTPUT_NAME "minigin_web"
+#    SUFFIX ".html"
+#  )
 
   target_link_options(${GAME_NAME} PRIVATE
     -sUSE_FREETYPE=1
@@ -276,7 +276,7 @@ if(EMSCRIPTEN)
   )
 
   add_custom_command(TARGET ${GAME_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
             "${CMAKE_CURRENT_SOURCE_DIR}/web"
             "$<TARGET_FILE_DIR:${GAME_NAME}>/"
   )

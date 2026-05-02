@@ -48,7 +48,7 @@ void dae::MiniginSoundSystem::Impl::Play(const std::string& file, const float vo
 
 		SoundEvent newSound{};
 		newSound.file = file;
-		newSound.volume = std::max(volume, 1.f);
+		newSound.volume = std::min(volume, 1.f);
 
 		m_SoundQueue.push(newSound);
 	}
@@ -94,6 +94,7 @@ void dae::MiniginSoundSystem::Impl::PlaySoundQueue()
 		auto next = m_SoundQueue.front();
 		m_SoundQueue.pop();
 		
+		lock.unlock();
 		PlaySound(next);
 	}
 }

@@ -50,7 +50,7 @@ void dae::MiniginLoggingSoundSystem::Impl::Play(const std::string& file, const f
 
 		SoundEvent newSound{};
 		newSound.file = file;
-		newSound.volume = std::max(volume, 1.f);
+		newSound.volume = std::min(volume, 1.f);
 
 		m_SoundQueue.push(newSound);
 		std::cout << m_Root << newSound.file << " has been added to the sound queue.\n";
@@ -84,8 +84,8 @@ void dae::MiniginLoggingSoundSystem::Impl::Quit()
 		std::scoped_lock<std::mutex> lock{ m_Mutex };
 		m_PlaySounds = false;
 	}
-	m_Condition.notify_one();
 
+	m_Condition.notify_one();
 	MIX_DestroyMixer(m_Mixer);
 }
 
@@ -102,6 +102,7 @@ void dae::MiniginLoggingSoundSystem::Impl::PlaySoundQueue()
 		auto next = m_SoundQueue.front();
 		m_SoundQueue.pop();
 		
+		lock.unlock();
 		PlaySound(next);
 	}
 }

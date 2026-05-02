@@ -272,6 +272,7 @@ if(EMSCRIPTEN)
     -sUSE_FREETYPE=1
     -sUSE_HARFBUZZ=1
     -sALLOW_MEMORY_GROWTH
+    -sASSERTIONS=1      # give me clear error messages
     --preload-file "${CMAKE_SOURCE_DIR}/Data@/"
   )
 

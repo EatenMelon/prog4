@@ -273,6 +273,8 @@ if(EMSCRIPTEN)
     -sUSE_HARFBUZZ=1
     -sALLOW_MEMORY_GROWTH
     -sASSERTIONS=1      # give me clear error messages
+    -sUSE_PTHREADS=1
+    -pthread
     --preload-file "${CMAKE_SOURCE_DIR}/Data@/"
   )
 

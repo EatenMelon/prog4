@@ -257,8 +257,8 @@ if(MSVC)
   target_compile_options(${ENGINE_NAME} PRIVATE /W4 /WX)
   target_compile_options(${GAME_NAME} PRIVATE /W4 /WX)
 else()
-  target_compile_options(${ENGINE_NAME} PRIVATE -Wall -Wextra -Werror)
-  target_compile_options(${GAME_NAME} PRIVATE -Wall -Wextra -Werror)
+  target_compile_options(${ENGINE_NAME} PRIVATE -pthread -Wall -Wextra -Werror)
+  target_compile_options(${GAME_NAME} PRIVATE -pthread -Wall -Wextra -Werror)
 endif()
 
 if(EMSCRIPTEN)
@@ -273,6 +273,8 @@ if(EMSCRIPTEN)
     -sUSE_HARFBUZZ=1
     -sALLOW_MEMORY_GROWTH
     -sASSERTIONS=1      # give me clear error messages
+    -sUSE_PTHREADS=1
+    -pthread
     --preload-file "${CMAKE_SOURCE_DIR}/Data@/"
   )
 

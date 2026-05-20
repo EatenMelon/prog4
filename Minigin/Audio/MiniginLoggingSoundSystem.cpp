@@ -132,17 +132,18 @@ void dae::MiniginLoggingSoundSystem::Impl::PlaySound(const SoundEvent& sound)
 	MIX_SetTrackGain(track, sound.volume);
 	MIX_SetTrackAudio(track, audio);
 
-	MIX_PlayTrack(track, 0);
-
 	// fire and release => alternative to an old MIX_PLAY_AUTOFREE macro
 	// https://wiki.libsdl.org/SDL3_mixer/MIX_TrackStoppedCallback
 	auto onTrackStopped = [](void*, MIX_Track* track)
 		{
+			// doesn't solve anything, add a destroy queue
 			MIX_DestroyTrack(track);
+
 			std::cout << "Sound has been released.\n";
 		};
 
 	MIX_SetTrackStoppedCallback(track, onTrackStopped, nullptr);
+	MIX_PlayTrack(track, 0);
 
 	// can be released without stopping the track
 	MIX_DestroyAudio(audio);

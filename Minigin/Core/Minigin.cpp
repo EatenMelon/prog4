@@ -22,7 +22,9 @@
 
 #ifdef _DEBUG
 #include <MiniginLoggingSoundSystem.h>
-#else
+#endif
+
+#ifndef __EMSCRIPTEN__
 #include <MiniginSoundSystem.h>
 #endif
 
@@ -95,10 +97,11 @@ dae::Minigin::Minigin(const std::filesystem::path& dataPath)
 	Renderer::GetInstance().Init(g_window);
 	ResourceManager::GetInstance().Init(dataPath);
 
+#ifndef __EMSCRIPTEN__
+	ServiceLocator::RegisterSoundSystem(std::make_unique<MiniginSoundSystem>(dataPath.string()));
+#endif
 #ifdef _DEBUG
 	ServiceLocator::RegisterSoundSystem(std::make_unique<MiniginLoggingSoundSystem>(dataPath.string()));
-#else
-	ServiceLocator::RegisterSoundSystem(std::make_unique<MiniginSoundSystem>(dataPath.string()));
 #endif
 
 	ServiceLocator::GetSoundSystem()->Init();
@@ -120,10 +123,6 @@ void dae::Minigin::Run(const std::function<void()>& load)
 	load();
 
 	SceneManager::GetInstance().Init();
-
-	// quick test
-	//ISteamUserStats* pStats = SteamUserStats();
-	//pStats->SetAchievement("ACH_WIN_ONE_GAME");
 		
 #ifndef __EMSCRIPTEN__
 	m_Timer.SetFPS(60);

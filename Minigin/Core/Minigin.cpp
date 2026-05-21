@@ -101,7 +101,13 @@ dae::Minigin::Minigin(const std::filesystem::path& dataPath)
 	ServiceLocator::RegisterSoundSystem(std::make_unique<MiniginSoundSystem>(dataPath.string()));
 #endif
 #ifdef _DEBUG
-	ServiceLocator::RegisterSoundSystem(std::make_unique<MiniginLoggingSoundSystem>(dataPath.string()));
+	ServiceLocator::RegisterSoundSystem
+	(
+		std::make_unique<MiniginLoggingSoundSystem>
+		(
+			std::make_unique<MiniginSoundSystem>(dataPath.string())
+		)
+	);
 #endif
 
 	ServiceLocator::GetSoundSystem()->Init();
@@ -110,11 +116,11 @@ dae::Minigin::Minigin(const std::filesystem::path& dataPath)
 dae::Minigin::~Minigin()
 {
 	ServiceLocator::GetSoundSystem()->Quit();
+	MIX_Quit();
 
 	Renderer::GetInstance().Destroy();
 	SDL_DestroyWindow(g_window);
 	g_window = nullptr;
-	MIX_Quit();
 	SDL_Quit();
 }
 

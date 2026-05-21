@@ -8,7 +8,6 @@
 #include <mutex>
 
 // ref: https://github.com/libsdl-org/SDL_mixer/blob/main/examples/basics/01-load-and-play/load-and-play.c
-
 class dae::MiniginSoundSystem::Impl final
 {
 public:
@@ -30,7 +29,7 @@ private:
 
 	const std::string m_Root{""};
 
-	std::jthread m_Thread{};
+	std::thread m_Thread{};
 	std::mutex m_Mutex{};
 	std::condition_variable m_Condition{};
 	bool m_PlaySounds{ false };
@@ -66,7 +65,7 @@ void dae::MiniginSoundSystem::Impl::Init()
 	}
 
 	m_PlaySounds = true;
-	m_Thread = std::jthread{ &Impl::PlaySoundQueue, this };
+	m_Thread = std::thread{ &Impl::PlaySoundQueue, this };
 }
 
 void dae::MiniginSoundSystem::Impl::Quit()
@@ -77,8 +76,14 @@ void dae::MiniginSoundSystem::Impl::Quit()
 	}
 	m_Condition.notify_one();
 
+	if (m_Thread.joinable())
+	{
+		m_Thread.join();
+	}
+
+	MIX_StopAllTracks(m_Mixer, 0);
 	MIX_DestroyMixer(m_Mixer);
-	
+	m_Mixer = nullptr;
 }
 
 void dae::MiniginSoundSystem::Impl::PlaySoundQueue()

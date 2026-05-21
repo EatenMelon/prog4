@@ -12,5 +12,6 @@ namespace dae
 
 		virtual void Init() = 0;
 		virtual void Quit() = 0;
+
 	};
 }

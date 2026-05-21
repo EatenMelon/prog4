@@ -8,7 +8,7 @@ namespace dae
 	class MiniginLoggingSoundSystem final : public SoundSystem
 	{
 	public:
-		MiniginLoggingSoundSystem(const std::string& root = "");
+		MiniginLoggingSoundSystem(std::unique_ptr<SoundSystem> ss);
 		~MiniginLoggingSoundSystem() override;
 
 		void Play(const std::string& file, const float volume) override;
@@ -17,7 +17,6 @@ namespace dae
 		void Quit() override;
 
 	private:
-		class Impl;
-		std::unique_ptr<Impl> m_pImpl{};
+		std::unique_ptr<SoundSystem> m_Wrapped{};
 	};
 }

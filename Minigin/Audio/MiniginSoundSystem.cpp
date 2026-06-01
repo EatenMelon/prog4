@@ -6,6 +6,7 @@
 
 #include <thread>
 #include <mutex>
+#include <unordered_map>
 
 // ref: https://github.com/libsdl-org/SDL_mixer/blob/main/examples/basics/01-load-and-play/load-and-play.c
 class minigin::SoundSystem::Impl final
@@ -26,6 +27,7 @@ private:
 
 	void PlaySoundQueue();
 	void PlaySound(const SoundEvent& sound);
+	void LoadAndPlaySound(const SoundEvent& sound);
 
 	const std::string m_Root{""};
 
@@ -36,6 +38,8 @@ private:
 
 	std::queue<SoundEvent> m_SoundQueue{};
 	MIX_Mixer* m_Mixer{ nullptr };
+
+	std::unordered_map<std::string, MIX_Track*> m_LoadedSounds{};
 };
 
 void minigin::SoundSystem::Impl::Play(const std::string& file, const float volume)
@@ -81,6 +85,11 @@ void minigin::SoundSystem::Impl::Quit()
 		m_Thread.join();
 	}
 
+	for (auto [path, track] : m_LoadedSounds)
+	{
+		MIX_DestroyTrack(track);
+	}
+
 	MIX_StopAllTracks(m_Mixer, 0);
 	MIX_DestroyMixer(m_Mixer);
 	m_Mixer = nullptr;
@@ -108,6 +117,23 @@ void minigin::SoundSystem::Impl::PlaySound(const SoundEvent& sound)
 {
 	std::string path{ m_Root + sound.file };
 
+	auto loadedSound = m_LoadedSounds.find(path);
+
+	if (loadedSound == m_LoadedSounds.end())
+	{
+		LoadAndPlaySound(sound);
+		return;
+	}
+
+	auto track = loadedSound->second;
+
+	MIX_PlayTrack(track, 0);
+}
+
+void minigin::SoundSystem::Impl::LoadAndPlaySound(const SoundEvent& sound)
+{
+	std::string path{ m_Root + sound.file };
+
 	MIX_Audio* audio = MIX_LoadAudio(m_Mixer, path.c_str(), false);
 
 	if (!audio)
@@ -125,16 +151,8 @@ void minigin::SoundSystem::Impl::PlaySound(const SoundEvent& sound)
 	MIX_SetTrackGain(track, sound.volume);
 	MIX_SetTrackAudio(track, audio);
 
+	m_LoadedSounds.emplace(path, track);
 	MIX_PlayTrack(track, 0);
-
-	// fire and release => alternative to an old MIX_PLAY_AUTOFREE macro
-	// https://wiki.libsdl.org/SDL3_mixer/MIX_TrackStoppedCallback
-	auto onTrackStopped = [](void*, MIX_Track* track)
-		{
-			MIX_DestroyTrack(track);
-		};
-
-	MIX_SetTrackStoppedCallback(track, onTrackStopped, nullptr);
 
 	// can be released without stopping the track
 	MIX_DestroyAudio(audio);

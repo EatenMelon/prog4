@@ -1,13 +1,17 @@
 #pragma once
 #include "Component.h"
 
-namespace dae
+namespace minigin
 {
 	class TextComponent;
-	class FpsCounterComponent final : public Component
+}
+
+namespace digdug
+{
+	class FpsCounterComponent final : public minigin::Component
 	{
 	public:
-		using Component::Component;
+		using minigin::Component::Component;
 
 		void Init() override;
 		void Update(float deltaTime) override;
@@ -16,6 +20,6 @@ namespace dae
 
 		float m_UntilTextUpdate{ 0.f };
 
-		TextComponent* m_TextComponent{ nullptr };
+		minigin::TextComponent* m_TextComponent{ nullptr };
 	};
 }

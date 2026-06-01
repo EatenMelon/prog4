@@ -3,7 +3,7 @@
 
 #include <backends/imgui_impl_sdl3.h>
 
-bool dae::InputManager::ProcessInput(float deltaTime)
+bool minigin::InputManager::ProcessInput(float deltaTime)
 {
 	// process keyboard input
 	SDL_Event e;
@@ -17,14 +17,14 @@ bool dae::InputManager::ProcessInput(float deltaTime)
 			break;
 
 		case SDL_EVENT_KEY_DOWN:
-			if (state != dae::KeyState::Pressed && state != dae::KeyState::OnDown)
+			if (state != minigin::KeyState::Pressed && state != minigin::KeyState::OnDown)
 			{
-				state = dae::KeyState::OnDown;
+				state = minigin::KeyState::OnDown;
 			}
 			break;
 
 		case SDL_EVENT_KEY_UP:
-			m_KeysDown[e.key.key] = dae::KeyState::OnRelease;
+			m_KeysDown[e.key.key] = minigin::KeyState::OnRelease;
 			break;
 		}
 
@@ -35,21 +35,21 @@ bool dae::InputManager::ProcessInput(float deltaTime)
 	// handle controller events
 	m_Gamepad.ProcessInput();
 
-	for (int button{ 0 }; button < static_cast<int>(dae::GamepadButton::COUNT); ++button)
+	for (int button{ 0 }; button < static_cast<int>(minigin::GamepadButton::COUNT); ++button)
 	{
 		auto gamepadButton = static_cast<GamepadButton>(button);
 
 		if (m_Gamepad.IsDownThisFrame(gamepadButton))
 		{
-			m_KeysDown[button] = dae::KeyState::OnDown;
+			m_KeysDown[button] = minigin::KeyState::OnDown;
 		}
 		else if (m_Gamepad.IsUpThisFrame(gamepadButton))
 		{
-			m_KeysDown[button] = dae::KeyState::OnRelease;
+			m_KeysDown[button] = minigin::KeyState::OnRelease;
 		}
 		else if(m_Gamepad.IsPressed(gamepadButton))
 		{
-			m_KeysDown[button] = dae::KeyState::Pressed;
+			m_KeysDown[button] = minigin::KeyState::Pressed;
 		}
 	}
 
@@ -97,19 +97,19 @@ bool dae::InputManager::ProcessInput(float deltaTime)
 	// kind of reverse engineering SDL (T^T)
 	for (auto& [key, state] : m_KeysDown)
 	{
-		if (state == dae::KeyState::OnDown) state = dae::KeyState::Pressed;
-		if (state == dae::KeyState::OnRelease) state = dae::KeyState::Idle;
+		if (state == minigin::KeyState::OnDown) state = minigin::KeyState::Pressed;
+		if (state == minigin::KeyState::OnRelease) state = minigin::KeyState::Idle;
 	}
 
 	return true;
 }
 
-void dae::InputManager::BindInput
+void minigin::InputManager::BindInput
 (
 	const std::string& name,
 	unsigned int button,
-	dae::KeyState state,
-	std::shared_ptr<dae::Command> command,
+	minigin::KeyState state,
+	std::shared_ptr<minigin::Command> command,
 	Direction axisDirection
 )
 
@@ -117,12 +117,12 @@ void dae::InputManager::BindInput
 	m_InputBindings.push_back(InputBinding{ name, button, state, command, axisDirection });
 }
 
-void dae::InputManager::BindInput
+void minigin::InputManager::BindInput
 (
 	const std::string& name,
-	dae::GamepadButton button,
-	dae::KeyState state,
-	std::shared_ptr<dae::Command> command,
+	minigin::GamepadButton button,
+	minigin::KeyState state,
+	std::shared_ptr<minigin::Command> command,
 	Direction axisDirection
 )
 
@@ -130,7 +130,7 @@ void dae::InputManager::BindInput
 	m_InputBindings.push_back(InputBinding{ name, static_cast<unsigned int>(button), state, command, axisDirection });
 }
 
-void dae::InputManager::UnBindInput(const std::string& actionName)
+void minigin::InputManager::UnBindInput(const std::string& actionName)
 {
 	// remove all bindings with the same name as the given name
 	m_InputBindings.erase

@@ -2,7 +2,7 @@
 #include "Observer.h"
 #include <algorithm>
 
-bool dae::Subject::Subscrube(dae::Observer* subscriber)
+bool minigin::ISubject::Subscrube(minigin::IObserver* subscriber)
 {
 	if (subscriber == nullptr) return false;
 
@@ -14,7 +14,7 @@ bool dae::Subject::Subscrube(dae::Observer* subscriber)
 	return true;
 }
 
-bool dae::Subject::UnSubscribe(dae::Observer* subscriber)
+bool minigin::ISubject::UnSubscribe(minigin::IObserver* subscriber)
 {
 	if (subscriber == nullptr) return false;
 
@@ -27,7 +27,7 @@ bool dae::Subject::UnSubscribe(dae::Observer* subscriber)
 	return true;
 }
 
-void dae::Subject::Notify(Event event)
+void minigin::ISubject::Notify(IEvent event)
 {
 	for (auto& observer : m_Observers)
 	{

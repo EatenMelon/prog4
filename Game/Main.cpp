@@ -33,37 +33,37 @@ namespace fs = std::filesystem;
 
 static void load()
 {
-	auto& scene = dae::SceneManager::GetInstance().CreateScene();
-	auto font = dae::ResourceManager::GetInstance().LoadFont("Fonts/Lingua.otf", 36);
-	auto smallFont = dae::ResourceManager::GetInstance().LoadFont("Fonts/Lingua.otf", 18);
+	auto& scene = minigin::SceneManager::GetInstance().CreateScene();
+	auto font = minigin::ResourceManager::GetInstance().LoadFont("Fonts/Lingua.otf", 36);
+	auto smallFont = minigin::ResourceManager::GetInstance().LoadFont("Fonts/Lingua.otf", 18);
 	
-	auto background = std::make_unique<dae::GameObject>();
+	auto background = std::make_unique<minigin::GameObject>();
 	{
-		auto renderComponent = background->AddComponent<dae::RenderComponent>();
+		auto renderComponent = background->AddComponent<minigin::RenderComponent>();
 		if (renderComponent != nullptr) renderComponent->SetTexture("Sprites/background.png");
 
 		scene.Add(std::move(background));
 	}
 
-	auto logo = std::make_unique<dae::GameObject>();
+	auto logo = std::make_unique<minigin::GameObject>();
 	{
 		logo->SetLocalPosition(358.f, 180.f);
 
-		auto renderComp = logo->AddComponent<dae::RenderComponent>();
+		auto renderComp = logo->AddComponent<minigin::RenderComponent>();
 		if (renderComp != nullptr) renderComp->SetTexture("Sprites/logo.png");
 
 		scene.Add(std::move(logo));
 	}
 
-	auto title = std::make_unique<dae::GameObject>();
+	auto title = std::make_unique<minigin::GameObject>();
 	{
 		title->SetLocalPosition(292.f, 20.f);
 
-		auto renderComp = title->AddComponent<dae::RenderComponent>();
+		auto renderComp = title->AddComponent<minigin::RenderComponent>();
 
 		if (renderComp != nullptr)
 		{
-			auto text = title->AddComponent<dae::TextComponent>();
+			auto text = title->AddComponent<minigin::TextComponent>();
 
 			if (text != nullptr)
 			{
@@ -75,15 +75,15 @@ static void load()
 		scene.Add(std::move(title));
 	}
 	
-	auto fpsCounter = std::make_unique<dae::GameObject>();
+	auto fpsCounter = std::make_unique<minigin::GameObject>();
 	{
 		fpsCounter->SetLocalPosition(20.f, 20.f);
 
-		auto renderComp = fpsCounter->AddComponent<dae::RenderComponent>();
+		auto renderComp = fpsCounter->AddComponent<minigin::RenderComponent>();
 
 		if (renderComp != nullptr)
 		{
-			auto text = fpsCounter->AddComponent<dae::TextComponent>();
+			auto text = fpsCounter->AddComponent<minigin::TextComponent>();
 
 			if (text != nullptr)
 			{
@@ -91,22 +91,22 @@ static void load()
 				text->SetFont(font);
 				text->SetColor({ 255, 255, 0, 255 });
 
-				fpsCounter->AddComponent<dae::FpsCounterComponent>();
+				fpsCounter->AddComponent<digdug::FpsCounterComponent>();
 			}
 		}
 
 		scene.Add(std::move(fpsCounter));
 	}
 
-	auto controlsTaizoHori = std::make_unique<dae::GameObject>();
+	auto controlsTaizoHori = std::make_unique<minigin::GameObject>();
 	{
 		controlsTaizoHori->SetLocalPosition(15.f, 80.f);
 
-		auto renderComp = controlsTaizoHori->AddComponent<dae::RenderComponent>();
+		auto renderComp = controlsTaizoHori->AddComponent<minigin::RenderComponent>();
 
 		if (renderComp != nullptr)
 		{
-			auto text = controlsTaizoHori->AddComponent<dae::TextComponent>();
+			auto text = controlsTaizoHori->AddComponent<minigin::TextComponent>();
 
 			if (text != nullptr)
 			{
@@ -118,15 +118,15 @@ static void load()
 		scene.Add(std::move(controlsTaizoHori));
 	}
 
-	auto controlsPooka = std::make_unique<dae::GameObject>();
+	auto controlsPooka = std::make_unique<minigin::GameObject>();
 	{
 		controlsPooka->SetLocalPosition(15.f, 110.f);
 
-		auto renderComp = controlsPooka->AddComponent<dae::RenderComponent>();
+		auto renderComp = controlsPooka->AddComponent<minigin::RenderComponent>();
 
 		if (renderComp != nullptr)
 		{
-			auto text = controlsPooka->AddComponent<dae::TextComponent>();
+			auto text = controlsPooka->AddComponent<minigin::TextComponent>();
 
 			if (text != nullptr)
 			{
@@ -138,18 +138,18 @@ static void load()
 		scene.Add(std::move(controlsPooka));
 	}
 
-	auto TaizoHori = std::make_unique<dae::GameObject>();
+	auto TaizoHori = std::make_unique<minigin::GameObject>();
 	{
-		auto HealthTaizoHori = std::make_unique<dae::GameObject>();
-		auto healthDisplayTaizoHori = HealthTaizoHori->AddComponent<dae::HealthDisplay>();
+		auto HealthTaizoHori = std::make_unique<minigin::GameObject>();
+		auto healthDisplayTaizoHori = HealthTaizoHori->AddComponent<digdug::HealthDisplay>();
 		{
 			HealthTaizoHori->SetLocalPosition(15.f, 150.f);
 
-			auto renderComp = HealthTaizoHori->AddComponent<dae::RenderComponent>();
+			auto renderComp = HealthTaizoHori->AddComponent<minigin::RenderComponent>();
 
 			if (renderComp != nullptr)
 			{
-				auto text = HealthTaizoHori->AddComponent<dae::TextComponent>();
+				auto text = HealthTaizoHori->AddComponent<minigin::TextComponent>();
 
 				if (text != nullptr)
 				{
@@ -160,16 +160,16 @@ static void load()
 			}
 		}
 
-		auto ScoreTaizoHori = std::make_unique<dae::GameObject>();
-		auto scoreDisplayTaizoHori = ScoreTaizoHori->AddComponent<dae::ScoreDisplay>();
+		auto ScoreTaizoHori = std::make_unique<minigin::GameObject>();
+		auto scoreDisplayTaizoHori = ScoreTaizoHori->AddComponent<digdug::ScoreDisplay>();
 		{
 			ScoreTaizoHori->SetLocalPosition(15.f, 170.f);
 
-			auto renderComp = ScoreTaizoHori->AddComponent<dae::RenderComponent>();
+			auto renderComp = ScoreTaizoHori->AddComponent<minigin::RenderComponent>();
 
 			if (renderComp != nullptr)
 			{
-				auto text = ScoreTaizoHori->AddComponent<dae::TextComponent>();
+				auto text = ScoreTaizoHori->AddComponent<minigin::TextComponent>();
 
 				if (text != nullptr)
 				{
@@ -182,27 +182,27 @@ static void load()
 
 		TaizoHori->SetLocalPosition(300.f, 200.f);
 
-		auto moveCommand = std::make_shared<dae::MoveCommand>(TaizoHori.get(), 500.f);
+		auto moveCommand = std::make_shared<minigin::MoveCommand>(TaizoHori.get(), 500.f);
 
-		dae::InputManager::GetInstance().BindInput("Move", SDLK_W, dae::KeyState::Pressed, moveCommand, dae::Direction::Up);
-		dae::InputManager::GetInstance().BindInput("Move", SDLK_A, dae::KeyState::Pressed, moveCommand, dae::Direction::Left);
-		dae::InputManager::GetInstance().BindInput("Move", SDLK_S, dae::KeyState::Pressed, moveCommand, dae::Direction::Down);
-		dae::InputManager::GetInstance().BindInput("Move", SDLK_D, dae::KeyState::Pressed, moveCommand, dae::Direction::Right);
+		minigin::InputManager::GetInstance().BindInput("Move", SDLK_W, minigin::KeyState::Pressed, moveCommand, minigin::Direction::Up);
+		minigin::InputManager::GetInstance().BindInput("Move", SDLK_A, minigin::KeyState::Pressed, moveCommand, minigin::Direction::Left);
+		minigin::InputManager::GetInstance().BindInput("Move", SDLK_S, minigin::KeyState::Pressed, moveCommand, minigin::Direction::Down);
+		minigin::InputManager::GetInstance().BindInput("Move", SDLK_D, minigin::KeyState::Pressed, moveCommand, minigin::Direction::Right);
 
-		auto renderComp = TaizoHori->AddComponent<dae::RenderComponent>();
+		auto renderComp = TaizoHori->AddComponent<minigin::RenderComponent>();
 		if (renderComp != nullptr) renderComp->SetTexture("Sprites/TaizoHori.png");
 
-		auto health = TaizoHori->AddComponent<dae::HealthComponent>();
+		auto health = TaizoHori->AddComponent<digdug::HealthComponent>();
 		if (health != nullptr && healthDisplayTaizoHori != nullptr)
 		{
 			health->Subscrube(healthDisplayTaizoHori);
 			healthDisplayTaizoHori->SetHealthComponent(health);
 		}
 
-		auto damageCommand = std::make_shared<dae::DamageCommand>(TaizoHori.get(), health);
-		dae::InputManager::GetInstance().BindInput("Damage", SDLK_C, dae::KeyState::OnDown, damageCommand);
+		auto damageCommand = std::make_shared<digdug::DamageCommand>(TaizoHori.get(), health);
+		minigin::InputManager::GetInstance().BindInput("Damage", SDLK_C, minigin::KeyState::OnDown, damageCommand);
 
-		auto score = TaizoHori->AddComponent<dae::ScoreComponent>();
+		auto score = TaizoHori->AddComponent<digdug::ScoreComponent>();
 		if (score != nullptr && scoreDisplayTaizoHori != nullptr)
 		{
 			score->Subscrube(scoreDisplayTaizoHori);
@@ -210,26 +210,26 @@ static void load()
 
 		}
 
-		auto scoreCommand = std::make_shared<dae::ScoreCommand>(TaizoHori.get(), score);
-		dae::InputManager::GetInstance().BindInput("Score", SDLK_X, dae::KeyState::OnDown, scoreCommand);
+		auto scoreCommand = std::make_shared<digdug::ScoreCommand>(TaizoHori.get(), score);
+		minigin::InputManager::GetInstance().BindInput("Score", SDLK_X, minigin::KeyState::OnDown, scoreCommand);
 
 		scene.Add(std::move(TaizoHori));
 		scene.Add(std::move(HealthTaizoHori));
 		scene.Add(std::move(ScoreTaizoHori));
 	}
 
-	auto Pooka = std::make_unique<dae::GameObject>();
+	auto Pooka = std::make_unique<minigin::GameObject>();
 	{
-		auto HealthPooka = std::make_unique<dae::GameObject>();
-		auto healthDisplayPooka = HealthPooka->AddComponent<dae::HealthDisplay>();
+		auto HealthPooka = std::make_unique<minigin::GameObject>();
+		auto healthDisplayPooka = HealthPooka->AddComponent<digdug::HealthDisplay>();
 		{
 			HealthPooka->SetLocalPosition(15.f, 210.f);
 
-			auto renderComp = HealthPooka->AddComponent<dae::RenderComponent>();
+			auto renderComp = HealthPooka->AddComponent<minigin::RenderComponent>();
 
 			if (renderComp != nullptr)
 			{
-				auto text = HealthPooka->AddComponent<dae::TextComponent>();
+				auto text = HealthPooka->AddComponent<minigin::TextComponent>();
 
 				if (text != nullptr)
 				{
@@ -240,16 +240,16 @@ static void load()
 			}
 		}
 
-		auto ScorePooka = std::make_unique<dae::GameObject>();
-		auto scoreDisplayPooka = ScorePooka->AddComponent<dae::ScoreDisplay>();
+		auto ScorePooka = std::make_unique<minigin::GameObject>();
+		auto scoreDisplayPooka = ScorePooka->AddComponent<digdug::ScoreDisplay>();
 		{
 			ScorePooka->SetLocalPosition(15.f, 230.f);
 
-			auto renderComp = ScorePooka->AddComponent<dae::RenderComponent>();
+			auto renderComp = ScorePooka->AddComponent<minigin::RenderComponent>();
 
 			if (renderComp != nullptr)
 			{
-				auto text = ScorePooka->AddComponent<dae::TextComponent>();
+				auto text = ScorePooka->AddComponent<minigin::TextComponent>();
 
 				if (text != nullptr)
 				{
@@ -262,35 +262,35 @@ static void load()
 
 		Pooka->SetLocalPosition(200.f, 200.f);
 
-		auto moveCommand = std::make_shared<dae::MoveCommand>(Pooka.get(), 250.f);
+		auto moveCommand = std::make_shared<minigin::MoveCommand>(Pooka.get(), 250.f);
 
-		dae::InputManager::GetInstance().BindInput("Move", dae::GamepadButton::DPAD_UP, dae::KeyState::Pressed, moveCommand, dae::Direction::Up);
-		dae::InputManager::GetInstance().BindInput("Move", dae::GamepadButton::DPAD_LEFT, dae::KeyState::Pressed, moveCommand, dae::Direction::Left);
-		dae::InputManager::GetInstance().BindInput("Move", dae::GamepadButton::DPAD_DOWN, dae::KeyState::Pressed, moveCommand, dae::Direction::Down);
-		dae::InputManager::GetInstance().BindInput("Move", dae::GamepadButton::DPAD_RIGHT, dae::KeyState::Pressed, moveCommand, dae::Direction::Right);
+		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::DPAD_UP, minigin::KeyState::Pressed, moveCommand, minigin::Direction::Up);
+		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::DPAD_LEFT, minigin::KeyState::Pressed, moveCommand, minigin::Direction::Left);
+		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::DPAD_DOWN, minigin::KeyState::Pressed, moveCommand, minigin::Direction::Down);
+		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::DPAD_RIGHT, minigin::KeyState::Pressed, moveCommand, minigin::Direction::Right);
 
-		auto renderComp = Pooka->AddComponent<dae::RenderComponent>();
+		auto renderComp = Pooka->AddComponent<minigin::RenderComponent>();
 		if (renderComp != nullptr) renderComp->SetTexture("Sprites/Pooka.png");
 
-		auto health = Pooka->AddComponent<dae::HealthComponent>();
+		auto health = Pooka->AddComponent<digdug::HealthComponent>();
 		if (health != nullptr)
 		{
 			health->Subscrube(healthDisplayPooka);
 			healthDisplayPooka->SetHealthComponent(health);
 		}
 
-		auto damageCommand = std::make_shared<dae::DamageCommand>(Pooka.get(), health);
-		dae::InputManager::GetInstance().BindInput("Damage", dae::GamepadButton::WEST, dae::KeyState::OnDown, damageCommand);
+		auto damageCommand = std::make_shared<digdug::DamageCommand>(Pooka.get(), health);
+		minigin::InputManager::GetInstance().BindInput("Damage", minigin::GamepadButton::WEST, minigin::KeyState::OnDown, damageCommand);
 
-		auto score = Pooka->AddComponent<dae::ScoreComponent>();
+		auto score = Pooka->AddComponent<digdug::ScoreComponent>();
 		if (score != nullptr)
 		{
 			score->Subscrube(scoreDisplayPooka);
 			scoreDisplayPooka->SetScoreComponent(score);
 		}
 
-		auto scoreCommand = std::make_shared<dae::ScoreCommand>(Pooka.get(), score);
-		dae::InputManager::GetInstance().BindInput("Score", dae::GamepadButton::SOUTH, dae::KeyState::OnDown, scoreCommand);
+		auto scoreCommand = std::make_shared<digdug::ScoreCommand>(Pooka.get(), score);
+		minigin::InputManager::GetInstance().BindInput("Score", minigin::GamepadButton::SOUTH, minigin::KeyState::OnDown, scoreCommand);
 
 		scene.Add(std::move(Pooka));
 		scene.Add(std::move(HealthPooka));
@@ -318,7 +318,7 @@ int main(int, char*[])
 	if(!fs::exists(data_location))
 		data_location = "../Data/";
 #endif
-	dae::Minigin engine(data_location);
+	minigin::Minigin engine(data_location);
 	engine.Run(load);
 
     return 0;

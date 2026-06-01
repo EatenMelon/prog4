@@ -2,9 +2,9 @@
 #include <SoundSystem.h>
 #include <memory>
 
-namespace dae
+namespace minigin
 {
-	class NullSoundSystem final : public SoundSystem
+	class NullSoundSystem final : public ISoundSystem
 	{
 	public:
 		void Play(const std::string&, const float ) override {};
@@ -17,11 +17,11 @@ namespace dae
 	class ServiceLocator final
 	{
 	public:
-		static void RegisterSoundSystem(std::unique_ptr<SoundSystem>&& ss) { m_SoundSystem = std::move(ss); }
-		static SoundSystem* GetSoundSystem() { return m_SoundSystem.get(); }
+		static void RegisterSoundSystem(std::unique_ptr<ISoundSystem>&& ss) { m_SoundSystem = std::move(ss); }
+		static ISoundSystem* GetSoundSystem() { return m_SoundSystem.get(); }
 
 	private:
-		inline static std::unique_ptr<SoundSystem> m_SoundSystem{ std::make_unique<NullSoundSystem>() };
+		inline static std::unique_ptr<ISoundSystem> m_SoundSystem{ std::make_unique<NullSoundSystem>() };
 
 	};
 }

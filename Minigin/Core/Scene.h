@@ -4,7 +4,7 @@
 #include <vector>
 #include "GameObject.h"
 
-namespace dae
+namespace minigin
 {
 	class Scene final
 	{

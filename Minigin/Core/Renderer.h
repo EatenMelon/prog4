@@ -4,7 +4,7 @@
 #include <vector>
 #include <functional>
 
-namespace dae
+namespace minigin
 {
 	class Texture2D;
 	/**

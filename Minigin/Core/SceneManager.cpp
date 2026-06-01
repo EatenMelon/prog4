@@ -1,7 +1,7 @@
 #include "SceneManager.h"
 #include "Scene.h"
 
-void dae::SceneManager::Init()
+void minigin::SceneManager::Init()
 {
 	for (auto& scene : m_scenes)
 	{
@@ -9,7 +9,7 @@ void dae::SceneManager::Init()
 	}
 }
 
-void dae::SceneManager::FixedUpdate(float fixedFrameTime)
+void minigin::SceneManager::FixedUpdate(float fixedFrameTime)
 {
 	for (auto& scene : m_scenes)
 	{
@@ -17,7 +17,7 @@ void dae::SceneManager::FixedUpdate(float fixedFrameTime)
 	}
 }
 
-void dae::SceneManager::Update(float deltaTime)
+void minigin::SceneManager::Update(float deltaTime)
 {
 	for(auto& scene : m_scenes)
 	{
@@ -25,7 +25,7 @@ void dae::SceneManager::Update(float deltaTime)
 	}
 }
 
-void dae::SceneManager::GuiRender() const
+void minigin::SceneManager::GuiRender() const
 {
 	for (const auto& scene : m_scenes)
 	{
@@ -33,7 +33,7 @@ void dae::SceneManager::GuiRender() const
 	}
 }
 
-void dae::SceneManager::Render() const
+void minigin::SceneManager::Render() const
 {
 	for (const auto& scene : m_scenes)
 	{
@@ -41,7 +41,7 @@ void dae::SceneManager::Render() const
 	}
 }
 
-void dae::SceneManager::Cleanup()
+void minigin::SceneManager::Cleanup()
 {
 	for (const auto& scene : m_scenes)
 	{
@@ -49,7 +49,7 @@ void dae::SceneManager::Cleanup()
 	}
 }
 
-dae::Scene& dae::SceneManager::CreateScene()
+minigin::Scene& minigin::SceneManager::CreateScene()
 {
 	m_scenes.emplace_back(new Scene());
 	return *m_scenes.back();

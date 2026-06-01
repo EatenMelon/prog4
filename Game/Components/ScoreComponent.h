@@ -2,9 +2,14 @@
 #include "Component.h"
 #include "Subject.h"
 
-namespace dae
+namespace minigin
 {
-	class ScoreComponent final : public Component, public Subject
+	class Component;
+}
+
+namespace digdug
+{
+	class ScoreComponent final : public minigin::Component, public minigin::ISubject
 	{
 	public:
 		using Component::Component;
@@ -12,7 +17,7 @@ namespace dae
 		void AddPoints(int points)
 		{
 			m_Score += points;
-			Notify(Event::ReceivedPoints);
+			Notify(minigin::IEvent::ReceivedPoints);
 		}
 
 		int GetScore() const { return m_Score; }

@@ -1,6 +1,6 @@
 #include "GameObject.h"
 
-void dae::GameObject::Init()
+void minigin::GameObject::Init()
 {
 	for (auto& comp : m_Components)
 	{
@@ -8,7 +8,7 @@ void dae::GameObject::Init()
 	}
 }
 
-void dae::GameObject::FixedUpdate(float fixedFrameTime)
+void minigin::GameObject::FixedUpdate(float fixedFrameTime)
 {
 	for (auto& comp : m_Components)
 	{
@@ -16,7 +16,7 @@ void dae::GameObject::FixedUpdate(float fixedFrameTime)
 	}
 }
 
-void dae::GameObject::Update(float deltaTime)
+void minigin::GameObject::Update(float deltaTime)
 {
 	for (auto& comp : m_Components)
 	{
@@ -24,7 +24,7 @@ void dae::GameObject::Update(float deltaTime)
 	}
 }
 
-void dae::GameObject::GuiRender() const
+void minigin::GameObject::GuiRender() const
 {
 	for (auto& comp : m_Components)
 	{
@@ -32,7 +32,7 @@ void dae::GameObject::GuiRender() const
 	}
 }
 
-void dae::GameObject::Render() const
+void minigin::GameObject::Render() const
 {
 	for (auto& comp : m_Components)
 	{
@@ -40,7 +40,7 @@ void dae::GameObject::Render() const
 	}
 }
 
-void dae::GameObject::Cleanup()
+void minigin::GameObject::Cleanup()
 {
 	std::erase_if
 	(
@@ -52,43 +52,43 @@ void dae::GameObject::Cleanup()
 	);
 }
 
-const glm::vec3& dae::GameObject::GetLocalPosition()
+const glm::vec3& minigin::GameObject::GetLocalPosition()
 {
 	return m_LocalTransform.GetPosition();
 }
 
-void dae::GameObject::SetLocalPosition(float x, float y, float z)
+void minigin::GameObject::SetLocalPosition(float x, float y, float z)
 {
 	m_LocalTransform.SetPosition(x, y, z);
 	SetPositionDirty();
 }
 
-void dae::GameObject::SetLocalPosition(const glm::vec3& position)
+void minigin::GameObject::SetLocalPosition(const glm::vec3& position)
 {
 	m_LocalTransform.SetPosition(position);
 	SetPositionDirty();
 }
 
-const glm::vec3& dae::GameObject::GetWorldPosition()
+const glm::vec3& minigin::GameObject::GetWorldPosition()
 {
 	UpdateWorldPosition();
 
 	return m_WorldTransform.GetPosition();
 }
 
-void dae::GameObject::SetWorldPosition(float x, float y, float z)
+void minigin::GameObject::SetWorldPosition(float x, float y, float z)
 {
 	m_WorldTransform.SetPosition(x, y, z);
 	SetPositionDirty();
 }
 
-void dae::GameObject::SetWorldPosition(const glm::vec3& position)
+void minigin::GameObject::SetWorldPosition(const glm::vec3& position)
 {
 	m_WorldTransform.SetPosition(position);
 	SetPositionDirty();
 }
 
-void dae::GameObject::SetPositionDirty()
+void minigin::GameObject::SetPositionDirty()
 {
 	m_PositionIsDirty = true;
 
@@ -98,7 +98,7 @@ void dae::GameObject::SetPositionDirty()
 	}
 }
 
-void dae::GameObject::UpdateWorldPosition()
+void minigin::GameObject::UpdateWorldPosition()
 {
 	if (!m_PositionIsDirty) return;
 
@@ -114,7 +114,7 @@ void dae::GameObject::UpdateWorldPosition()
 	m_PositionIsDirty = false;
 }
 
-void dae::GameObject::Destroy()
+void minigin::GameObject::Destroy()
 {
 	m_Destroyed = true;
 
@@ -124,12 +124,12 @@ void dae::GameObject::Destroy()
 	}
 }
 
-bool dae::GameObject::MarkedForDestruction() const
+bool minigin::GameObject::MarkedForDestruction() const
 {
 	return m_Destroyed;
 }
 
-void dae::GameObject::SetParent(GameObject* parent, bool keepWorldTransform)
+void minigin::GameObject::SetParent(GameObject* parent, bool keepWorldTransform)
 {
 	if (parent == nullptr)
 	{
@@ -156,36 +156,36 @@ void dae::GameObject::SetParent(GameObject* parent, bool keepWorldTransform)
 	if (m_Parent) m_Parent->AddChild(this);
 }
 
-dae::GameObject* dae::GameObject::GetParent() const
+minigin::GameObject* minigin::GameObject::GetParent() const
 {
 	return m_Parent;
 }
 
-size_t dae::GameObject::GetChildCount() const
+size_t minigin::GameObject::GetChildCount() const
 {
 	return m_Children.size();
 }
 
-dae::GameObject* dae::GameObject::GetChildAt(size_t index) const
+minigin::GameObject* minigin::GameObject::GetChildAt(size_t index) const
 {
 	if (index >= m_Children.size()) return nullptr;
 
 	return m_Children[index];
 }
 
-bool dae::GameObject::IsChild(GameObject* parent) const
+bool minigin::GameObject::IsChild(GameObject* parent) const
 {
 	return std::find(m_Children.begin(), m_Children.end(), parent) != m_Children.end();
 }
 
-void dae::GameObject::AddChild(GameObject* child)
+void minigin::GameObject::AddChild(GameObject* child)
 {
 	if (IsChild(child)) return;
 
 	m_Children.push_back(child);
 }
 
-void dae::GameObject::RemoveChild(GameObject* child)
+void minigin::GameObject::RemoveChild(GameObject* child)
 {
 	if (!IsChild(child)) return;
 

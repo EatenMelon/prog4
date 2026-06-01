@@ -1,9 +1,9 @@
 #pragma once
 
-namespace dae
+namespace minigin
 {
 	// add custom events here
-	enum class Event
+	enum class IEvent
 	{
 		ReceivedDamage,
 		ReceivedPoints

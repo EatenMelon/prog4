@@ -6,12 +6,12 @@
 #include "GameObject.h"
 #include "TextComponent.h"
 
-void dae::FpsCounterComponent::Init()
+void digdug::FpsCounterComponent::Init()
 {
-	m_TextComponent = GetOwner().GetComponent<TextComponent>();
+	m_TextComponent = GetOwner().GetComponent<minigin::TextComponent>();
 }
 
-void dae::FpsCounterComponent::Update(float deltaTime)
+void digdug::FpsCounterComponent::Update(float deltaTime)
 {
 	if (m_TextComponent == nullptr) return;
 

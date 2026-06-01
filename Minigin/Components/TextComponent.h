@@ -5,7 +5,7 @@
 #include "Component.h"
 #include <memory>
 
-namespace dae
+namespace minigin
 {
 	class Texture2D;
 	class RenderComponent;

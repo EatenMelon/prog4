@@ -8,7 +8,7 @@
 #include "Singleton.h"
 #include <unordered_map>
 
-namespace dae
+namespace minigin
 {
 	enum class KeyState { OnDown, OnRelease, Pressed, Idle };
 	enum class Direction { Up, Down, Left, Right, None };

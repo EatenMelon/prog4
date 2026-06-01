@@ -9,13 +9,13 @@
 #include "Renderer.h"
 #include "Font.h"
 
-void dae::TextComponent::Init()
+void minigin::TextComponent::Init()
 {
 	m_RenderComponent = GetOwner().GetComponent<RenderComponent>();
 	m_NeedsUpdate = true;
 }
 
-void dae::TextComponent::Update(float)
+void minigin::TextComponent::Update(float)
 {
 	if (!m_RenderComponent) return;
 
@@ -37,7 +37,7 @@ void dae::TextComponent::Update(float)
 	}
 }
 
-void dae::TextComponent::SetText(const std::string& text)
+void minigin::TextComponent::SetText(const std::string& text)
 {
 	if (m_Text == text) return;
 
@@ -45,13 +45,13 @@ void dae::TextComponent::SetText(const std::string& text)
 	m_NeedsUpdate = true;
 }
 
-void dae::TextComponent::SetColor(const SDL_Color& color)
+void minigin::TextComponent::SetColor(const SDL_Color& color)
 {
 	m_Color = color;
 	m_NeedsUpdate = true;
 }
 
-void dae::TextComponent::SetFont(std::shared_ptr<Font> font)
+void minigin::TextComponent::SetFont(std::shared_ptr<Font> font)
 {
 	m_font = std::move(font);
 }

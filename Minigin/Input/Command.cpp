@@ -1,14 +1,14 @@
 #include "Command.h"
 #include "GameObject.h"
 
-dae::MoveCommand::MoveCommand(GameObject* pActor, float movementSpeed)
+minigin::MoveCommand::MoveCommand(GameObject* pActor, float movementSpeed)
 	: ActorCommand(pActor)
 	, m_MovementSpeed{ movementSpeed }
 {
 
 }
 
-void dae::MoveCommand::Execute(const InputContext& context, float deltaTime)
+void minigin::MoveCommand::Execute(const InputContext& context, float deltaTime)
 {
 
 	glm::vec3 pos = GetActor().GetLocalPosition();

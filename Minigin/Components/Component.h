@@ -1,6 +1,6 @@
 #pragma once
 
-namespace dae
+namespace minigin
 {
 	class GameObject;
 	class Component

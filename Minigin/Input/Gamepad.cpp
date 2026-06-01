@@ -6,25 +6,25 @@
 #include <Windows.h>
 #include <Xinput.h>
 
-std::unordered_map<dae::GamepadButton, unsigned int> g_ButtonMap
+std::unordered_map<minigin::GamepadButton, unsigned int> g_ButtonMap
 {
-	{dae::GamepadButton::SOUTH,				XINPUT_GAMEPAD_A},
-	{dae::GamepadButton::EAST,				XINPUT_GAMEPAD_B},
-	{dae::GamepadButton::WEST,				XINPUT_GAMEPAD_X},
-	{dae::GamepadButton::NORTH,				XINPUT_GAMEPAD_Y},
-	{dae::GamepadButton::BACK,				XINPUT_GAMEPAD_BACK},
-	{dae::GamepadButton::START,				XINPUT_GAMEPAD_START},
-	{dae::GamepadButton::LEFT_THUMB,		XINPUT_GAMEPAD_LEFT_THUMB},
-	{dae::GamepadButton::RIGHT_THUMB,		XINPUT_GAMEPAD_RIGHT_THUMB},
-	{dae::GamepadButton::LEFT_SHOULDER,		XINPUT_GAMEPAD_LEFT_SHOULDER},
-	{dae::GamepadButton::RIGHT_SHOULDER,	XINPUT_GAMEPAD_RIGHT_SHOULDER},
-	{dae::GamepadButton::DPAD_UP,			XINPUT_GAMEPAD_DPAD_UP},
-	{dae::GamepadButton::DPAD_DOWN,			XINPUT_GAMEPAD_DPAD_DOWN},
-	{dae::GamepadButton::DPAD_LEFT,			XINPUT_GAMEPAD_DPAD_LEFT},
-	{dae::GamepadButton::DPAD_RIGHT,		XINPUT_GAMEPAD_DPAD_RIGHT}
+	{minigin::GamepadButton::SOUTH,				XINPUT_GAMEPAD_A},
+	{minigin::GamepadButton::EAST,				XINPUT_GAMEPAD_B},
+	{minigin::GamepadButton::WEST,				XINPUT_GAMEPAD_X},
+	{minigin::GamepadButton::NORTH,				XINPUT_GAMEPAD_Y},
+	{minigin::GamepadButton::BACK,				XINPUT_GAMEPAD_BACK},
+	{minigin::GamepadButton::START,				XINPUT_GAMEPAD_START},
+	{minigin::GamepadButton::LEFT_THUMB,		XINPUT_GAMEPAD_LEFT_THUMB},
+	{minigin::GamepadButton::RIGHT_THUMB,		XINPUT_GAMEPAD_RIGHT_THUMB},
+	{minigin::GamepadButton::LEFT_SHOULDER,		XINPUT_GAMEPAD_LEFT_SHOULDER},
+	{minigin::GamepadButton::RIGHT_SHOULDER,	XINPUT_GAMEPAD_RIGHT_SHOULDER},
+	{minigin::GamepadButton::DPAD_UP,			XINPUT_GAMEPAD_DPAD_UP},
+	{minigin::GamepadButton::DPAD_DOWN,			XINPUT_GAMEPAD_DPAD_DOWN},
+	{minigin::GamepadButton::DPAD_LEFT,			XINPUT_GAMEPAD_DPAD_LEFT},
+	{minigin::GamepadButton::DPAD_RIGHT,		XINPUT_GAMEPAD_DPAD_RIGHT}
 };
 
-class dae::Gamepad::Impl
+class minigin::Gamepad::Impl
 {
 public:
 	void ProcessInput();
@@ -42,7 +42,7 @@ private:
 	XINPUT_STATE m_PreviousState{};
 };
 
-void dae::Gamepad::Impl::ProcessInput()
+void minigin::Gamepad::Impl::ProcessInput()
 {
 	// get the first controller you can find
 	for (DWORD i = 0; i < 4; i++)
@@ -68,17 +68,17 @@ void dae::Gamepad::Impl::ProcessInput()
 	m_ButtonsReleasedThisFrame = buttonChanges & (~m_CurrentState.Gamepad.wButtons);
 }
 
-bool dae::Gamepad::Impl::IsDownThisFrame(unsigned int button) const
+bool minigin::Gamepad::Impl::IsDownThisFrame(unsigned int button) const
 {
 	return m_ButtonsPressedThisFrame & button;
 }
 
-bool dae::Gamepad::Impl::IsUpThisFrame(unsigned int button) const
+bool minigin::Gamepad::Impl::IsUpThisFrame(unsigned int button) const
 {
 	return m_ButtonsReleasedThisFrame & button;
 }
 
-bool dae::Gamepad::Impl::IsPressed(unsigned int button) const
+bool minigin::Gamepad::Impl::IsPressed(unsigned int button) const
 {
 	return m_CurrentState.Gamepad.wButtons & button;
 }
@@ -188,19 +188,19 @@ bool dae::Gamepad::Impl::IsUpThisFrame(unsigned int button) const
 
 #endif
 
-dae::Gamepad::Gamepad()
+minigin::Gamepad::Gamepad()
 {
 	m_pImpl = std::make_unique<Impl>();
 }
 
-dae::Gamepad::~Gamepad() = default;
+minigin::Gamepad::~Gamepad() = default;
 
-void dae::Gamepad::ProcessInput()
+void minigin::Gamepad::ProcessInput()
 {
 	m_pImpl->ProcessInput();
 }
 
-bool dae::Gamepad::IsDownThisFrame(GamepadButton button) const
+bool minigin::Gamepad::IsDownThisFrame(GamepadButton button) const
 {
 #ifdef WIN32
 	auto itr = g_ButtonMap.find(button);
@@ -212,7 +212,7 @@ bool dae::Gamepad::IsDownThisFrame(GamepadButton button) const
 #endif
 }
 
-bool dae::Gamepad::IsUpThisFrame(GamepadButton button) const
+bool minigin::Gamepad::IsUpThisFrame(GamepadButton button) const
 {
 #ifdef WIN32
 	auto itr = g_ButtonMap.find(button);
@@ -224,7 +224,7 @@ bool dae::Gamepad::IsUpThisFrame(GamepadButton button) const
 #endif
 }
 
-bool dae::Gamepad::IsPressed(GamepadButton button) const
+bool minigin::Gamepad::IsPressed(GamepadButton button) const
 {
 #ifdef WIN32
 	auto itr = g_ButtonMap.find(button);

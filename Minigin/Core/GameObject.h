@@ -9,7 +9,7 @@
 #include "Component.h"
 #include "Transform.h"
 
-namespace dae
+namespace minigin
 {
 	class Texture2D;
 	class GameObject final // has to be enabled to use shared_from_this()

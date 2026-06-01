@@ -8,7 +8,7 @@
 #include <mutex>
 
 // ref: https://github.com/libsdl-org/SDL_mixer/blob/main/examples/basics/01-load-and-play/load-and-play.c
-class dae::MiniginSoundSystem::Impl final
+class minigin::SoundSystem::Impl final
 {
 public:
 	Impl(const std::string& root) : m_Root{ root } {}
@@ -38,7 +38,7 @@ private:
 	MIX_Mixer* m_Mixer{ nullptr };
 };
 
-void dae::MiniginSoundSystem::Impl::Play(const std::string& file, const float volume)
+void minigin::SoundSystem::Impl::Play(const std::string& file, const float volume)
 {
 	if (file.empty() || volume <= 0) return;
 
@@ -55,7 +55,7 @@ void dae::MiniginSoundSystem::Impl::Play(const std::string& file, const float vo
 	m_Condition.notify_one();
 }
 
-void dae::MiniginSoundSystem::Impl::Init()
+void minigin::SoundSystem::Impl::Init()
 {
 	m_Mixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, nullptr);
 
@@ -68,7 +68,7 @@ void dae::MiniginSoundSystem::Impl::Init()
 	m_Thread = std::thread{ &Impl::PlaySoundQueue, this };
 }
 
-void dae::MiniginSoundSystem::Impl::Quit()
+void minigin::SoundSystem::Impl::Quit()
 {
 	{
 		std::scoped_lock<std::mutex> lock{ m_Mutex };
@@ -86,7 +86,7 @@ void dae::MiniginSoundSystem::Impl::Quit()
 	m_Mixer = nullptr;
 }
 
-void dae::MiniginSoundSystem::Impl::PlaySoundQueue()
+void minigin::SoundSystem::Impl::PlaySoundQueue()
 {
 	while (m_PlaySounds)
 	{
@@ -104,7 +104,7 @@ void dae::MiniginSoundSystem::Impl::PlaySoundQueue()
 	}
 }
 
-void dae::MiniginSoundSystem::Impl::PlaySound(const SoundEvent& sound)
+void minigin::SoundSystem::Impl::PlaySound(const SoundEvent& sound)
 {
 	std::string path{ m_Root + sound.file };
 
@@ -140,8 +140,8 @@ void dae::MiniginSoundSystem::Impl::PlaySound(const SoundEvent& sound)
 	MIX_DestroyAudio(audio);
 }
 
-dae::MiniginSoundSystem::MiniginSoundSystem(const std::string& root) : m_pImpl{ std::make_unique<dae::MiniginSoundSystem::Impl>(root) } {}
-dae::MiniginSoundSystem::~MiniginSoundSystem() = default;
-void dae::MiniginSoundSystem::Play(const std::string& file, const float volume) { m_pImpl->Play(file, volume); }
-void dae::MiniginSoundSystem::Init() { m_pImpl->Init(); }
-void dae::MiniginSoundSystem::Quit() { m_pImpl->Quit(); }
+minigin::SoundSystem::SoundSystem(const std::string& root) : m_pImpl{ std::make_unique<minigin::SoundSystem::Impl>(root) } {}
+minigin::SoundSystem::~SoundSystem() = default;
+void minigin::SoundSystem::Play(const std::string& file, const float volume) { m_pImpl->Play(file, volume); }
+void minigin::SoundSystem::Init() { m_pImpl->Init(); }
+void minigin::SoundSystem::Quit() { m_pImpl->Quit(); }

@@ -2,11 +2,11 @@
 #include <string>
 #include "Events.h"
 
-namespace dae
+namespace minigin
 {
-	class Observer
+	class IObserver
 	{
 	public:
-		virtual void OnNotify(Event event) = 0;
+		virtual void OnNotify(IEvent event) = 0;
 	};
 }

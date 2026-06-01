@@ -9,7 +9,7 @@
 #include <backends/imgui_impl_sdl3.h>
 #include <backends/imgui_impl_sdlrenderer3.h>
 
-void dae::Renderer::Init(SDL_Window* window)
+void minigin::Renderer::Init(SDL_Window* window)
 {
 	m_window = window;
 	SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1");
@@ -36,7 +36,7 @@ void dae::Renderer::Init(SDL_Window* window)
 	ImGui_ImplSDLRenderer3_Init(m_renderer);
 }
 
-void dae::Renderer::Render() const
+void minigin::Renderer::Render() const
 {
 	// imgui
 	ImGui_ImplSDLRenderer3_NewFrame();
@@ -58,7 +58,7 @@ void dae::Renderer::Render() const
 	SDL_RenderPresent(m_renderer);
 }
 
-void dae::Renderer::Destroy()
+void minigin::Renderer::Destroy()
 {
 	// imgui cleanup
 	ImGui_ImplSDLRenderer3_Shutdown();
@@ -72,7 +72,7 @@ void dae::Renderer::Destroy()
 	}
 }
 
-void dae::Renderer::RenderTexture(const Texture2D& texture, const float x, const float y) const
+void minigin::Renderer::RenderTexture(const Texture2D& texture, const float x, const float y) const
 {
 	SDL_FRect dst{};
 	dst.x = x;
@@ -81,7 +81,7 @@ void dae::Renderer::RenderTexture(const Texture2D& texture, const float x, const
 	SDL_RenderTexture(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst);
 }
 
-void dae::Renderer::RenderTexture(const Texture2D& texture, const float x, const float y, const float width, const float height) const
+void minigin::Renderer::RenderTexture(const Texture2D& texture, const float x, const float y, const float width, const float height) const
 {
 	SDL_FRect dst{};
 	dst.x = x;
@@ -91,4 +91,4 @@ void dae::Renderer::RenderTexture(const Texture2D& texture, const float x, const
 	SDL_RenderTexture(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst);
 }
 
-SDL_Renderer* dae::Renderer::GetSDLRenderer() const { return m_renderer; }
+SDL_Renderer* minigin::Renderer::GetSDLRenderer() const { return m_renderer; }

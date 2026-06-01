@@ -5,7 +5,7 @@
 #include "Scene.h"
 #include "Singleton.h"
 
-namespace dae
+namespace minigin
 {
 	class Scene;
 	class SceneManager final : public Singleton<SceneManager>

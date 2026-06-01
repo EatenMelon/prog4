@@ -3,13 +3,13 @@
 #include <SoundSystem.h>
 #include <memory>
 
-namespace dae
+namespace minigin
 {
-	class MiniginLoggingSoundSystem final : public SoundSystem
+	class LoggingSoundSystem final : public ISoundSystem
 	{
 	public:
-		MiniginLoggingSoundSystem(std::unique_ptr<SoundSystem> ss);
-		~MiniginLoggingSoundSystem() override;
+		LoggingSoundSystem(std::unique_ptr<ISoundSystem> ss);
+		~LoggingSoundSystem() override;
 
 		void Play(const std::string& file, const float volume) override;
 
@@ -17,6 +17,6 @@ namespace dae
 		void Quit() override;
 
 	private:
-		std::unique_ptr<SoundSystem> m_Wrapped{};
+		std::unique_ptr<ISoundSystem> m_Wrapped{};
 	};
 }

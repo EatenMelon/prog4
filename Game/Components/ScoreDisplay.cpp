@@ -6,23 +6,23 @@
 #include "ScoreComponent.h"
 #include "GameObject.h"
 
-void dae::ScoreDisplay::Init()
+void digdug::ScoreDisplay::Init()
 {
 	UpdateDisplay();
 }
 
-void dae::ScoreDisplay::OnNotify(Event event)
+void digdug::ScoreDisplay::OnNotify(minigin::IEvent event)
 {
-	if (event != Event::ReceivedPoints) return;
+	if (event != minigin::IEvent::ReceivedPoints) return;
 
 	UpdateDisplay();
 }
 
-void dae::ScoreDisplay::UpdateDisplay()
+void digdug::ScoreDisplay::UpdateDisplay()
 {
 	if (m_Display == nullptr)
 	{
-		auto txtComp = GetOwner().GetComponent<TextComponent>();
+		auto txtComp = GetOwner().GetComponent<minigin::TextComponent>();
 
 		if (txtComp == nullptr) return;
 

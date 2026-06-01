@@ -1,15 +1,15 @@
 #pragma once
 #include <Command.h>
 
-namespace dae
+namespace digdug
 {
 	class ScoreComponent;
-	class ScoreCommand final : public ActorCommand
+	class ScoreCommand final : public minigin::ActorCommand
 	{
 	public:
-		ScoreCommand(GameObject* pActor, ScoreComponent* pScore);
+		ScoreCommand(minigin::GameObject* pActor, ScoreComponent* pScore);
 
-		void Execute(const InputContext& context, float deltaTime) override;
+		void Execute(const minigin::InputContext& context, float deltaTime) override;
 
 	private:
 		ScoreComponent* m_pScore;

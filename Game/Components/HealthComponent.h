@@ -2,9 +2,9 @@
 #include "Component.h"
 #include "Subject.h"
 
-namespace dae
+namespace digdug
 {
-	class HealthComponent final : public Component, public Subject
+	class HealthComponent final : public minigin::Component, public minigin::ISubject
 	{
 	public:
 		using Component::Component;
@@ -12,7 +12,7 @@ namespace dae
 		void Damage(int damage)
 		{
 			m_Health -= damage;
-			Notify(Event::ReceivedDamage);
+			Notify(minigin::IEvent::ReceivedDamage);
 		}
 
 		int GetHealth() const { return m_Health; }

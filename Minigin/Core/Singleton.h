@@ -1,5 +1,5 @@
 #pragma once
-namespace dae
+namespace minigin
 {
 	template <typename T>
 	class Singleton

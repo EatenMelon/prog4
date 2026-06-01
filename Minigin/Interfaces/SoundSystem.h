@@ -1,12 +1,12 @@
 #pragma once
 #include <string>
 
-namespace dae
+namespace minigin
 {
-	class SoundSystem
+	class ISoundSystem
 	{
 	public:
-		virtual ~SoundSystem() = default;
+		virtual ~ISoundSystem() = default;
 
 		virtual void Play(const std::string& file, const float volume) = 0;
 

@@ -3,13 +3,13 @@
 #include <SoundSystem.h>
 #include <memory>
 
-namespace dae
+namespace minigin
 {
-	class MiniginSoundSystem final : public SoundSystem
+	class SoundSystem final : public ISoundSystem
 	{
 	public:
-		MiniginSoundSystem(const std::string& root = "");
-		~MiniginSoundSystem() override;
+		SoundSystem(const std::string& root = "");
+		~SoundSystem() override;
 
 		void Play(const std::string& file, const float volume) override;
 

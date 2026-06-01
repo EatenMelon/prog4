@@ -66,7 +66,7 @@ void PrintSDLVersion()
 	LogSDLVersion("Linked with SDL_ttf ", SDL_VERSIONNUM_MAJOR(version), SDL_VERSIONNUM_MINOR(version),	SDL_VERSIONNUM_MICRO(version));
 }
 
-dae::Minigin::Minigin(const std::filesystem::path& dataPath)
+minigin::Minigin::Minigin(const std::filesystem::path& dataPath)
 {
 	PrintSDLVersion();
 	
@@ -98,14 +98,14 @@ dae::Minigin::Minigin(const std::filesystem::path& dataPath)
 	ResourceManager::GetInstance().Init(dataPath);
 
 #ifndef __EMSCRIPTEN__
-	ServiceLocator::RegisterSoundSystem(std::make_unique<MiniginSoundSystem>(dataPath.string()));
+	ServiceLocator::RegisterSoundSystem(std::make_unique<SoundSystem>(dataPath.string()));
 #endif
 #ifdef _DEBUG
 	ServiceLocator::RegisterSoundSystem
 	(
-		std::make_unique<MiniginLoggingSoundSystem>
+		std::make_unique<LoggingSoundSystem>
 		(
-			std::make_unique<MiniginSoundSystem>(dataPath.string())
+			std::make_unique<SoundSystem>(dataPath.string())
 		)
 	);
 #endif
@@ -113,7 +113,7 @@ dae::Minigin::Minigin(const std::filesystem::path& dataPath)
 	ServiceLocator::GetSoundSystem()->Init();
 }
 
-dae::Minigin::~Minigin()
+minigin::Minigin::~Minigin()
 {
 	ServiceLocator::GetSoundSystem()->Quit();
 	MIX_Quit();
@@ -124,7 +124,7 @@ dae::Minigin::~Minigin()
 	SDL_Quit();
 }
 
-void dae::Minigin::Run(const std::function<void()>& load)
+void minigin::Minigin::Run(const std::function<void()>& load)
 {
 	load();
 
@@ -144,7 +144,7 @@ void dae::Minigin::Run(const std::function<void()>& load)
 #endif
 }
 
-void dae::Minigin::RunOneFrame()
+void minigin::Minigin::RunOneFrame()
 {
 	m_Timer.Stop();
 	m_Timer.Start();

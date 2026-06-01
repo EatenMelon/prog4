@@ -6,23 +6,23 @@
 #include "HealthComponent.h"
 #include "GameObject.h"
 
-void dae::HealthDisplay::Init()
+void digdug::HealthDisplay::Init()
 {
 	UpdateDisplay();
 }
 
-void dae::HealthDisplay::OnNotify(Event event)
+void digdug::HealthDisplay::OnNotify(minigin::IEvent event)
 {
-	if (event != Event::ReceivedDamage) return;
+	if (event != minigin::IEvent::ReceivedDamage) return;
 
 	UpdateDisplay();
 }
 
-void dae::HealthDisplay::UpdateDisplay()
+void digdug::HealthDisplay::UpdateDisplay()
 {
 	if (m_Display == nullptr)
 	{
-		auto txtComp = GetOwner().GetComponent<TextComponent>();
+		auto txtComp = GetOwner().GetComponent<minigin::TextComponent>();
 
 		if (txtComp == nullptr) return;
 

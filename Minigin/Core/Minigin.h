@@ -4,7 +4,7 @@
 
 #include "Timer.h"
 
-namespace dae
+namespace minigin
 {
 	class Minigin final
 	{

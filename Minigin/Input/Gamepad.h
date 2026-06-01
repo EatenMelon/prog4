@@ -6,7 +6,7 @@
 #include <wtypes.h>
 #endif
 
-namespace dae
+namespace minigin
 {
 	enum class GamepadButton
 	{

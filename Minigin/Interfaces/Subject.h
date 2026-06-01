@@ -3,20 +3,20 @@
 #include <vector>
 #include "Events.h"
 
-namespace dae
+namespace minigin
 {
-	class Observer;
-	class Subject
+	class IObserver;
+	class ISubject
 	{
 	public:
-		bool Subscrube(Observer* subscriber);
-		bool UnSubscribe(Observer* subscriber);
+		bool Subscrube(IObserver* subscriber);
+		bool UnSubscribe(IObserver* subscriber);
 
 	protected:
-		void Notify(Event event);
+		void Notify(IEvent event);
 
 	private:
-		std::vector<Observer*> m_Observers;
+		std::vector<IObserver*> m_Observers;
 
 	};
 }

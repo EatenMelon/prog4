@@ -2,7 +2,7 @@
 #include <cassert>
 #include "Scene.h"
 
-using namespace dae;
+using namespace minigin;
 
 void Scene::Add(std::unique_ptr<GameObject> object)
 {
@@ -51,7 +51,7 @@ void Scene::Update(float deltaTime)
 	}
 }
 
-void dae::Scene::GuiRender() const
+void minigin::Scene::GuiRender() const
 {
 	for (const auto& object : m_objects)
 	{

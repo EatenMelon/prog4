@@ -2,15 +2,15 @@
 #include <Command.h>
 
 
-namespace dae
+namespace digdug
 {
 	class HealthComponent;
-	class DamageCommand final : public ActorCommand
+	class DamageCommand final : public minigin::ActorCommand
 	{
 	public:
-		DamageCommand(GameObject* pActor, HealthComponent* pHealth);
+		DamageCommand(minigin::GameObject* pActor, HealthComponent* pHealth);
 
-		void Execute(const InputContext& context, float deltaTime) override;
+		void Execute(const minigin::InputContext& context, float deltaTime) override;
 
 	private:
 		HealthComponent* m_pHealth;

@@ -4,14 +4,14 @@
 #include <HealthComponent.h>
 #include <ServiceLocator.h>
 
-dae::DamageCommand::DamageCommand(GameObject* pActor, HealthComponent* pHealth)
+digdug::DamageCommand::DamageCommand(minigin::GameObject* pActor, HealthComponent* pHealth)
 	: ActorCommand(pActor)
 	, m_pHealth{ pHealth }
 {
 
 }
 
-void dae::DamageCommand::Execute(const InputContext&, float)
+void digdug::DamageCommand::Execute(const minigin::InputContext&, float)
 {
 	if (m_pHealth == nullptr)
 	{
@@ -24,5 +24,5 @@ void dae::DamageCommand::Execute(const InputContext&, float)
 
 	m_pHealth->Damage(1);
 
-	ServiceLocator::GetSoundSystem()->Play("Sound/GameOver.mp3", 1.f);
+	minigin::ServiceLocator::GetSoundSystem()->Play("Sound/GameOver.mp3", 1.f);
 }

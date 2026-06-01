@@ -97,7 +97,12 @@ bool minigin::InputManager::ProcessInput(float deltaTime)
 
 		if (glm::dot(context.axis, context.axis) <= 0.f) continue;
 
+//#undef WIN32
+
+#ifdef WIN32
+		// SDL does this already, XInput doesn't
 		context.axis.y = -context.axis.y;
+#endif
 
 		commandContexts[binding.command.get()] = context;
 	}

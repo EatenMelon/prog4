@@ -1,10 +1,8 @@
 #include "Gamepad.h"
-#include "Gamepad.h"
 #include "SDL3/SDL.h"
-#include <iostream>
+#include <algorithm>
 
 //#undef WIN32
-
 #ifdef WIN32
 
 #include <Windows.h>
@@ -32,6 +30,8 @@ std::unordered_map<minigin::GamepadButton, unsigned int> g_ButtonMap
 class minigin::Gamepad::Impl
 {
 public:
+	Impl(int playerID);
+
 	void ProcessInput();
 
 	bool IsDownThisFrame(unsigned int button) const;
@@ -54,36 +54,46 @@ private:
 	glm::vec2 m_RightJoystick{ glm::vec2() };
 
 	float m_Deadzone{ 0.05f };
+	int m_PlayerID{ -1 };
 };
+
+minigin::Gamepad::Impl::Impl(int playerID) 
+	: m_ControllerIndex{ static_cast<DWORD>(std::clamp(playerID, 0, 3)) }
+{
+}
 
 void minigin::Gamepad::Impl::ProcessInput()
 {
-	// get the first controller you can find
-	for (DWORD i = 0; i < 4; i++)
-	{
-		XINPUT_STATE state;
-		ZeroMemory(&state, sizeof(XINPUT_STATE));
-
-		if (XInputGetState(i, &state) == ERROR_SUCCESS)
-		{
-			m_ControllerIndex = i;
-			break;
-		}
-	}
-
-	//XINPUT_GAMPAD__GUID
-
 	CopyMemory(&m_PreviousState, &m_CurrentState, sizeof(XINPUT_STATE));
 	ZeroMemory(&m_CurrentState, sizeof(XINPUT_STATE));
-	XInputGetState(m_ControllerIndex, &m_CurrentState);
+
+	XINPUT_STATE state;
+	ZeroMemory(&state, sizeof(XINPUT_STATE));
+
+	if (XInputGetState(m_ControllerIndex, &state) == ERROR_SUCCESS)
+	{
+		m_CurrentState = state;
+	}
+	else
+	{
+		ZeroMemory(&m_CurrentState, sizeof(XINPUT_STATE));
+
+		m_ButtonsPressedThisFrame = 0;
+		m_ButtonsReleasedThisFrame = 0;
+
+		m_LeftJoystick = glm::vec2(0.f);
+		m_RightJoystick = glm::vec2(0.f);
+
+		return;
+	}
 
 	WORD buttonChanges = m_CurrentState.Gamepad.wButtons ^ m_PreviousState.Gamepad.wButtons;
 	m_ButtonsPressedThisFrame = buttonChanges & m_CurrentState.Gamepad.wButtons;
 	m_ButtonsReleasedThisFrame = buttonChanges & (~m_CurrentState.Gamepad.wButtons);
 
 	// update joysticks
-	m_LeftJoystick = glm::vec2(m_CurrentState.Gamepad.sThumbLX, m_CurrentState.Gamepad.sThumbLY);
-	m_RightJoystick = glm::vec2(m_CurrentState.Gamepad.sThumbRX, m_CurrentState.Gamepad.sThumbRY);
+	m_LeftJoystick = glm::vec2(m_CurrentState.Gamepad.sThumbLX, -m_CurrentState.Gamepad.sThumbLY);
+	m_RightJoystick = glm::vec2(m_CurrentState.Gamepad.sThumbRX, -m_CurrentState.Gamepad.sThumbRY);
 
 	//std::cout << "Left stick: [" << m_LeftJoystick.x << ", " << m_LeftJoystick.y << "] \t";
 	//std::cout << "Right stick: [" << m_RightJoystick.x << ", " << m_RightJoystick.y << "]\n";
@@ -155,7 +165,7 @@ glm::vec2 minigin::Gamepad::Impl::ApplyDeadzone(const glm::vec2& in) const
 class minigin::Gamepad::Impl
 {
 public:
-	Impl();
+	Impl(int playerID);
 	~Impl();
 
 	void ProcessInput();
@@ -168,6 +178,7 @@ public:
 	void SetDeadzone(float deadzone) { m_Deadzone = deadzone; }
 
 private:
+	void GetController();
 	glm::vec2 ApplyDeadzone(const glm::vec2& in) const;
 
 	SDL_Gamepad* m_Controller{};
@@ -181,28 +192,19 @@ private:
 	glm::vec2 m_RightJoystick{ glm::vec2() };
 
 	float m_Deadzone{ 0.05f };
+	int m_PlayerID{ -1 };
 };
 
-minigin::Gamepad::Impl::Impl()
+minigin::Gamepad::Impl::Impl(int playerID) : m_PlayerID{ playerID }
 {
-	// get the fist controller that is currently connected
-	int num_joysticks{ 0 };
-	SDL_JoystickID* joysticks = SDL_GetJoysticks(&num_joysticks);
+	m_PlayerID = std::clamp(m_PlayerID, 0, 3);
 
-	if (!joysticks || num_joysticks <= 0) return;
-
-	// check if the first joystick is a supported gamepad
-	if (SDL_IsGamepad(joysticks[0]))
-	{
-		m_Controller = SDL_OpenGamepad(joysticks[0]);
-	}
-
-	// free the array returned by SDL_GetJoysticks
-	SDL_free(joysticks);
+	GetController();
 }
 
 minigin::Gamepad::Impl::~Impl()
 {
+	SDL_CloseGamepad(m_Controller);
 	m_Controller = nullptr;
 }
 
@@ -219,17 +221,7 @@ void minigin::Gamepad::Impl::ProcessInput()
 	// seach for a controller when you currently don't have one
 	if (!m_Controller)
 	{
-		int num_joysticks{ 0 };
-		SDL_JoystickID* joysticks = SDL_GetJoysticks(&num_joysticks);
-
-		if (!joysticks || num_joysticks <= 0) return;
-
-		if (SDL_IsGamepad(joysticks[0]))
-		{
-			m_Controller = SDL_OpenGamepad(joysticks[0]);
-		}
-
-		SDL_free(joysticks);
+		GetController();
 	}
 
 	// trying a similar approach as XInput
@@ -290,6 +282,23 @@ glm::vec2 minigin::Gamepad::Impl::GetJoystick(GamepadJoystick joystick) const
 	return glm::vec2();
 }
 
+void minigin::Gamepad::Impl::GetController()
+{
+	// not the best way since this doesn't consider disconnecting hardware
+	int numJoysticks{ 0 };
+	SDL_JoystickID* joysticks = SDL_GetJoysticks(&numJoysticks);
+
+	if (!joysticks || numJoysticks <= 0) return;
+	if (numJoysticks <= m_PlayerID) return;
+
+	if (SDL_IsGamepad(joysticks[m_PlayerID]))
+	{
+		m_Controller = SDL_OpenGamepad(joysticks[m_PlayerID]);
+	}
+
+	SDL_free(joysticks);
+}
+
 glm::vec2 minigin::Gamepad::Impl::ApplyDeadzone(const glm::vec2& in) const
 {
 	glm::vec2 v{ in };
@@ -322,9 +331,9 @@ glm::vec2 minigin::Gamepad::Impl::ApplyDeadzone(const glm::vec2& in) const
 
 #endif
 
-minigin::Gamepad::Gamepad()
+minigin::Gamepad::Gamepad(int playerID)
 {
-	m_pImpl = std::make_unique<Impl>();
+	m_pImpl = std::make_unique<Impl>(playerID);
 }
 
 minigin::Gamepad::~Gamepad() = default;

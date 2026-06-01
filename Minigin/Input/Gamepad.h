@@ -36,7 +36,7 @@ namespace minigin
 	class Gamepad
 	{
 	public:
-		Gamepad();
+		Gamepad(int playerID = 0);
 		~Gamepad();
 		void ProcessInput();
 

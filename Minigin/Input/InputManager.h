@@ -16,20 +16,22 @@ namespace minigin
 	class InputManager final : public Singleton<InputManager>
 	{
 	public:
+		void Init(int numPlayers);
+
 		bool ProcessInput(float deltaTime);
 
-		void BindInput(const std::string& name, unsigned int button, KeyState state, 
-			std::shared_ptr<Command> command, Direction axisDirection = Direction::None);
+		void BindInput(const std::string& name, unsigned int button, KeyState state,
+			std::shared_ptr<Command> command, int playerID, Direction axisDirection = Direction::None);
 
 		void BindInput(const std::string& name, GamepadButton button, KeyState state,
-			std::shared_ptr<Command> command, Direction axisDirection = Direction::None);
+			std::shared_ptr<Command> command, int playerID, Direction axisDirection = Direction::None);
 
-		void BindInput(const std::string& name, GamepadJoystick joystick, float deadzone, std::shared_ptr<Command> command);
+		void BindInput(const std::string& name, GamepadJoystick joystick, float deadzone, std::shared_ptr<Command> command, int playerID);
 
 		void UnBindInput(const std::string& actionName);
 
 	private:
-		Gamepad m_Gamepad{};
+		std::vector<std::unique_ptr<Gamepad>> m_Gamepads{};
 
 		struct ButtonBinding
 		{
@@ -38,6 +40,7 @@ namespace minigin
 			KeyState state{};
 			std::shared_ptr<Command> command{};
 			Direction axisDirection{};
+			int playerID{ -1 };
 		};
 
 		struct JoystickBinding
@@ -46,6 +49,7 @@ namespace minigin
 			GamepadJoystick joystick{};
 			float deadzone{};
 			std::shared_ptr<Command> command{};
+			int playerID{ -1 };
 		};
 
 		std::vector<ButtonBinding> m_ButtonBindings{};

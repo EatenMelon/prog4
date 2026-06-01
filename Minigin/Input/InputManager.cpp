@@ -1,8 +1,20 @@
 #include "InputManager.h"
+#include "InputManager.h"
 #include <SDL3/SDL.h>
 
 #include <backends/imgui_impl_sdl3.h>
 #include <iostream>
+
+void minigin::InputManager::Init(int numPlayers)
+{
+	m_Gamepads.clear();
+	m_Gamepads.reserve(numPlayers);
+
+	for (int p{ 0 }; p < numPlayers; ++p)
+	{
+		m_Gamepads.push_back(std::make_unique<Gamepad>(p));
+	}
+}
 
 bool minigin::InputManager::ProcessInput(float deltaTime)
 {
@@ -34,30 +46,50 @@ bool minigin::InputManager::ProcessInput(float deltaTime)
 	}
 
 	// handle controller events
-	m_Gamepad.ProcessInput();
+	// prepare the input context for each command
+	std::vector<std::pair<Command*, InputContext>> commandContexts;
 
-	for (int button{ 0 }; button < static_cast<int>(minigin::GamepadButton::COUNT); ++button)
+	for (int playerID{ 0 }; playerID < m_Gamepads.size(); ++playerID)
 	{
-		auto gamepadButton = static_cast<GamepadButton>(button);
+		auto& gamepad = m_Gamepads[playerID];
+		gamepad->ProcessInput();
 
-		if (m_Gamepad.IsDownThisFrame(gamepadButton))
+		// preparing gamepad button input
+		for (int button{ 0 }; button < static_cast<int>(minigin::GamepadButton::COUNT); ++button)
 		{
-			m_KeysDown[button] = minigin::KeyState::OnDown;
+			auto gamepadButton = static_cast<GamepadButton>(button);
+
+			if (gamepad->IsDownThisFrame(gamepadButton))
+			{
+				m_KeysDown[button] = minigin::KeyState::OnDown;
+			}
+			else if (gamepad->IsUpThisFrame(gamepadButton))
+			{
+				m_KeysDown[button] = minigin::KeyState::OnRelease;
+			}
+			else if (gamepad->IsPressed(gamepadButton))
+			{
+				m_KeysDown[button] = minigin::KeyState::Pressed;
+			}
 		}
-		else if (m_Gamepad.IsUpThisFrame(gamepadButton))
+
+		for (const auto binding : m_JoystickBindings)
 		{
-			m_KeysDown[button] = minigin::KeyState::OnRelease;
-		}
-		else if(m_Gamepad.IsPressed(gamepadButton))
-		{
-			m_KeysDown[button] = minigin::KeyState::Pressed;
+			InputContext context{};
+
+			gamepad->SetDeadzone(binding.deadzone);
+
+			context.axis = gamepad->GetJoystick(binding.joystick);
+			context.playerID = binding.playerID;
+
+			if (glm::dot(context.axis, context.axis) < 0.0001f) continue;
+
+			commandContexts.emplace_back(binding.command.get(), context);
 		}
 	}
 
-	// prepare the input context for each command
-	std::unordered_map<Command*, InputContext> commandContexts{};
-
-	for (auto& binding : m_ButtonBindings)
+	// processing all button input
+	for (const auto& binding : m_ButtonBindings)
 	{
 		auto it = m_KeysDown.find(binding.button);
 		if (it == m_KeysDown.end()) continue;
@@ -65,7 +97,8 @@ bool minigin::InputManager::ProcessInput(float deltaTime)
 		// only prepare context when the desired key state matches
 		if (binding.state != m_KeysDown[binding.button]) continue;
 
-		InputContext& context = commandContexts[binding.command.get()];
+		InputContext context{};
+		context.playerID = binding.playerID;
 
 		// already changed the axis' y pos to match the screen
 		switch (binding.axisDirection)
@@ -86,25 +119,20 @@ bool minigin::InputManager::ProcessInput(float deltaTime)
 			// prevent division by zero
 			context.axis = { 0.f, 0.f };
 		}
+
+		commandContexts.emplace_back(binding.command.get(), context);
 	}
 
-	for (auto binding : m_JoystickBindings)
-	{
-		InputContext context{};
-
-		m_Gamepad.SetDeadzone(binding.deadzone);
-		context.axis = m_Gamepad.GetJoystick(binding.joystick);
-
-		if (glm::dot(context.axis, context.axis) <= 0.f) continue;
-
-		commandContexts[binding.command.get()] = context;
-	}
+	std::cout << "Executing commands: " << commandContexts.size() << "\n";
 
 	// execute all necessary commands
 	for (auto& [command, context] : commandContexts)
 	{
 		command->Execute(context, deltaTime);
+		std::cout << "Executing command for player " << context.playerID << "\n";
 	}
+
+	std::cout << "Command count: " << commandContexts.size() << "\n";
 
 	// make sure on down & on release are single time events
 	// kind of reverse engineering SDL (T^T)
@@ -123,11 +151,20 @@ void minigin::InputManager::BindInput
 	unsigned int button,
 	minigin::KeyState state,
 	std::shared_ptr<minigin::Command> command,
+	int playerID,
 	Direction axisDirection
 )
 
 {
-	m_ButtonBindings.push_back(ButtonBinding{ name, button, state, command, axisDirection });
+	ButtonBinding binding{};
+	binding.actionName = name;
+	binding.button = button;
+	binding.state = state;
+	binding.command = command;
+	binding.axisDirection = axisDirection;
+	binding.playerID = playerID;
+
+	m_ButtonBindings.push_back(binding);
 }
 
 void minigin::InputManager::BindInput
@@ -136,16 +173,39 @@ void minigin::InputManager::BindInput
 	minigin::GamepadButton button,
 	minigin::KeyState state,
 	std::shared_ptr<minigin::Command> command,
+	int playerID,
 	Direction axisDirection
 )
 
 {
-	m_ButtonBindings.push_back(ButtonBinding{ name, static_cast<unsigned int>(button), state, command, axisDirection });
+	ButtonBinding binding{};
+	binding.actionName = name;
+	binding.button = static_cast<unsigned int>(button);
+	binding.state = state;
+	binding.command = command;
+	binding.axisDirection = axisDirection;
+	binding.playerID = playerID;
+
+	m_ButtonBindings.push_back(binding);
 }
 
-void minigin::InputManager::BindInput(const std::string& name, GamepadJoystick joystick, float deadzone, std::shared_ptr<Command> command)
+void minigin::InputManager::BindInput
+(
+	const std::string& name,
+	GamepadJoystick joystick,
+	float deadzone,
+	std::shared_ptr<Command> command,
+	int playerID
+)
 {
-	m_JoystickBindings.push_back(JoystickBinding{ name, joystick, deadzone, command });
+	JoystickBinding binding{};
+	binding.actionName = name;
+	binding.joystick = joystick;
+	binding.deadzone = deadzone;
+	binding.command = command;
+	binding.playerID = playerID;
+
+	m_JoystickBindings.push_back(binding);
 }
 
 void minigin::InputManager::UnBindInput(const std::string& actionName)

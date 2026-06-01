@@ -46,7 +46,7 @@ void LogSDLVersion(const std::string& message, int major, int minor, int patch)
 
 void LoopCallback(void* arg)
 {
-	static_cast<dae::Minigin*>(arg)->RunOneFrame();
+	static_cast<minigin::Minigin*>(arg)->RunOneFrame();
 }
 #endif
 

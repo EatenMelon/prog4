@@ -7,9 +7,10 @@ namespace digdug
 	class ScoreCommand final : public minigin::ActorCommand
 	{
 	public:
-		ScoreCommand(minigin::GameObject* pActor, ScoreComponent* pScore);
+		ScoreCommand(minigin::GameObject* pActor, int playerID, ScoreComponent* pScore);
 
-		void Execute(const minigin::InputContext& context, float deltaTime) override;
+	protected:
+		void ActorExecute(const minigin::InputContext& context, float deltaTime) override;
 
 	private:
 		ScoreComponent* m_pScore;

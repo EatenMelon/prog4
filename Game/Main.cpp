@@ -182,7 +182,8 @@ static void load()
 
 		TaizoHori->SetLocalPosition(300.f, 200.f);
 
-		auto moveCommand = std::make_shared<minigin::MoveCommand>(TaizoHori.get(), 500.f);
+		int playerID{ 0 };
+		auto moveCommand = std::make_shared<minigin::MoveCommand>(TaizoHori.get(), playerID, 500.f);
 
 		minigin::InputManager::GetInstance().BindInput("Move", SDLK_W, minigin::KeyState::Pressed, moveCommand, minigin::Direction::Up);
 		minigin::InputManager::GetInstance().BindInput("Move", SDLK_A, minigin::KeyState::Pressed, moveCommand, minigin::Direction::Left);
@@ -199,7 +200,7 @@ static void load()
 			healthDisplayTaizoHori->SetHealthComponent(health);
 		}
 
-		auto damageCommand = std::make_shared<digdug::DamageCommand>(TaizoHori.get(), health);
+		auto damageCommand = std::make_shared<digdug::DamageCommand>(TaizoHori.get(), 0, health);
 		minigin::InputManager::GetInstance().BindInput("Damage", SDLK_C, minigin::KeyState::OnDown, damageCommand);
 
 		auto score = TaizoHori->AddComponent<digdug::ScoreComponent>();
@@ -210,7 +211,7 @@ static void load()
 
 		}
 
-		auto scoreCommand = std::make_shared<digdug::ScoreCommand>(TaizoHori.get(), score);
+		auto scoreCommand = std::make_shared<digdug::ScoreCommand>(TaizoHori.get(), 0, score);
 		minigin::InputManager::GetInstance().BindInput("Score", SDLK_X, minigin::KeyState::OnDown, scoreCommand);
 
 		scene.Add(std::move(TaizoHori));
@@ -262,14 +263,15 @@ static void load()
 
 		Pooka->SetLocalPosition(200.f, 200.f);
 
-		auto moveCommand = std::make_shared<minigin::MoveCommand>(Pooka.get(), 250.f);
+		int playerID{ 1 };
+		auto moveCommand = std::make_shared<minigin::MoveCommand>(Pooka.get(), playerID, 250.f);
 
 		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::DPAD_UP, minigin::KeyState::Pressed, moveCommand, minigin::Direction::Up);
 		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::DPAD_LEFT, minigin::KeyState::Pressed, moveCommand, minigin::Direction::Left);
 		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::DPAD_DOWN, minigin::KeyState::Pressed, moveCommand, minigin::Direction::Down);
 		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::DPAD_RIGHT, minigin::KeyState::Pressed, moveCommand, minigin::Direction::Right);
 
-		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadJoystick::LEFT_JOYSTICK, 0.99f, moveCommand);
+		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadJoystick::LEFT_JOYSTICK, 0.9f, moveCommand);
 
 		auto renderComp = Pooka->AddComponent<minigin::RenderComponent>();
 		if (renderComp != nullptr) renderComp->SetTexture("Sprites/Pooka.png");
@@ -281,7 +283,7 @@ static void load()
 			healthDisplayPooka->SetHealthComponent(health);
 		}
 
-		auto damageCommand = std::make_shared<digdug::DamageCommand>(Pooka.get(), health);
+		auto damageCommand = std::make_shared<digdug::DamageCommand>(Pooka.get(), playerID, health);
 		minigin::InputManager::GetInstance().BindInput("Damage", minigin::GamepadButton::WEST, minigin::KeyState::OnDown, damageCommand);
 
 		auto score = Pooka->AddComponent<digdug::ScoreComponent>();
@@ -291,7 +293,7 @@ static void load()
 			scoreDisplayPooka->SetScoreComponent(score);
 		}
 
-		auto scoreCommand = std::make_shared<digdug::ScoreCommand>(Pooka.get(), score);
+		auto scoreCommand = std::make_shared<digdug::ScoreCommand>(Pooka.get(), playerID, score);
 		minigin::InputManager::GetInstance().BindInput("Score", minigin::GamepadButton::SOUTH, minigin::KeyState::OnDown, scoreCommand);
 
 		scene.Add(std::move(Pooka));

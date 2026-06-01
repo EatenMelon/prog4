@@ -4,14 +4,14 @@
 #include <HealthComponent.h>
 #include <ServiceLocator.h>
 
-digdug::DamageCommand::DamageCommand(minigin::GameObject* pActor, HealthComponent* pHealth)
-	: ActorCommand(pActor)
+digdug::DamageCommand::DamageCommand(minigin::GameObject* pActor, int playerID, HealthComponent* pHealth)
+	: ActorCommand(pActor, playerID)
 	, m_pHealth{ pHealth }
 {
 
 }
 
-void digdug::DamageCommand::Execute(const minigin::InputContext&, float)
+void digdug::DamageCommand::ActorExecute(const minigin::InputContext&, float)
 {
 	if (m_pHealth == nullptr)
 	{

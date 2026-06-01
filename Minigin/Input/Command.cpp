@@ -1,14 +1,14 @@
 #include "Command.h"
 #include "GameObject.h"
 
-minigin::MoveCommand::MoveCommand(GameObject* pActor, float movementSpeed)
-	: ActorCommand(pActor)
+minigin::MoveCommand::MoveCommand(GameObject* pActor, int playerID, float movementSpeed)
+	: ActorCommand(pActor, playerID)
 	, m_MovementSpeed{ movementSpeed }
 {
 
 }
 
-void minigin::MoveCommand::Execute(const InputContext& context, float deltaTime)
+void minigin::MoveCommand::ActorExecute(const InputContext& context, float deltaTime)
 {
 
 	glm::vec3 pos = GetActor().GetLocalPosition();

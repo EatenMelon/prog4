@@ -3,14 +3,14 @@
 #include <GameObject.h>
 #include <ScoreComponent.h>
 
-digdug::ScoreCommand::ScoreCommand(minigin::GameObject* pActor, ScoreComponent* pScore)
-	: ActorCommand(pActor)
+digdug::ScoreCommand::ScoreCommand(minigin::GameObject* pActor, int playerID, ScoreComponent* pScore)
+	: ActorCommand(pActor, playerID)
 	, m_pScore{ pScore }
 {
 
 }
 
-void digdug::ScoreCommand::Execute(const minigin::InputContext&, float)
+void digdug::ScoreCommand::ActorExecute(const minigin::InputContext&, float)
 {
 	if (m_pScore == nullptr)
 	{

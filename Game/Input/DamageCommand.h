@@ -8,9 +8,10 @@ namespace digdug
 	class DamageCommand final : public minigin::ActorCommand
 	{
 	public:
-		DamageCommand(minigin::GameObject* pActor, HealthComponent* pHealth);
+		DamageCommand(minigin::GameObject* pActor, int playerID, HealthComponent* pHealth);
 
-		void Execute(const minigin::InputContext& context, float deltaTime) override;
+	protected:
+		void ActorExecute(const minigin::InputContext& context, float deltaTime) override;
 
 	private:
 		HealthComponent* m_pHealth;

@@ -1,10 +1,15 @@
 #include "Gamepad.h"
+#include "Gamepad.h"
 #include "SDL3/SDL.h"
+#include <iostream>
+
+//#undef WIN32
 
 #ifdef WIN32
 
 #include <Windows.h>
 #include <Xinput.h>
+#include <unordered_map>
 
 std::unordered_map<minigin::GamepadButton, unsigned int> g_ButtonMap
 {
@@ -33,13 +38,22 @@ public:
 	bool IsUpThisFrame(unsigned int button) const;
 	bool IsPressed(unsigned int button) const;
 
+	glm::vec2 GetJoystick(GamepadJoystick joystick) const;
+	void SetDeadzone(float deadzone) { m_Deadzone = deadzone; }
+
 private:
+	glm::vec2 ApplyDeadzone(const glm::vec2& in) const;
 
 	DWORD m_ControllerIndex{};
 	WORD m_ButtonsPressedThisFrame{};
 	WORD m_ButtonsReleasedThisFrame{};
 	XINPUT_STATE m_CurrentState{};
 	XINPUT_STATE m_PreviousState{};
+
+	glm::vec2 m_LeftJoystick{ glm::vec2() };
+	glm::vec2 m_RightJoystick{ glm::vec2() };
+
+	float m_Deadzone{ 0.05f };
 };
 
 void minigin::Gamepad::Impl::ProcessInput()
@@ -66,6 +80,13 @@ void minigin::Gamepad::Impl::ProcessInput()
 	WORD buttonChanges = m_CurrentState.Gamepad.wButtons ^ m_PreviousState.Gamepad.wButtons;
 	m_ButtonsPressedThisFrame = buttonChanges & m_CurrentState.Gamepad.wButtons;
 	m_ButtonsReleasedThisFrame = buttonChanges & (~m_CurrentState.Gamepad.wButtons);
+
+	// update joysticks
+	m_LeftJoystick = glm::vec2(m_CurrentState.Gamepad.sThumbLX, m_CurrentState.Gamepad.sThumbLY);
+	m_RightJoystick = glm::vec2(m_CurrentState.Gamepad.sThumbRX, m_CurrentState.Gamepad.sThumbRY);
+
+	//std::cout << "Left stick: [" << m_LeftJoystick.x << ", " << m_LeftJoystick.y << "] \t";
+	//std::cout << "Right stick: [" << m_RightJoystick.x << ", " << m_RightJoystick.y << "]\n";
 }
 
 bool minigin::Gamepad::Impl::IsDownThisFrame(unsigned int button) const
@@ -83,9 +104,55 @@ bool minigin::Gamepad::Impl::IsPressed(unsigned int button) const
 	return m_CurrentState.Gamepad.wButtons & button;
 }
 
+glm::vec2 minigin::Gamepad::Impl::GetJoystick(GamepadJoystick joystick) const
+{
+	switch (joystick)
+	{
+	case minigin::GamepadJoystick::LEFT_JOYSTICK:
+		return ApplyDeadzone(m_LeftJoystick);
+		break;
+
+	case minigin::GamepadJoystick::RIGHT_JOYSTICK:
+		return ApplyDeadzone(m_RightJoystick);
+		break;
+	}
+
+	return glm::vec2();
+}
+
+glm::vec2 minigin::Gamepad::Impl::ApplyDeadzone(const glm::vec2& in) const
+{
+	glm::vec2 v{ in };
+
+	// normalize
+	constexpr float xinputMax = 32767.f;
+
+	v /= xinputMax;
+
+	float length2 = glm::dot(v, v);
+
+	if (length2 < m_Deadzone * m_Deadzone)
+	{
+		v = glm::vec2(0.f);
+		return v;
+	}
+
+	float length = glm::sqrt(length2);
+
+	glm::vec2 dir = v / length;
+
+	// remap safely
+	float t = (length - m_Deadzone) / (1.0f - m_Deadzone);
+	t = glm::clamp(t, 0.0f, 1.0f);
+
+	v = dir * t;
+
+	return v;
+}
+
 #else
 
-class dae::Gamepad::Impl
+class minigin::Gamepad::Impl
 {
 public:
 	Impl();
@@ -97,16 +164,26 @@ public:
 	bool IsUpThisFrame(unsigned int button) const;
 	bool IsPressed(unsigned int button) const;
 
+	glm::vec2 GetJoystick(GamepadJoystick joystick) const;
+	void SetDeadzone(float deadzone) { m_Deadzone = deadzone; }
+
 private:
+	glm::vec2 ApplyDeadzone(const glm::vec2& in) const;
+
 	SDL_Gamepad* m_Controller{};
 
 	uint32_t m_ButtonsPressedThisFrame{};
 	uint32_t m_ButtonsReleasedThisFrame{};
 	uint32_t m_CurrentState{};
 	uint32_t m_PreviousState{};
+
+	glm::vec2 m_LeftJoystick{ glm::vec2() };
+	glm::vec2 m_RightJoystick{ glm::vec2() };
+
+	float m_Deadzone{ 0.05f };
 };
 
-dae::Gamepad::Impl::Impl()
+minigin::Gamepad::Impl::Impl()
 {
 	// get the fist controller that is currently connected
 	int num_joysticks{ 0 };
@@ -124,12 +201,12 @@ dae::Gamepad::Impl::Impl()
 	SDL_free(joysticks);
 }
 
-dae::Gamepad::Impl::~Impl()
+minigin::Gamepad::Impl::~Impl()
 {
 	m_Controller = nullptr;
 }
 
-void dae::Gamepad::Impl::ProcessInput()
+void minigin::Gamepad::Impl::ProcessInput()
 {
 	// need this function for the emscripten build
 	SDL_PumpEvents();
@@ -158,7 +235,7 @@ void dae::Gamepad::Impl::ProcessInput()
 	// trying a similar approach as XInput
 	// but XInput uses bitmasks while SDL uses enums
 	// so I'll need to do a bitshift instead of simply doing AND
-	for (int button{ 0 }; button < static_cast<int>(dae::GamepadButton::COUNT); ++button)
+	for (int button{ 0 }; button < static_cast<int>(minigin::GamepadButton::COUNT); ++button)
 	{
 		if (!SDL_GetGamepadButton(m_Controller, static_cast<SDL_GamepadButton>(button))) continue;
 
@@ -169,21 +246,78 @@ void dae::Gamepad::Impl::ProcessInput()
 
 	m_ButtonsPressedThisFrame = buttonChanges & m_CurrentState;
 	m_ButtonsReleasedThisFrame = buttonChanges & (~m_CurrentState);
+
+	// updating joysticks
+
+	m_LeftJoystick.x = SDL_GetGamepadAxis(m_Controller, SDL_GAMEPAD_AXIS_LEFTX);
+	m_LeftJoystick.y = SDL_GetGamepadAxis(m_Controller, SDL_GAMEPAD_AXIS_LEFTY);
+
+	m_RightJoystick.x = SDL_GetGamepadAxis(m_Controller, SDL_GAMEPAD_AXIS_RIGHTX);
+	m_RightJoystick.y = SDL_GetGamepadAxis(m_Controller, SDL_GAMEPAD_AXIS_RIGHTY);
+
+	//std::cout << "Left stick: [" << m_LeftJoystick.x << ", " << m_LeftJoystick.y << "] \t";
+	//std::cout << "Right stick: [" << m_RightJoystick.x << ", " << m_RightJoystick.y << "]\n";
 }
 
-bool dae::Gamepad::Impl::IsPressed(unsigned int button) const
+bool minigin::Gamepad::Impl::IsPressed(unsigned int button) const
 {
 	return m_CurrentState & (1u << button);
 }
 
-bool dae::Gamepad::Impl::IsDownThisFrame(unsigned int button) const
+bool minigin::Gamepad::Impl::IsDownThisFrame(unsigned int button) const
 {
 	return m_ButtonsPressedThisFrame & (1u << button);
 }
 
-bool dae::Gamepad::Impl::IsUpThisFrame(unsigned int button) const
+bool minigin::Gamepad::Impl::IsUpThisFrame(unsigned int button) const
 {
 	return m_ButtonsReleasedThisFrame & (1u << button);
+}
+
+glm::vec2 minigin::Gamepad::Impl::GetJoystick(GamepadJoystick joystick) const
+{
+	switch (joystick)
+	{
+	case minigin::GamepadJoystick::LEFT_JOYSTICK:
+		return ApplyDeadzone(m_LeftJoystick);
+		break;
+
+	case minigin::GamepadJoystick::RIGHT_JOYSTICK:
+		return ApplyDeadzone(m_RightJoystick);
+		break;
+	}
+
+	return glm::vec2();
+}
+
+glm::vec2 minigin::Gamepad::Impl::ApplyDeadzone(const glm::vec2& in) const
+{
+	glm::vec2 v{ in };
+
+	// normalize
+	constexpr float xinputMax = 32767.f;
+
+	v /= xinputMax;
+
+	float length2 = glm::dot(v, v);
+
+	if (length2 < m_Deadzone * m_Deadzone)
+	{
+		v = glm::vec2(0.f);
+		return v;
+	}
+
+	float length = glm::sqrt(length2);
+
+	glm::vec2 dir = v / length;
+
+	// remap safely
+	float t = (length - m_Deadzone) / (1.0f - m_Deadzone);
+	t = glm::clamp(t, 0.0f, 1.0f);
+
+	v = dir * t;
+
+	return v;
 }
 
 #endif
@@ -234,4 +368,14 @@ bool minigin::Gamepad::IsPressed(GamepadButton button) const
 #else
 	return m_pImpl->IsPressed(static_cast<unsigned int>(button));
 #endif
+}
+
+glm::vec2 minigin::Gamepad::GetJoystick(GamepadJoystick joystick) const
+{
+	return m_pImpl->GetJoystick(joystick);
+}
+
+void minigin::Gamepad::SetDeadzone(float deadzone)
+{
+	return m_pImpl->SetDeadzone(deadzone);
 }

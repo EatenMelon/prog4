@@ -269,6 +269,8 @@ static void load()
 		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::DPAD_DOWN, minigin::KeyState::Pressed, moveCommand, minigin::Direction::Down);
 		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::DPAD_RIGHT, minigin::KeyState::Pressed, moveCommand, minigin::Direction::Right);
 
+		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadJoystick::LEFT_JOYSTICK, 0.99f, moveCommand);
+
 		auto renderComp = Pooka->AddComponent<minigin::RenderComponent>();
 		if (renderComp != nullptr) renderComp->SetTexture("Sprites/Pooka.png");
 

@@ -1,6 +1,6 @@
 #pragma once
-#include <unordered_map>
 #include <memory>
+#include <glm/glm.hpp>
 
 #ifdef WIN32
 #include <wtypes.h>
@@ -27,6 +27,12 @@ namespace minigin
 		COUNT = 15
 	};
 
+	enum class GamepadJoystick
+	{
+		LEFT_JOYSTICK,
+		RIGHT_JOYSTICK
+	};
+
 	class Gamepad
 	{
 	public:
@@ -37,6 +43,9 @@ namespace minigin
 		bool IsDownThisFrame(GamepadButton button) const;
 		bool IsUpThisFrame(GamepadButton button) const;
 		bool IsPressed(GamepadButton button) const;
+
+		glm::vec2 GetJoystick(GamepadJoystick joystick) const;
+		void SetDeadzone(float deadzone);
 
 	private:
 		class Impl;

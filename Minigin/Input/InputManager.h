@@ -24,12 +24,14 @@ namespace minigin
 		void BindInput(const std::string& name, GamepadButton button, KeyState state,
 			std::shared_ptr<Command> command, Direction axisDirection = Direction::None);
 
+		void BindInput(const std::string& name, GamepadJoystick joystick, float deadzone, std::shared_ptr<Command> command);
+
 		void UnBindInput(const std::string& actionName);
 
 	private:
 		Gamepad m_Gamepad{};
 
-		struct InputBinding
+		struct ButtonBinding
 		{
 			std::string actionName{};
 			unsigned int button{};
@@ -38,7 +40,16 @@ namespace minigin
 			Direction axisDirection{};
 		};
 
-		std::vector<InputBinding> m_InputBindings{};
+		struct JoystickBinding
+		{
+			std::string actionName{};
+			GamepadJoystick joystick{};
+			float deadzone{};
+			std::shared_ptr<Command> command{};
+		};
+
+		std::vector<ButtonBinding> m_ButtonBindings{};
+		std::vector<JoystickBinding> m_JoystickBindings{};
 		std::unordered_map<unsigned int, KeyState> m_KeysDown{ };
 	};
 }

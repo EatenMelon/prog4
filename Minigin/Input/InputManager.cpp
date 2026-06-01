@@ -1,7 +1,8 @@
-#include <SDL3/SDL.h>
 #include "InputManager.h"
+#include <SDL3/SDL.h>
 
 #include <backends/imgui_impl_sdl3.h>
+#include <iostream>
 
 bool minigin::InputManager::ProcessInput(float deltaTime)
 {
@@ -56,7 +57,7 @@ bool minigin::InputManager::ProcessInput(float deltaTime)
 	// prepare the input context for each command
 	std::unordered_map<Command*, InputContext> commandContexts{};
 
-	for (auto& binding : m_InputBindings)
+	for (auto& binding : m_ButtonBindings)
 	{
 		auto it = m_KeysDown.find(binding.button);
 		if (it == m_KeysDown.end()) continue;
@@ -76,7 +77,7 @@ bool minigin::InputManager::ProcessInput(float deltaTime)
 		case Direction::None:  break;
 		}
 
-		if (glm::length(context.axis) > 0.f)
+		if (glm::dot(context.axis, context.axis) > 0.f)
 		{
 			context.axis = glm::normalize(context.axis);
 		}
@@ -86,6 +87,22 @@ bool minigin::InputManager::ProcessInput(float deltaTime)
 			context.axis = { 0.f, 0.f };
 		}
 	}
+
+	for (auto binding : m_JoystickBindings)
+	{
+		InputContext context{};
+
+		m_Gamepad.SetDeadzone(binding.deadzone);
+		context.axis = m_Gamepad.GetJoystick(binding.joystick);
+
+		if (glm::dot(context.axis, context.axis) <= 0.f) continue;
+
+		context.axis.y = -context.axis.y;
+
+		commandContexts[binding.command.get()] = context;
+	}
+
+	
 
 	// execute all necessary commands
 	for (auto& [command, context] : commandContexts)
@@ -114,7 +131,7 @@ void minigin::InputManager::BindInput
 )
 
 {
-	m_InputBindings.push_back(InputBinding{ name, button, state, command, axisDirection });
+	m_ButtonBindings.push_back(ButtonBinding{ name, button, state, command, axisDirection });
 }
 
 void minigin::InputManager::BindInput
@@ -127,24 +144,44 @@ void minigin::InputManager::BindInput
 )
 
 {
-	m_InputBindings.push_back(InputBinding{ name, static_cast<unsigned int>(button), state, command, axisDirection });
+	m_ButtonBindings.push_back(ButtonBinding{ name, static_cast<unsigned int>(button), state, command, axisDirection });
+}
+
+void minigin::InputManager::BindInput(const std::string& name, GamepadJoystick joystick, float deadzone, std::shared_ptr<Command> command)
+{
+	m_JoystickBindings.push_back(JoystickBinding{ name, joystick, deadzone, command });
 }
 
 void minigin::InputManager::UnBindInput(const std::string& actionName)
 {
 	// remove all bindings with the same name as the given name
-	m_InputBindings.erase
+	m_ButtonBindings.erase
 	(
 		std::remove_if
 		(
-			m_InputBindings.begin(),
-			m_InputBindings.end(),
+			m_ButtonBindings.begin(),
+			m_ButtonBindings.end(),
 
-			[&actionName](const InputBinding& b)
+			[&actionName](const ButtonBinding& b)
 			{
 				return b.actionName == actionName;
 			}
 		),
-		m_InputBindings.end()
+		m_ButtonBindings.end()
+	);
+
+	m_JoystickBindings.erase
+	(
+		std::remove_if
+		(
+			m_JoystickBindings.begin(),
+			m_JoystickBindings.end(),
+
+			[&actionName](const JoystickBinding& j)
+			{
+				return j.actionName == actionName;
+			}
+		),
+		m_JoystickBindings.end()
 	);
 }

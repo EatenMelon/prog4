@@ -1,14 +1,19 @@
 #include "InputManager.h"
-#include "InputManager.h"
 #include <SDL3/SDL.h>
 
 #include <backends/imgui_impl_sdl3.h>
 #include <iostream>
+#include <algorithm>
 
 void minigin::InputManager::Init(int numPlayers)
 {
 	m_Gamepads.clear();
 	m_Gamepads.reserve(numPlayers);
+
+	if (numPlayers > 4)
+	{
+		throw std::runtime_error("MAx limit of players is 4");
+	}
 
 	for (int p{ 0 }; p < numPlayers; ++p)
 	{
@@ -22,7 +27,11 @@ bool minigin::InputManager::ProcessInput(float deltaTime)
 	SDL_Event e;
 	while (SDL_PollEvent(&e))
 	{
-		auto& state = m_KeysDown[e.key.key];
+		PlayerButton pb{};
+		pb.button = e.key.key;
+		pb.playerID = -1;	// keyboard
+
+		auto& state = m_KeysDown[pb];
 		switch (e.type)
 		{
 		case SDL_EVENT_QUIT:
@@ -37,7 +46,7 @@ bool minigin::InputManager::ProcessInput(float deltaTime)
 			break;
 
 		case SDL_EVENT_KEY_UP:
-			m_KeysDown[e.key.key] = minigin::KeyState::OnRelease;
+			state = minigin::KeyState::OnRelease;
 			break;
 		}
 
@@ -49,7 +58,7 @@ bool minigin::InputManager::ProcessInput(float deltaTime)
 	// prepare the input context for each command
 	std::vector<std::pair<Command*, InputContext>> commandContexts;
 
-	for (int playerID{ 0 }; playerID < m_Gamepads.size(); ++playerID)
+	for (int playerID{ 0 }; playerID < static_cast<int>(m_Gamepads.size()); ++playerID)
 	{
 		auto& gamepad = m_Gamepads[playerID];
 		gamepad->ProcessInput();
@@ -59,22 +68,28 @@ bool minigin::InputManager::ProcessInput(float deltaTime)
 		{
 			auto gamepadButton = static_cast<GamepadButton>(button);
 
+			PlayerButton pb{};
+			pb.button = button;
+			pb.playerID = playerID;
+
 			if (gamepad->IsDownThisFrame(gamepadButton))
 			{
-				m_KeysDown[button] = minigin::KeyState::OnDown;
+				m_KeysDown[pb] = minigin::KeyState::OnDown;
 			}
 			else if (gamepad->IsUpThisFrame(gamepadButton))
 			{
-				m_KeysDown[button] = minigin::KeyState::OnRelease;
+				m_KeysDown[pb] = minigin::KeyState::OnRelease;
 			}
 			else if (gamepad->IsPressed(gamepadButton))
 			{
-				m_KeysDown[button] = minigin::KeyState::Pressed;
+				m_KeysDown[pb] = minigin::KeyState::Pressed;
 			}
 		}
 
-		for (const auto binding : m_JoystickBindings)
+		for (const auto& binding : m_JoystickBindings)
 		{
+			if (binding.playerID != playerID) continue;
+
 			InputContext context{};
 
 			gamepad->SetDeadzone(binding.deadzone);
@@ -91,11 +106,15 @@ bool minigin::InputManager::ProcessInput(float deltaTime)
 	// processing all button input
 	for (const auto& binding : m_ButtonBindings)
 	{
-		auto it = m_KeysDown.find(binding.button);
+		PlayerButton pb{};
+		pb.button = binding.button;
+		pb.playerID = binding.playerID;
+
+		auto it = m_KeysDown.find(pb);
 		if (it == m_KeysDown.end()) continue;
 
 		// only prepare context when the desired key state matches
-		if (binding.state != m_KeysDown[binding.button]) continue;
+		if (binding.state != m_KeysDown[pb]) continue;
 
 		InputContext context{};
 		context.playerID = binding.playerID;
@@ -123,16 +142,12 @@ bool minigin::InputManager::ProcessInput(float deltaTime)
 		commandContexts.emplace_back(binding.command.get(), context);
 	}
 
-	std::cout << "Executing commands: " << commandContexts.size() << "\n";
-
 	// execute all necessary commands
 	for (auto& [command, context] : commandContexts)
 	{
 		command->Execute(context, deltaTime);
 		std::cout << "Executing command for player " << context.playerID << "\n";
 	}
-
-	std::cout << "Command count: " << commandContexts.size() << "\n";
 
 	// make sure on down & on release are single time events
 	// kind of reverse engineering SDL (T^T)

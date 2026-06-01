@@ -183,14 +183,14 @@ static void load()
 		TaizoHori->SetLocalPosition(300.f, 200.f);
 
 		int playerID{ 0 };
-		auto moveCommand = std::make_shared<minigin::MoveCommand>(TaizoHori.get(), playerID, 500.f);
+		auto moveCommand = std::make_shared<minigin::MoveCommand>(TaizoHori.get(), playerID, 250.f);
 
 		minigin::InputManager::GetInstance().BindInput("Move", SDLK_W, minigin::KeyState::Pressed, moveCommand, playerID, minigin::Direction::Up);
 		minigin::InputManager::GetInstance().BindInput("Move", SDLK_A, minigin::KeyState::Pressed, moveCommand, playerID, minigin::Direction::Left);
 		minigin::InputManager::GetInstance().BindInput("Move", SDLK_S, minigin::KeyState::Pressed, moveCommand, playerID, minigin::Direction::Down);
 		minigin::InputManager::GetInstance().BindInput("Move", SDLK_D, minigin::KeyState::Pressed, moveCommand, playerID, minigin::Direction::Right);
 		
-		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadJoystick::LEFT_JOYSTICK, 0.9f, moveCommand, playerID);
+		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadJoystick::LEFT_JOYSTICK, 0.5f, moveCommand, playerID);
 
 		auto renderComp = TaizoHori->AddComponent<minigin::RenderComponent>();
 		if (renderComp != nullptr) renderComp->SetTexture("Sprites/TaizoHori.png");
@@ -213,7 +213,7 @@ static void load()
 
 		}
 
-		auto scoreCommand = std::make_shared<digdug::ScoreCommand>(TaizoHori.get(), 0, score);
+		auto scoreCommand = std::make_shared<digdug::ScoreCommand>(TaizoHori.get(), playerID, score);
 		minigin::InputManager::GetInstance().BindInput("Score", SDLK_X, minigin::KeyState::OnDown, scoreCommand, playerID);
 
 		scene.Add(std::move(TaizoHori));
@@ -273,7 +273,7 @@ static void load()
 		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::DPAD_DOWN, minigin::KeyState::Pressed, moveCommand, playerID, minigin::Direction::Down);
 		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::DPAD_RIGHT, minigin::KeyState::Pressed, moveCommand, playerID, minigin::Direction::Right);
 
-		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadJoystick::LEFT_JOYSTICK, 0.9f, moveCommand, playerID);
+		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadJoystick::LEFT_JOYSTICK, 0.5f, moveCommand, playerID);
 
 		auto renderComp = Pooka->AddComponent<minigin::RenderComponent>();
 		if (renderComp != nullptr) renderComp->SetTexture("Sprites/Pooka.png");

@@ -52,8 +52,34 @@ namespace minigin
 			int playerID{ -1 };
 		};
 
+		struct PlayerButton
+		{
+			unsigned int button{};
+			int playerID{};
+
+			bool operator==(const PlayerButton& other) const noexcept
+			{
+				return button == other.button &&
+					playerID == other.playerID;
+			}
+		};
+
+		struct PlayerButtonHash
+		{
+			// hash function for unordered maps
+			// Used the example of the PointHasher from geeksforgeeks:
+			// https://www.geeksforgeeks.org/cpp/implement-custom-hash-functions-for-user-defined-types-in-std-unordered_map/
+			std::size_t operator()(const PlayerButton& pb) const noexcept
+			{
+				std::size_t h1 = std::hash<unsigned int>{}(pb.button);
+				std::size_t h2 = std::hash<int>{}(pb.playerID);
+
+				return h1 ^ (h2 << 1);
+			}
+		};
+
 		std::vector<ButtonBinding> m_ButtonBindings{};
 		std::vector<JoystickBinding> m_JoystickBindings{};
-		std::unordered_map<unsigned int, KeyState> m_KeysDown{ };
+		std::unordered_map<PlayerButton, KeyState, PlayerButtonHash> m_KeysDown{ };
 	};
 }

@@ -1,4 +1,5 @@
 #include "GameObject.h"
+#include "GameObject.h"
 
 void minigin::GameObject::FixedUpdate(float fixedFrameTime)
 {
@@ -132,6 +133,11 @@ void minigin::GameObject::Destroy()
 bool minigin::GameObject::MarkedForDestruction() const
 {
 	return m_Destroyed;
+}
+
+size_t minigin::GameObject::GetSceneId() const
+{
+	return m_SceneId;
 }
 
 void minigin::GameObject::SetParent(GameObject* parent, bool keepWorldTransform)

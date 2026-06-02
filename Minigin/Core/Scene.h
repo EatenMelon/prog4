@@ -26,9 +26,10 @@ namespace minigin
 
 	private:
 		friend class SceneManager;
-		explicit Scene() = default;
+		explicit Scene(size_t id) : m_Id{ id } { }
 
-		std::vector < std::unique_ptr<GameObject>> m_objects{};
+		std::vector<std::unique_ptr<GameObject>> m_objects{};
+		size_t m_Id{ 0 };
 	};
 
 }

@@ -19,6 +19,7 @@ namespace minigin
 		void Render() const;
 		void Cleanup();
 		bool SetActiveScene(size_t index);
+		size_t ActiveSceneId() const;
 
 	private:
 		friend class Singleton<SceneManager>;

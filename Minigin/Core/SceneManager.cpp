@@ -1,4 +1,5 @@
 #include "SceneManager.h"
+#include "SceneManager.h"
 #include "Scene.h"
 #include <imgui.h>
 #include <string>
@@ -74,8 +75,13 @@ bool minigin::SceneManager::SetActiveScene(size_t index)
 	return true;
 }
 
+size_t minigin::SceneManager::ActiveSceneId() const
+{
+	return m_ActiveSceneIdx;
+}
+
 minigin::Scene& minigin::SceneManager::CreateScene()
 {
-	m_scenes.emplace_back(new Scene());
+	m_scenes.emplace_back(new Scene(m_scenes.size()));
 	return *m_scenes.back();
 }

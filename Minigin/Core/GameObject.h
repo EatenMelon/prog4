@@ -35,6 +35,7 @@ namespace minigin
 
 		void Destroy();
 		bool MarkedForDestruction() const;
+		size_t GetSceneId() const;
 
 		void SetParent(GameObject* parent, bool keepWorldTransform = false);
 
@@ -96,6 +97,9 @@ namespace minigin
 		void AddChild(GameObject* child);
 		void RemoveChild(GameObject* child);
 
+		friend class Scene;
+		void SetSceneId(size_t id) { m_SceneId = id; }
+
 		std::unordered_map<std::type_index, std::unique_ptr<Component>> m_Components{};
 		std::queue<std::type_index> m_InitQueue{};
 
@@ -107,6 +111,7 @@ namespace minigin
 		bool m_PositionIsDirty{ false };
 
 		bool m_Destroyed{ false };
+		size_t m_SceneId{ 0 };
 	};
 
 }

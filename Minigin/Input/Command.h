@@ -1,5 +1,6 @@
 #pragma once
 #include <glm/glm.hpp>
+#include <SceneManager.h>
 
 namespace minigin
 {
@@ -34,7 +35,15 @@ namespace minigin
 
 		void Execute(const InputContext& context, float deltaTime) override final
 		{
-			if (context.playerID != m_playerID) return;
+			if (SceneManager::GetInstance().ActiveSceneId() != m_Actor->GetSceneId())
+			{
+				return;
+			}
+
+			if (context.playerID != m_playerID)
+			{
+				return;
+			}
 
 			ActorExecute(context, deltaTime);
 		}
@@ -49,6 +58,8 @@ namespace minigin
 		GameObject* m_Actor;
 		int m_playerID{};
 	};
+
+
 
 	// standard move command, so i'll keep it in the engine
 	class MoveCommand final : public ActorCommand

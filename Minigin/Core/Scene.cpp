@@ -7,6 +7,7 @@ using namespace minigin;
 void Scene::Add(std::unique_ptr<GameObject> object)
 {
 	assert(object != nullptr && "Cannot add a null GameObject to the scene.");
+	object->SetSceneId(m_Id);
 	m_objects.emplace_back(std::move(object));
 }
 

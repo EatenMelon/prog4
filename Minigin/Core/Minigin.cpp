@@ -112,6 +112,7 @@ minigin::Minigin::Minigin(const std::filesystem::path& dataPath)
 #endif
 
 	ServiceLocator::GetSoundSystem()->Init();
+	SceneManager::GetInstance().SetActiveScene(0);
 }
 
 minigin::Minigin::~Minigin()

@@ -11,9 +11,11 @@ void digdug::HealthDisplay::Init()
 	UpdateDisplay();
 }
 
-void digdug::HealthDisplay::OnNotify(minigin::IEvent event)
+void digdug::HealthDisplay::OnNotify(const minigin::IEvent* event)
 {
-	if (event != minigin::IEvent::ReceivedDamage) return;
+	auto plain = static_cast<const minigin::PlainEvent*>(event);
+
+	if (plain->GetEventHash() != minigin::PlainEvent::CreateHashSDBM("damage")) return;
 
 	UpdateDisplay();
 }

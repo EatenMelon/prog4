@@ -1,5 +1,4 @@
 #pragma once
-#include <string>
 #include <vector>
 #include "Events.h"
 
@@ -13,7 +12,7 @@ namespace minigin
 		bool UnSubscribe(IObserver* subscriber);
 
 	protected:
-		void Notify(IEvent event);
+		void Notify(const IEvent* event);
 
 	private:
 		std::vector<IObserver*> m_Observers;

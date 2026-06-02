@@ -43,6 +43,7 @@ add_library(${ENGINE_NAME} STATIC
     "${INPUT_DIR}/Command.cpp"
 
     "${INTERFACES_DIR}/Subject.cpp"
+    "${INTERFACES_DIR}/Events.cpp"
 
     "${AUDIO_DIR}/MiniginSoundSystem.cpp"
     "${AUDIO_DIR}/MiniginLoggingSoundSystem.cpp"

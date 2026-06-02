@@ -17,7 +17,9 @@ namespace digdug
 		void AddPoints(int points)
 		{
 			m_Score += points;
-			Notify(minigin::IEvent::ReceivedPoints);
+			auto event = minigin::PlainEvent("points");
+
+			Notify(&event);
 		}
 
 		int GetScore() const { return m_Score; }

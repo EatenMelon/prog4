@@ -12,7 +12,10 @@ namespace digdug
 		void Damage(int damage)
 		{
 			m_Health -= damage;
-			Notify(minigin::IEvent::ReceivedDamage);
+
+			auto event = minigin::PlainEvent("damage");
+
+			Notify(&event);
 		}
 
 		int GetHealth() const { return m_Health; }

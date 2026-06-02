@@ -183,12 +183,14 @@ static void load()
 		TaizoHori->SetLocalPosition(300.f, 200.f);
 
 		int playerID{ 0 };
+		int keyboard{ -1 };
 		auto moveCommand = std::make_shared<minigin::MoveCommand>(TaizoHori.get(), playerID, 250.f);
+		auto moveCommandk = std::make_shared<minigin::MoveCommand>(TaizoHori.get(), keyboard, 250.f);
 
-		minigin::InputManager::GetInstance().BindInput("Move", SDLK_W, minigin::KeyState::Pressed, moveCommand, playerID, minigin::Direction::Up);
-		minigin::InputManager::GetInstance().BindInput("Move", SDLK_A, minigin::KeyState::Pressed, moveCommand, playerID, minigin::Direction::Left);
-		minigin::InputManager::GetInstance().BindInput("Move", SDLK_S, minigin::KeyState::Pressed, moveCommand, playerID, minigin::Direction::Down);
-		minigin::InputManager::GetInstance().BindInput("Move", SDLK_D, minigin::KeyState::Pressed, moveCommand, playerID, minigin::Direction::Right);
+		minigin::InputManager::GetInstance().BindInput("Move", SDLK_W, minigin::KeyState::Pressed, moveCommandk, keyboard, minigin::Direction::Up);
+		minigin::InputManager::GetInstance().BindInput("Move", SDLK_A, minigin::KeyState::Pressed, moveCommandk, keyboard, minigin::Direction::Left);
+		minigin::InputManager::GetInstance().BindInput("Move", SDLK_S, minigin::KeyState::Pressed, moveCommandk, keyboard, minigin::Direction::Down);
+		minigin::InputManager::GetInstance().BindInput("Move", SDLK_D, minigin::KeyState::Pressed, moveCommandk, keyboard, minigin::Direction::Right);
 		
 		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadJoystick::LEFT_JOYSTICK, 0.5f, moveCommand, playerID);
 
@@ -202,8 +204,8 @@ static void load()
 			healthDisplayTaizoHori->SetHealthComponent(health);
 		}
 
-		auto damageCommand = std::make_shared<digdug::DamageCommand>(TaizoHori.get(), playerID, health);
-		minigin::InputManager::GetInstance().BindInput("Damage", SDLK_C, minigin::KeyState::OnDown, damageCommand, playerID);
+		auto damageCommand = std::make_shared<digdug::DamageCommand>(TaizoHori.get(), keyboard, health);
+		minigin::InputManager::GetInstance().BindInput("Damage", SDLK_C, minigin::KeyState::OnDown, damageCommand, keyboard);
 
 		auto score = TaizoHori->AddComponent<digdug::ScoreComponent>();
 		if (score != nullptr && scoreDisplayTaizoHori != nullptr)
@@ -213,8 +215,8 @@ static void load()
 
 		}
 
-		auto scoreCommand = std::make_shared<digdug::ScoreCommand>(TaizoHori.get(), playerID, score);
-		minigin::InputManager::GetInstance().BindInput("Score", SDLK_X, minigin::KeyState::OnDown, scoreCommand, playerID);
+		auto scoreCommand = std::make_shared<digdug::ScoreCommand>(TaizoHori.get(), keyboard, score);
+		minigin::InputManager::GetInstance().BindInput("Score", SDLK_X, minigin::KeyState::OnDown, scoreCommand, keyboard);
 
 		scene.Add(std::move(TaizoHori));
 		scene.Add(std::move(HealthTaizoHori));

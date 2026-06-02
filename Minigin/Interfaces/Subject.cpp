@@ -1,4 +1,5 @@
 #include "Subject.h"
+#include "Subject.h"
 #include "Observer.h"
 #include <algorithm>
 
@@ -27,7 +28,7 @@ bool minigin::ISubject::UnSubscribe(minigin::IObserver* subscriber)
 	return true;
 }
 
-void minigin::ISubject::Notify(IEvent event)
+void minigin::ISubject::Notify(const IEvent* event)
 {
 	for (auto& observer : m_Observers)
 	{

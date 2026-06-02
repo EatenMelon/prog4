@@ -146,7 +146,7 @@ bool minigin::InputManager::ProcessInput(float deltaTime)
 	for (auto& [command, context] : commandContexts)
 	{
 		command->Execute(context, deltaTime);
-		std::cout << "Executing command for player " << context.playerID << "\n";
+		//std::cout << "Executing command for player " << context.playerID << "\n";
 	}
 
 	// make sure on down & on release are single time events

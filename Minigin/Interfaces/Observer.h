@@ -7,6 +7,7 @@ namespace minigin
 	class IObserver
 	{
 	public:
-		virtual void OnNotify(IEvent event) = 0;
+		virtual ~IObserver() = default;
+		virtual void OnNotify(const IEvent* event) = 0;
 	};
 }

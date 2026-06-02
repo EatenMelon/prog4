@@ -4,7 +4,7 @@
 
 namespace digdug
 {
-	class HealthComponent final : public minigin::Component, public minigin::ISubject
+	class HealthComponent final : public minigin::Component, public minigin::Subject
 	{
 	public:
 		using Component::Component;

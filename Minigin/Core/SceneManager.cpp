@@ -1,52 +1,83 @@
 #include "SceneManager.h"
 #include "Scene.h"
-
-void minigin::SceneManager::Init()
-{
-	for (auto& scene : m_scenes)
-	{
-		scene->Init();
-	}
-}
+#include <imgui.h>
+#include <string>
 
 void minigin::SceneManager::FixedUpdate(float fixedFrameTime)
 {
-	for (auto& scene : m_scenes)
-	{
-		scene->FixedUpdate(fixedFrameTime);
-	}
+	if (m_ActiveSceneIdx >= m_scenes.size()) return;
+
+	m_scenes[m_ActiveSceneIdx]->FixedUpdate(fixedFrameTime);
 }
 
 void minigin::SceneManager::Update(float deltaTime)
 {
-	for(auto& scene : m_scenes)
-	{
-		scene->Update(deltaTime);
-	}
+	if (m_ActiveSceneIdx >= m_scenes.size()) return;
+
+	m_scenes[m_ActiveSceneIdx]->Update(deltaTime);
 }
 
-void minigin::SceneManager::GuiRender() const
+void minigin::SceneManager::GuiRender()
 {
-	for (const auto& scene : m_scenes)
+	if (m_ActiveSceneIdx >= m_scenes.size()) return;
+
+	m_scenes[m_ActiveSceneIdx]->GuiRender();
+
+	bool open = true;
+	ImGui::Begin("Scene selector", &open);
 	{
-		scene->GuiRender();
+		ImGui::Text("Active Scene [%zu]", m_ActiveSceneIdx);
+
+		for (size_t s{ 0 }; s < m_scenes.size(); ++s)
+		{
+			if (s == m_ActiveSceneIdx) continue;
+
+			std::string label = "Scene " + std::to_string(s);
+
+			if (!ImGui::Button(label.c_str(), { 120, 0 }))
+			{
+				continue;
+			}
+
+			SetActiveScene(s);
+		}
 	}
+	ImGui::End();
 }
 
 void minigin::SceneManager::Render() const
 {
-	for (const auto& scene : m_scenes)
-	{
-		scene->Render();
-	}
+	if (m_ActiveSceneIdx >= m_scenes.size()) return;
+
+	m_scenes[m_ActiveSceneIdx]->Render();
 }
 
 void minigin::SceneManager::Cleanup()
 {
-	for (const auto& scene : m_scenes)
+	for (auto& scene : m_scenes)
 	{
 		scene->Cleanup();
 	}
+
+	m_scenes.clear();
+	m_ActiveSceneIdx = 0;
+}
+
+bool minigin::SceneManager::SetActiveScene(size_t index)
+{
+	if (index >= m_scenes.size()) return false;
+
+	if (index == m_ActiveSceneIdx) return false;
+
+	// exit old scene
+	//if (m_ActiveSceneIdx < m_scenes.size()) m_scenes[m_ActiveSceneIdx]->Cleanup();
+
+	m_ActiveSceneIdx = index;
+
+	// enter new scene
+	m_scenes[m_ActiveSceneIdx]->Init();
+
+	return true;
 }
 
 minigin::Scene& minigin::SceneManager::CreateScene()

@@ -1,4 +1,5 @@
 #include "GameObject.h"
+#include "GameObject.h"
 
 void minigin::GameObject::Init()
 {

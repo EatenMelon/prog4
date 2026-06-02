@@ -128,8 +128,6 @@ minigin::Minigin::~Minigin()
 void minigin::Minigin::Run(const std::function<void()>& load)
 {
 	load();
-
-	SceneManager::GetInstance().Init();
 		
 #ifndef __EMSCRIPTEN__
 	m_Timer.SetFPS(60);
@@ -143,6 +141,8 @@ void minigin::Minigin::Run(const std::function<void()>& load)
 
 	emscripten_set_main_loop_arg(&LoopCallback, this, 0, true);
 #endif
+
+	SceneManager::GetInstance().Cleanup();
 }
 
 void minigin::Minigin::RunOneFrame()
@@ -163,8 +163,6 @@ void minigin::Minigin::RunOneFrame()
 
 	SceneManager::GetInstance().Update(m_Timer.GetDeltaTime());
 	Renderer::GetInstance().Render();
-
-	SceneManager::GetInstance().Cleanup();
 
 	m_Timer.WaitUntilNextFrame();
 }

@@ -3,7 +3,7 @@
 #include "Observer.h"
 #include <algorithm>
 
-bool minigin::ISubject::Subscrube(minigin::IObserver* subscriber)
+bool minigin::Subject::Subscrube(minigin::IObserver* subscriber)
 {
 	if (subscriber == nullptr) return false;
 
@@ -15,7 +15,7 @@ bool minigin::ISubject::Subscrube(minigin::IObserver* subscriber)
 	return true;
 }
 
-bool minigin::ISubject::UnSubscribe(minigin::IObserver* subscriber)
+bool minigin::Subject::UnSubscribe(minigin::IObserver* subscriber)
 {
 	if (subscriber == nullptr) return false;
 
@@ -28,7 +28,7 @@ bool minigin::ISubject::UnSubscribe(minigin::IObserver* subscriber)
 	return true;
 }
 
-void minigin::ISubject::Notify(const IEvent* event)
+void minigin::Subject::Notify(const IEvent* event)
 {
 	for (auto& observer : m_Observers)
 	{

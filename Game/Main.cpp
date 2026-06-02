@@ -67,8 +67,13 @@ static void load()
 
 			if (text != nullptr)
 			{
+				SDL_Color color{};
+				color.r = static_cast<unsigned char>(std::rand() % 255);
+				color.g = static_cast<unsigned char>(std::rand() % 255);
+				color.b = static_cast<unsigned char>(std::rand() % 255);
+
 				text->SetFont(font);
-				text->SetColor({ 255, 255, 0, 255 });
+				text->SetColor(color);
 				text->SetText("Programming 4 Assignment");
 			}
 		}
@@ -306,6 +311,15 @@ static void load()
 	}
 }
 
+static void DoubleLoad()
+{
+	load();
+	load();
+	load();
+	load();
+	load();
+}
+
 int main(int, char*[])
 {
 #if defined(WIN32) && defined(_DEBUG)
@@ -327,7 +341,7 @@ int main(int, char*[])
 		data_location = "../Data/";
 #endif
 	minigin::Minigin engine(data_location);
-	engine.Run(load);
+	engine.Run(DoubleLoad);
 
     return 0;
 }

@@ -9,7 +9,7 @@ namespace minigin
 
 namespace digdug
 {
-	class ScoreComponent final : public minigin::Component, public minigin::ISubject
+	class ScoreComponent final : public minigin::Component, public minigin::Subject
 	{
 	public:
 		using Component::Component;

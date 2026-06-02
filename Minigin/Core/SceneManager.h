@@ -1,6 +1,5 @@
 #pragma once
 #include <vector>
-#include <string>
 #include <memory>
 #include "Scene.h"
 #include "Singleton.h"
@@ -13,16 +12,18 @@ namespace minigin
 	public:
 		Scene& CreateScene();
 
-		void Init();
 		void FixedUpdate(float fixedFrameTime);
 		void Update(float deltaTime);
-		void GuiRender() const;
+		void GuiRender();
 		void Render() const;
 		void Cleanup();
+		bool SetActiveScene(size_t index);
 
 	private:
 		friend class Singleton<SceneManager>;
 		SceneManager() = default;
 		std::vector<std::unique_ptr<Scene>> m_scenes{};
+
+		size_t m_ActiveSceneIdx{ 0 };
 	};
 }

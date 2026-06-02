@@ -9,7 +9,7 @@
 #include "Renderer.h"
 #include "Font.h"
 
-void minigin::TextComponent::Init()
+void minigin::TextComponent::Start()
 {
 	m_RenderComponent = GetOwner().GetComponent<RenderComponent>();
 	m_NeedsUpdate = true;

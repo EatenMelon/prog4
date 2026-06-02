@@ -12,7 +12,6 @@ namespace minigin
 		void Remove(const GameObject& object);
 		void RemoveAll();
 
-		void Init();
 		void FixedUpdate(float fixedFrameTime);
 		void Update(float deltaTime);
 		void GuiRender() const;

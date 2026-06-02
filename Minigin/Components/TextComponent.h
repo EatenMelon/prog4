@@ -15,7 +15,7 @@ namespace minigin
 	public:
 		using Component::Component;
 
-		void Init() override;
+		void Start() override;
 		void Update(float deltaTime) override;
 
 		void SetText(const std::string& text);

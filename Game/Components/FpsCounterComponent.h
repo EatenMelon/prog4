@@ -13,7 +13,7 @@ namespace digdug
 	public:
 		using minigin::Component::Component;
 
-		void Init() override;
+		void Start() override;
 		void Update(float deltaTime) override;
 
 	private:

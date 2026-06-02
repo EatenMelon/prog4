@@ -6,7 +6,7 @@
 #include "GameObject.h"
 #include "TextComponent.h"
 
-void digdug::FpsCounterComponent::Init()
+void digdug::FpsCounterComponent::Start()
 {
 	m_TextComponent = GetOwner().GetComponent<minigin::TextComponent>();
 }

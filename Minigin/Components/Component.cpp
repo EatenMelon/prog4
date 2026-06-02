@@ -5,10 +5,9 @@ minigin::Component::Component(GameObject* owner)
 	: m_Owner{ owner }
 	, m_Destroyed{ false }
 {
-
 }
 
-void minigin::Component::Init() { }
+void minigin::Component::Start() { }
 
 void minigin::Component::FixedUpdate(float) { }
 

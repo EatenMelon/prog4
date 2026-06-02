@@ -69,13 +69,7 @@ bool minigin::SceneManager::SetActiveScene(size_t index)
 
 	if (index == m_ActiveSceneIdx) return false;
 
-	// exit old scene
-	//if (m_ActiveSceneIdx < m_scenes.size()) m_scenes[m_ActiveSceneIdx]->Cleanup();
-
 	m_ActiveSceneIdx = index;
-
-	// enter new scene
-	m_scenes[m_ActiveSceneIdx]->Init();
 
 	return true;
 }

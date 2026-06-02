@@ -6,7 +6,7 @@
 #include "HealthComponent.h"
 #include "GameObject.h"
 
-void digdug::HealthDisplay::Init()
+void digdug::HealthDisplay::Start()
 {
 	UpdateDisplay();
 }

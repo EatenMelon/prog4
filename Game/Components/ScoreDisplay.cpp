@@ -6,7 +6,7 @@
 #include "ScoreComponent.h"
 #include "GameObject.h"
 
-void digdug::ScoreDisplay::Init()
+void digdug::ScoreDisplay::Start()
 {
 	UpdateDisplay();
 }

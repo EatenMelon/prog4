@@ -15,7 +15,7 @@ namespace digdug
 	public:
 		using Component::Component;
 
-		void Init() override;
+		void Start() override;
 		void OnNotify(const minigin::IEvent* event) override;
 
 		void SetHealthComponent(HealthComponent* healthComp) { m_Health = healthComp; }

@@ -8,6 +8,7 @@
 
 #include "Component.h"
 #include "Transform.h"
+#include <queue>
 
 namespace minigin
 {
@@ -15,7 +16,6 @@ namespace minigin
 	class GameObject final // has to be enabled to use shared_from_this()
 	{
 	public:
-		void Init();
 		void FixedUpdate(float fixedFrameTime);
 		void Update(float deltaTime);
 		void GuiRender() const;
@@ -48,7 +48,7 @@ namespace minigin
 		{
 			if (!std::is_base_of_v<Component, T>) return nullptr;
 			if (typeid(T) == typeid(Component)) return nullptr;
-			if (m_Components.find(typeid(T)) != m_Components.end()) return nullptr;
+			if (m_Components.contains(typeid(T))) return nullptr;
 
 			try
 			{
@@ -60,6 +60,7 @@ namespace minigin
 
 				// return component
 				auto comp = m_Components.find(typeid(T));
+				m_InitQueue.push(typeid(T));
 
 				return static_cast<T*>(comp->second.get());
 			}
@@ -96,6 +97,7 @@ namespace minigin
 		void RemoveChild(GameObject* child);
 
 		std::unordered_map<std::type_index, std::unique_ptr<Component>> m_Components{};
+		std::queue<std::type_index> m_InitQueue{};
 
 		GameObject* m_Parent{ nullptr };
 		std::vector<GameObject*> m_Children;

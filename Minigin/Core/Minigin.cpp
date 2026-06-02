@@ -112,7 +112,6 @@ minigin::Minigin::Minigin(const std::filesystem::path& dataPath)
 #endif
 
 	ServiceLocator::GetSoundSystem()->Init();
-	SceneManager::GetInstance().SetActiveScene(0);
 }
 
 minigin::Minigin::~Minigin()
@@ -129,6 +128,7 @@ minigin::Minigin::~Minigin()
 void minigin::Minigin::Run(const std::function<void()>& load)
 {
 	load();
+	SceneManager::GetInstance().SetActiveScene(0);
 		
 #ifndef __EMSCRIPTEN__
 	m_Timer.SetFPS(60);

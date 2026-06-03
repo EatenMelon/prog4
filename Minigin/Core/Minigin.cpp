@@ -20,6 +20,8 @@
 #include "ResourceManager.h"
 #include "ServiceLocator.h"
 
+#include <HitboxManager.h>
+
 #ifdef _DEBUG
 #include <MiniginLoggingSoundSystem.h>
 #endif
@@ -154,6 +156,8 @@ void minigin::Minigin::RunOneFrame()
 	m_Lag += m_Timer.GetDeltaTime();
 
 	m_quit = !InputManager::GetInstance().ProcessInput(m_Timer.GetDeltaTime());
+
+	minigin::HitboxManager::GetInstance().ChechCollisions();
 
 	while (m_Lag >= m_Timer.GetFixedFrameTime())
 	{

@@ -11,11 +11,11 @@ void digdug::ScoreDisplay::Start()
 	UpdateDisplay();
 }
 
-void digdug::ScoreDisplay::OnNotify(const minigin::IEvent* event)
+void digdug::ScoreDisplay::OnNotify(const minigin::IEvent& event)
 {
-	auto plain = static_cast<const minigin::PlainEvent*>(event);
+	auto plain = static_cast<const minigin::PlainEvent&>(event);
 
-	if (plain->GetEventHash() != minigin::PlainEvent::CreateHashSDBM("points")) return;
+	if (plain.GetEventHash() != minigin::PlainEvent::CreateHashSDBM("points")) return;
 
 	UpdateDisplay();
 }

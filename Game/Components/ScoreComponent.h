@@ -20,7 +20,7 @@ namespace digdug
 			m_Score += points;
 			auto event = minigin::PlainEvent("points");
 
-			Notify(&event);
+			Notify(event);
 		}
 
 		int GetScore() const { return m_Score; }

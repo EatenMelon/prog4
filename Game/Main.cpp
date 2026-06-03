@@ -18,14 +18,12 @@
 // my components
 #include <FpsCounterComponent.h>
 #include <HealthComponent.h>
-#include <HealthDisplay.h>
 #include <ScoreComponent.h>
 #include <ScoreDisplay.h>
+#include <Hitbox.h>
 
 // input
 #include "InputManager.h"
-#include <DamageCommand.h>
-#include <ScoreCommand.h>
 
 #include <filesystem>
 
@@ -146,12 +144,12 @@ static void load()
 	auto TaizoHori = std::make_unique<minigin::GameObject>();
 	{
 		auto HealthTaizoHori = std::make_unique<minigin::GameObject>();
-		auto healthDisplayTaizoHori = HealthTaizoHori->AddComponent<digdug::HealthDisplay>();
+		HealthTaizoHori->SetLocalPosition(15.f, 150.f);
+
+		auto health = TaizoHori->AddComponent<digdug::HealthComponent>();
+		if (health != nullptr)
 		{
-			HealthTaizoHori->SetLocalPosition(15.f, 150.f);
-
 			auto renderComp = HealthTaizoHori->AddComponent<minigin::RenderComponent>();
-
 			if (renderComp != nullptr)
 			{
 				auto text = HealthTaizoHori->AddComponent<minigin::TextComponent>();
@@ -161,9 +159,15 @@ static void load()
 					text->SetFont(smallFont);
 					text->SetColor({ 255, 255, 0, 255 });
 					text->SetText("...");
+
+					health->LinkTextComponent(text);
 				}
 			}
 		}
+
+		auto hitbox = TaizoHori->AddComponent<minigin::Hitbox>();
+		hitbox->SetSize(16, 16);
+		hitbox->HitEnterEvent().Subscrube(health);
 
 		auto ScoreTaizoHori = std::make_unique<minigin::GameObject>();
 		auto scoreDisplayTaizoHori = ScoreTaizoHori->AddComponent<digdug::ScoreDisplay>();
@@ -202,26 +206,12 @@ static void load()
 		auto renderComp = TaizoHori->AddComponent<minigin::RenderComponent>();
 		if (renderComp != nullptr) renderComp->SetTexture("Sprites/TaizoHori.png");
 
-		auto health = TaizoHori->AddComponent<digdug::HealthComponent>();
-		if (health != nullptr && healthDisplayTaizoHori != nullptr)
-		{
-			health->Subscrube(healthDisplayTaizoHori);
-			healthDisplayTaizoHori->SetHealthComponent(health);
-		}
-
-		auto damageCommand = std::make_shared<digdug::DamageCommand>(TaizoHori.get(), keyboard, health);
-		minigin::InputManager::GetInstance().BindInput("Damage", SDLK_C, minigin::KeyState::OnDown, damageCommand, keyboard);
-
 		auto score = TaizoHori->AddComponent<digdug::ScoreComponent>();
 		if (score != nullptr && scoreDisplayTaizoHori != nullptr)
 		{
 			score->Subscrube(scoreDisplayTaizoHori);
 			scoreDisplayTaizoHori->SetScoreComponent(score);
-
 		}
-
-		auto scoreCommand = std::make_shared<digdug::ScoreCommand>(TaizoHori.get(), keyboard, score);
-		minigin::InputManager::GetInstance().BindInput("Score", SDLK_X, minigin::KeyState::OnDown, scoreCommand, keyboard);
 
 		scene.Add(std::move(TaizoHori));
 		scene.Add(std::move(HealthTaizoHori));
@@ -231,29 +221,34 @@ static void load()
 	auto Pooka = std::make_unique<minigin::GameObject>();
 	{
 		auto HealthPooka = std::make_unique<minigin::GameObject>();
-		auto healthDisplayPooka = HealthPooka->AddComponent<digdug::HealthDisplay>();
+		HealthPooka->SetLocalPosition(15.f, 250.f);
+
+		auto health = Pooka->AddComponent<digdug::HealthComponent>();
+		if (health != nullptr)
 		{
-			HealthPooka->SetLocalPosition(15.f, 210.f);
-
 			auto renderComp = HealthPooka->AddComponent<minigin::RenderComponent>();
-
 			if (renderComp != nullptr)
 			{
 				auto text = HealthPooka->AddComponent<minigin::TextComponent>();
-
 				if (text != nullptr)
 				{
 					text->SetFont(smallFont);
 					text->SetColor({ 255, 255, 0, 255 });
 					text->SetText("...");
+
+					health->LinkTextComponent(text);
 				}
 			}
 		}
 
+		auto hitbox = Pooka->AddComponent<minigin::Hitbox>();
+		hitbox->SetSize(16, 16);
+		hitbox->HitExitEvent().Subscrube(health);
+
 		auto ScorePooka = std::make_unique<minigin::GameObject>();
+		ScorePooka->SetLocalPosition(15.f, 230.f);
 		auto scoreDisplayPooka = ScorePooka->AddComponent<digdug::ScoreDisplay>();
 		{
-			ScorePooka->SetLocalPosition(15.f, 230.f);
 
 			auto renderComp = ScorePooka->AddComponent<minigin::RenderComponent>();
 
@@ -285,25 +280,12 @@ static void load()
 		auto renderComp = Pooka->AddComponent<minigin::RenderComponent>();
 		if (renderComp != nullptr) renderComp->SetTexture("Sprites/Pooka.png");
 
-		auto health = Pooka->AddComponent<digdug::HealthComponent>();
-		if (health != nullptr)
-		{
-			health->Subscrube(healthDisplayPooka);
-			healthDisplayPooka->SetHealthComponent(health);
-		}
-
-		auto damageCommand = std::make_shared<digdug::DamageCommand>(Pooka.get(), playerID, health);
-		minigin::InputManager::GetInstance().BindInput("Damage", minigin::GamepadButton::WEST, minigin::KeyState::OnDown, damageCommand, playerID);
-
 		auto score = Pooka->AddComponent<digdug::ScoreComponent>();
 		if (score != nullptr)
 		{
 			score->Subscrube(scoreDisplayPooka);
 			scoreDisplayPooka->SetScoreComponent(score);
 		}
-
-		auto scoreCommand = std::make_shared<digdug::ScoreCommand>(Pooka.get(), playerID, score);
-		minigin::InputManager::GetInstance().BindInput("Score", minigin::GamepadButton::SOUTH, minigin::KeyState::OnDown, scoreCommand, playerID);
 
 		scene.Add(std::move(Pooka));
 		scene.Add(std::move(HealthPooka));

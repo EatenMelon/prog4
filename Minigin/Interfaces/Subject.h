@@ -11,8 +11,7 @@ namespace minigin
 		bool Subscrube(IObserver* subscriber);
 		bool UnSubscribe(IObserver* subscriber);
 
-	protected:
-		void Notify(const IEvent* event);
+		void Notify(const IEvent& event);
 
 	private:
 		std::vector<IObserver*> m_Observers;

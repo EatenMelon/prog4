@@ -17,7 +17,7 @@ namespace digdug
 		using Component::Component;
 
 		void Start() override;
-		void OnNotify(const minigin::IEvent* event) override;
+		void OnNotify(const minigin::IEvent& event) override;
 
 		void SetScoreComponent(ScoreComponent* scoreComp) { m_Score = scoreComp; }
 

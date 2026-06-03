@@ -1,28 +1,32 @@
 #pragma once
 #include "Component.h"
-#include "Subject.h"
+#include <Observer.h>
 #include "Events.h"
+
+namespace minigin
+{
+	class TextComponent;
+}
 
 namespace digdug
 {
-	class HealthComponent final : public minigin::Component, public minigin::Subject
+	class HealthComponent final : public minigin::Component, public minigin::IObserver
 	{
 	public:
 		using Component::Component;
 
-		void Damage(int damage)
-		{
-			m_Health -= damage;
+		void Start() override;
+		void OnNotify(const minigin::IEvent& event) override;
 
-			auto event = minigin::PlainEvent("damage");
-
-			Notify(&event);
-		}
-
+		void LinkTextComponent(minigin::TextComponent* comp);
 		int GetHealth() const { return m_Health; }
 
 	private:
-		int m_Health{ 3 };
+		void UpdateDisplay();
 
+		minigin::TextComponent* m_Display{ nullptr };
+
+		int m_Health{ 3 };
+		unsigned int m_HitEventHash{ 0 };
 	};
 }

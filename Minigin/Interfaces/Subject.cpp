@@ -28,7 +28,7 @@ bool minigin::Subject::UnSubscribe(minigin::IObserver* subscriber)
 	return true;
 }
 
-void minigin::Subject::Notify(const IEvent* event)
+void minigin::Subject::Notify(const IEvent& event)
 {
 	for (auto& observer : m_Observers)
 	{

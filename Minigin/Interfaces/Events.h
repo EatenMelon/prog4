@@ -28,4 +28,19 @@ namespace minigin
 		const std::string m_Name{};
 		const unsigned int m_Hash{};
 	};
+
+	class Hitbox;
+	class HitEvent final : public PlainEvent
+	{
+	public:
+		HitEvent(Hitbox* hitWith)
+			: PlainEvent("HitEvent")
+			, m_Other{ hitWith }
+		{}
+
+		Hitbox* Who();
+
+	private:
+		Hitbox* m_Other{ nullptr };
+	};
 }

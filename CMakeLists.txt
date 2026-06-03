@@ -33,10 +33,12 @@ add_library(${ENGINE_NAME} STATIC
     "${CORE_DIR}/Texture2D.cpp"
     "${CORE_DIR}/Transform.cpp"
     "${CORE_DIR}/Timer.cpp"
+    "${CORE_DIR}/HitboxManager.cpp"
 
     "${COMPONENTS_DIR}/Component.cpp"
     "${COMPONENTS_DIR}/TextComponent.cpp"
     "${COMPONENTS_DIR}/RenderComponent.cpp"
+    "${COMPONENTS_DIR}/Hitbox.cpp"
     
     "${INPUT_DIR}/InputManager.cpp"
     "${INPUT_DIR}/Gamepad.cpp"
@@ -71,10 +73,10 @@ add_executable(${GAME_NAME} ${TARGET_PARAM}
 
     "${COMPONENTS_DIR}/FpsCounterComponent.cpp"
     "${COMPONENTS_DIR}/ScoreDisplay.cpp"
-    "${COMPONENTS_DIR}/HealthDisplay.cpp"
+    "${COMPONENTS_DIR}/HealthComponent.cpp"
 
-    "${INPUT_DIR}/DamageCommand.cpp"
-    "${INPUT_DIR}/ScoreCommand.cpp"
+    
+    
 )
 
 target_compile_features(${GAME_NAME} PUBLIC cxx_std_20)

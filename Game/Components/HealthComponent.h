@@ -1,6 +1,7 @@
 #pragma once
 #include "Component.h"
 #include "Subject.h"
+#include "Events.h"
 
 namespace digdug
 {

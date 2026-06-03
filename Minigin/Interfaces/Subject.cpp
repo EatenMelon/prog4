@@ -1,6 +1,6 @@
 #include "Subject.h"
-#include "Subject.h"
 #include "Observer.h"
+#include "Events.h"
 #include <algorithm>
 
 bool minigin::Subject::Subscrube(minigin::IObserver* subscriber)
@@ -9,7 +9,7 @@ bool minigin::Subject::Subscrube(minigin::IObserver* subscriber)
 
 	// avoid calling OnNotify of the same observer multiple times
 	if (std::find(m_Observers.begin(), m_Observers.end(), subscriber) != m_Observers.end()) return false;
-
+	
 	m_Observers.push_back(subscriber);
 
 	return true;

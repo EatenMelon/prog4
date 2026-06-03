@@ -1,10 +1,10 @@
 #pragma once
 #include <vector>
-#include "Events.h"
 
 namespace minigin
 {
 	class IObserver;
+	class IEvent;
 	class Subject
 	{
 	public:

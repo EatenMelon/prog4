@@ -142,14 +142,25 @@ static void load()
 
 	auto TaizoHori = std::make_unique<minigin::GameObject>();
 	{
+		TaizoHori->SetLocalPosition(300.f, 200.f);
+
+		auto renderComp = TaizoHori->AddComponent<minigin::RenderComponent>();
+		if (renderComp != nullptr)
+		{
+			renderComp->SetTexture("Sprites/TaizoHori.png");
+			renderComp->SetUniformScale(3);
+			renderComp->SetRotation(0);
+			renderComp->SetHorizontalFlip(true);
+		}
+
 		auto HealthTaizoHori = std::make_unique<minigin::GameObject>();
 		HealthTaizoHori->SetLocalPosition(15.f, 150.f);
 
 		auto health = TaizoHori->AddComponent<digdug::HealthComponent>();
 		if (health != nullptr)
 		{
-			auto renderComp = HealthTaizoHori->AddComponent<minigin::RenderComponent>();
-			if (renderComp != nullptr)
+			auto renderCompDisplay = HealthTaizoHori->AddComponent<minigin::RenderComponent>();
+			if (renderCompDisplay != nullptr)
 			{
 				auto text = HealthTaizoHori->AddComponent<minigin::TextComponent>();
 
@@ -170,8 +181,8 @@ static void load()
 		auto score = TaizoHori->AddComponent<digdug::ScoreComponent>();
 		if (score != nullptr)
 		{
-			auto renderComp = ScoreTaizoHori->AddComponent<minigin::RenderComponent>();
-			if (renderComp != nullptr)
+			auto renderCompDisplay = ScoreTaizoHori->AddComponent<minigin::RenderComponent>();
+			if (renderCompDisplay != nullptr)
 			{
 				auto text = ScoreTaizoHori->AddComponent<minigin::TextComponent>();
 
@@ -187,11 +198,21 @@ static void load()
 		}
 
 		auto hitbox = TaizoHori->AddComponent<minigin::Hitbox>();
-		hitbox->SetSize(16, 16);
-		hitbox->HitEnterEvent().Subscrube(health);
-		hitbox->HitExitEvent().Subscrube(score);
+		if (hitbox != nullptr)
+		{
+			if (renderComp != nullptr)
+			{
+				auto size = renderComp->GetSize();
+				hitbox->SetSize(size.x, size.y);
+			}
+			else
+			{
+				hitbox->SetSize(16, 16);
+			}
 
-		TaizoHori->SetLocalPosition(300.f, 200.f);
+			hitbox->HitEnterEvent().Subscrube(health);
+			hitbox->HitExitEvent().Subscrube(score);
+		}
 
 		int playerID{ 0 };
 		int keyboard{ -1 };
@@ -205,9 +226,6 @@ static void load()
 		
 		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadJoystick::LEFT_JOYSTICK, 0.5f, moveCommand, playerID);
 
-		auto renderComp = TaizoHori->AddComponent<minigin::RenderComponent>();
-		if (renderComp != nullptr) renderComp->SetTexture("Sprites/TaizoHori.png");
-
 		scene.Add(std::move(TaizoHori));
 		scene.Add(std::move(HealthTaizoHori));
 		scene.Add(std::move(ScoreTaizoHori));
@@ -215,14 +233,23 @@ static void load()
 
 	auto Pooka = std::make_unique<minigin::GameObject>();
 	{
+		Pooka->SetLocalPosition(200.f, 200.f);
+
+		auto renderComp = Pooka->AddComponent<minigin::RenderComponent>();
+		if (renderComp != nullptr)
+		{
+			renderComp->SetTexture("Sprites/Pooka.png");
+			renderComp->SetUniformScale(3);
+		}
+
 		auto HealthPooka = std::make_unique<minigin::GameObject>();
 		HealthPooka->SetLocalPosition(15.f, 250.f);
 
 		auto health = Pooka->AddComponent<digdug::HealthComponent>();
 		if (health != nullptr)
 		{
-			auto renderComp = HealthPooka->AddComponent<minigin::RenderComponent>();
-			if (renderComp != nullptr)
+			auto renderCompDisplay = HealthPooka->AddComponent<minigin::RenderComponent>();
+			if (renderCompDisplay != nullptr)
 			{
 				auto text = HealthPooka->AddComponent<minigin::TextComponent>();
 				if (text != nullptr)
@@ -242,8 +269,8 @@ static void load()
 		auto score = Pooka->AddComponent<digdug::ScoreComponent>();
 		if (score != nullptr)
 		{
-			auto renderComp = ScorePooka->AddComponent<minigin::RenderComponent>();
-			if (renderComp != nullptr)
+			auto renderCompDisplay = ScorePooka->AddComponent<minigin::RenderComponent>();
+			if (renderCompDisplay != nullptr)
 			{
 				auto text = ScorePooka->AddComponent<minigin::TextComponent>();
 
@@ -259,11 +286,21 @@ static void load()
 		}
 
 		auto hitbox = Pooka->AddComponent<minigin::Hitbox>();
-		hitbox->SetSize(16, 16);
-		hitbox->HitExitEvent().Subscrube(health);
-		hitbox->HitEnterEvent().Subscrube(score);
+		if (hitbox != nullptr)
+		{
+			if (renderComp != nullptr)
+			{
+				auto size = renderComp->GetSize();
+				hitbox->SetSize(size.x, size.y);
+			}
+			else
+			{
+				hitbox->SetSize(16, 16);
+			}
 
-		Pooka->SetLocalPosition(200.f, 200.f);
+			hitbox->HitExitEvent().Subscrube(health);
+			hitbox->HitEnterEvent().Subscrube(score);
+		}
 
 		int playerID{ 1 };
 		auto moveCommand = std::make_shared<minigin::MoveCommand>(Pooka.get(), playerID, 250.f);
@@ -274,9 +311,6 @@ static void load()
 		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::DPAD_RIGHT, minigin::KeyState::Pressed, moveCommand, playerID, minigin::Direction::Right);
 
 		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadJoystick::LEFT_JOYSTICK, 0.5f, moveCommand, playerID);
-
-		auto renderComp = Pooka->AddComponent<minigin::RenderComponent>();
-		if (renderComp != nullptr) renderComp->SetTexture("Sprites/Pooka.png");
 
 		scene.Add(std::move(Pooka));
 		scene.Add(std::move(HealthPooka));

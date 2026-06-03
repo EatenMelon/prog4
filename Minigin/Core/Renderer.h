@@ -1,8 +1,7 @@
 #pragma once
 #include <SDL3/SDL.h>
 #include "Singleton.h"
-#include <vector>
-#include <functional>
+#include <glm/vec2.hpp>
 
 namespace minigin
 {
@@ -17,8 +16,10 @@ namespace minigin
 		void Render() const;
 		void Destroy();
 
-		void RenderTexture(const Texture2D& texture, float x, float y) const;
-		void RenderTexture(const Texture2D& texture, float x, float y, float width, float height) const;
+		void RenderTexture(const Texture2D& texture, const glm::vec2& pos) const;
+		void RenderTexture(const Texture2D& texture, const glm::vec2& pos, const glm::vec2& size) const;
+		void RenderTexture(const Texture2D& texture, const glm::vec2& pos, const glm::vec2& size, float angle) const;
+		void RenderTexture(const Texture2D& texture, const glm::vec2& pos, const glm::vec2& size, float angle, SDL_FlipMode flipmode) const;
 
 		SDL_Renderer* GetSDLRenderer() const;
 

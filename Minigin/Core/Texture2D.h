@@ -22,6 +22,7 @@ namespace minigin
 		Texture2D(Texture2D &&) = delete;
 		Texture2D & operator= (const Texture2D &) = delete;
 		Texture2D & operator= (const Texture2D &&) = delete;
+
 	private:
 		SDL_Texture* m_texture;
 	};

@@ -72,23 +72,53 @@ void minigin::Renderer::Destroy()
 	}
 }
 
-void minigin::Renderer::RenderTexture(const Texture2D& texture, const float x, const float y) const
+void minigin::Renderer::RenderTexture(const Texture2D& texture, const glm::vec2& pos) const
 {
 	SDL_FRect dst{};
-	dst.x = x;
-	dst.y = y;
+	dst.x = pos.x;
+	dst.y = pos.y;
 	SDL_GetTextureSize(texture.GetSDLTexture(), &dst.w, &dst.h);
 	SDL_RenderTexture(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst);
 }
 
-void minigin::Renderer::RenderTexture(const Texture2D& texture, const float x, const float y, const float width, const float height) const
+void minigin::Renderer::RenderTexture(const Texture2D& texture, const glm::vec2& pos, const glm::vec2& size) const
 {
 	SDL_FRect dst{};
-	dst.x = x;
-	dst.y = y;
-	dst.w = width;
-	dst.h = height;
+	dst.x = pos.x;
+	dst.y = pos.y;
+	dst.w = size.x;
+	dst.h = size.y;
 	SDL_RenderTexture(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst);
+}
+
+void minigin::Renderer::RenderTexture(const Texture2D& texture, const glm::vec2& pos, const glm::vec2& size, float angle) const
+{
+	SDL_FRect dst{};
+	dst.x = pos.x;
+	dst.y = pos.y;
+	dst.w = size.x;
+	dst.h = size.y;
+
+	SDL_FPoint center{};
+	center.x = size.x / 2;
+	center.y = size.y / 2;
+
+	SDL_RenderTextureRotated(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst, angle, &center, SDL_FLIP_NONE);
+}
+
+void minigin::Renderer::RenderTexture(const Texture2D& texture, const glm::vec2& pos, const glm::vec2& size, float angle, SDL_FlipMode flipmode) const
+{
+	SDL_FRect dst{};
+	dst.x = pos.x;
+	dst.y = pos.y;
+	dst.w = size.x;
+	dst.h = size.y;
+
+	SDL_FPoint center{};
+	center.x = size.x / 2;
+	center.y = size.y / 2;
+
+	SDL_RenderTextureRotated(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst, angle, &center, flipmode);
 }
 
 SDL_Renderer* minigin::Renderer::GetSDLRenderer() const { return m_renderer; }

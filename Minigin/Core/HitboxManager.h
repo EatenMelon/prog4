@@ -6,6 +6,7 @@
 
 namespace minigin
 {
+	class Hitbox;
 	class HitboxManager final : public Singleton<HitboxManager>
 	{
 	public:

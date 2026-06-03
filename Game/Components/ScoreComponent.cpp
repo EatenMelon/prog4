@@ -1,4 +1,4 @@
-#include "HealthComponent.h"
+#include "ScoreComponent.h"
 
 #include <sstream>
 #include <iostream>
@@ -6,9 +6,7 @@
 #include <TextComponent.h>
 #include <Events.h>
 
-#include <ServiceLocator.h>
-
-void digdug::HealthComponent::Start()
+void digdug::ScoreComponent::Start()
 {
 	minigin::HitEvent event{ nullptr };
 	m_HitEventHash = minigin::PlainEvent::CreateHashSDBM(event.GetEventName());
@@ -16,28 +14,26 @@ void digdug::HealthComponent::Start()
 	UpdateDisplay();
 }
 
-void digdug::HealthComponent::OnNotify(const minigin::IEvent& event)
+void digdug::ScoreComponent::OnNotify(const minigin::IEvent& event)
 {
 	if (event.GetEventHash() != m_HitEventHash)
 	{
 		return;
 	}
 
-	--m_Health;
-
-	minigin::ServiceLocator::GetSoundSystem()->Play("Sound/GameOver.mp3", 1.f);
+	m_Score += 100;
 
 	UpdateDisplay();
 }
 
-void digdug::HealthComponent::LinkTextComponent(minigin::TextComponent* comp)
+void digdug::ScoreComponent::LinkTextComponent(minigin::TextComponent* comp)
 {
 	if (comp == nullptr) return;
 
 	m_Display = comp;
 }
 
-void digdug::HealthComponent::UpdateDisplay()
+void digdug::ScoreComponent::UpdateDisplay()
 {
 	if (m_Display == nullptr)
 	{
@@ -47,12 +43,13 @@ void digdug::HealthComponent::UpdateDisplay()
 	try
 	{
 		std::stringstream ss{};
-		ss << "Health: " << m_Health;
+		ss << "Score: " << m_Score;
 
 		m_Display->SetText(ss.str());
 	}
 	catch (const std::exception& e)
 	{
-		std::cerr << "Health component: " << e.what() << "\n";
+		std::cerr << "Score component: " << e.what() << "\n";
 	}
+
 }

@@ -72,11 +72,8 @@ add_executable(${GAME_NAME} ${TARGET_PARAM}
     "Game/Main.cpp"
 
     "${COMPONENTS_DIR}/FpsCounterComponent.cpp"
-    "${COMPONENTS_DIR}/ScoreDisplay.cpp"
     "${COMPONENTS_DIR}/HealthComponent.cpp"
-
-    
-    
+    "${COMPONENTS_DIR}/ScoreComponent.cpp"
 )
 
 target_compile_features(${GAME_NAME} PUBLIC cxx_std_20)

@@ -1,32 +1,32 @@
 #pragma once
 #include "Component.h"
-#include "Subject.h"
+#include <Observer.h>
 #include "Events.h"
 
 namespace minigin
 {
-	class Component;
+	class TextComponent;
 }
 
 namespace digdug
 {
-	class ScoreComponent final : public minigin::Component, public minigin::Subject
+	class ScoreComponent final : public minigin::Component, public minigin::IObserver
 	{
 	public:
 		using Component::Component;
 
-		void AddPoints(int points)
-		{
-			m_Score += points;
-			auto event = minigin::PlainEvent("points");
+		void Start() override;
+		void OnNotify(const minigin::IEvent& event) override;
 
-			Notify(event);
-		}
-
+		void LinkTextComponent(minigin::TextComponent* comp);
 		int GetScore() const { return m_Score; }
 
 	private:
-		int m_Score{ 0 };
+		void UpdateDisplay();
 
+		minigin::TextComponent* m_Display{ nullptr };
+
+		int m_Score{ 0 };
+		unsigned int m_HitEventHash{ 0 };
 	};
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdint>
 #include <glm/glm.hpp>
+#include <limits>
 
 namespace minigin
 {
@@ -12,11 +13,12 @@ namespace digdug
 	class DirtCell
 	{
 	public:
-		DirtCell() = default;
 		DirtCell(minigin::Texture2D& tiles, int rowFull = 0, int rowSide = 1, int rowCorner = 2);
 		void Render(const glm::vec2& pos, float cellSize) const;
 
 		void Dig(const glm::vec2& entryPoint);
+		void Refill() { m_SubCells = std::numeric_limits<uint8_t>::max(); }
+		bool HasBeenDug() const { return !GetSubCell(1, 1); }
 
 	private:
 		void DrawSubCell(const glm::vec2& pos, float subCellSize, int x, int y) const;
@@ -33,7 +35,8 @@ namespace digdug
 		const int m_RowSideTile{};
 		const int m_RowCornerTile{};
 
-		uint8_t m_SubCells{ 0xFF };
+		
+		uint8_t m_SubCells{ std::numeric_limits<uint8_t>::max() };
 
 		static constexpr uint8_t m_Size{ 3 };
 		static constexpr int m_BitMap[m_Size * m_Size]

@@ -55,6 +55,12 @@ void digdug::DirtCell::Dig(const glm::vec2& entryPoint)
 void digdug::DirtCell::DrawSubCell(const glm::vec2& pos, float subCellSize, int x, int y) const
 {
 	if (!GetSubCell(x, y)) return;
+	if (m_TileSheet == nullptr) return;
+
+	const bool horNeighbours = HasHorizontalNeightbours(x, y);
+	const bool verNeihbours = HasHVerticalNeightbours(x, y);
+
+	if (!horNeighbours && !verNeihbours) return;
 
 	SDL_FRect dst{};
 	dst.x = pos.x;
@@ -69,7 +75,7 @@ void digdug::DirtCell::DrawSubCell(const glm::vec2& pos, float subCellSize, int 
 	src.y = m_RowFullTile * src.h;
 
 	auto renderer = minigin::Renderer::GetInstance().GetSDLRenderer();
-	if (m_SubCells == 0xFF)
+	if (m_SubCells == std::numeric_limits<uint8_t>::max())
 	{
 		SDL_RenderTexture(renderer, m_TileSheet->GetSDLTexture(), &src, &dst);
 		return;
@@ -77,7 +83,7 @@ void digdug::DirtCell::DrawSubCell(const glm::vec2& pos, float subCellSize, int 
 
 	int row{ m_RowSideTile };
 
-	if (IsCorner(x, y) && HasHorizontalNeightbours(x, y) && HasHVerticalNeightbours(x, y))
+	if (IsCorner(x, y) && horNeighbours && verNeihbours)
 	{
 		row = m_RowCornerTile;
 	}
@@ -162,25 +168,27 @@ float digdug::DirtCell::GetSubCellSpriteRotation(int x, int y) const
 	int turns{ 0 };
 
 	// for corner tiles
-	if (up && left) turns = 0;
-	else if (up && right) turns = 1;
-	else if (down && right) turns = 2;
-	else if (down && left) turns = 3;
-	else if (HasHorizontalNeightbours(x, y) && y == 0) turns = 2;
-	else if (HasHorizontalNeightbours(x, y)) turns = 0;
-	else if (HasHVerticalNeightbours(x, y) && x == 0) turns = 1;
-	else if (HasHVerticalNeightbours(x, y)) turns = 3;
+	if (up && left)				turns = 0;
+	else if (up && right)		turns = 1;
+	else if (down && right)		turns = 2;
+	else if (down && left)		turns = 3;
+
+	// for corners that "become sides"
+	else if (HasHorizontalNeightbours(x, y) && y == 0)	turns = 2;
+	else if (HasHorizontalNeightbours(x, y))			turns = 0;
+	else if (HasHVerticalNeightbours(x, y) && x == 0)	turns = 1;
+	else if (HasHVerticalNeightbours(x, y))				turns = 3;
 
 	// for the sides
 	else if (up && down)
 	{
 		if (x == 0) turns = 1;
-		else turns = 3;
+		else		turns = 3;
 	}
 	else if (left && right)
 	{
 		if (y == 0) turns = 2;
-		else turns = 0;
+		else		turns = 0;
 	}
 
 	return turns * turnAngle;

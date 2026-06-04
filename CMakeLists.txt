@@ -65,7 +65,7 @@ target_compile_features(${ENGINE_NAME} PUBLIC cxx_std_20)
 # change directories
 set(COMPONENTS_DIR "Game/Components")
 set(INPUT_DIR "Game/Input")
-set(INTERFACES_DIR "Game/Interfaces")
+set(UTILITY_DIR "Game/Utility")
 
 # list source files here
 add_executable(${GAME_NAME} ${TARGET_PARAM}
@@ -74,6 +74,8 @@ add_executable(${GAME_NAME} ${TARGET_PARAM}
     "${COMPONENTS_DIR}/FpsCounterComponent.cpp"
     "${COMPONENTS_DIR}/HealthComponent.cpp"
     "${COMPONENTS_DIR}/ScoreComponent.cpp"
+
+    "${UTILITY_DIR}/DirtCell.cpp"
 )
 
 target_compile_features(${GAME_NAME} PUBLIC cxx_std_20)
@@ -81,7 +83,7 @@ target_compile_features(${GAME_NAME} PUBLIC cxx_std_20)
 target_include_directories(${GAME_NAME} PUBLIC 
     ${COMPONENTS_DIR}
     ${INPUT_DIR}
-    ${INTERFACES_DIR}
+    ${UTILITY_DIR}
 )
 
 include(FetchContent)

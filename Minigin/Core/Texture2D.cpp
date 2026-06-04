@@ -35,6 +35,8 @@ minigin::Texture2D::Texture2D(const std::string &fullPath)
         surface
     );
 
+    SDL_SetTextureScaleMode(m_texture, SDL_SCALEMODE_PIXELART);
+
     SDL_DestroySurface(surface);
 
     if (!m_texture)

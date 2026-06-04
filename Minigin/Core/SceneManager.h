@@ -3,7 +3,7 @@
 #include <memory>
 #include "Scene.h"
 #include "Singleton.h"
-#include <climits>
+#include <limits>
 
 namespace minigin
 {
@@ -26,6 +26,6 @@ namespace minigin
 		SceneManager() = default;
 		std::vector<std::unique_ptr<Scene>> m_scenes{};
 
-		size_t m_ActiveSceneIdx{ SIZE_MAX };
+		size_t m_ActiveSceneIdx{ std::numeric_limits<size_t>::max() };
 	};
 }

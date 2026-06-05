@@ -11,7 +11,7 @@ namespace minigin
 	class SceneManager final : public Singleton<SceneManager>
 	{
 	public:
-		Scene& CreateScene();
+		void CreateScene(const std::function<void(Scene&)>& loader);
 
 		void FixedUpdate(float fixedFrameTime);
 		void Update(float deltaTime);

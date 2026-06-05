@@ -9,6 +9,9 @@ void minigin::InputManager::Init(int numPlayers)
 {
 	m_Gamepads.clear();
 	m_Gamepads.reserve(numPlayers);
+	
+	m_ButtonBindings.clear();
+	m_JoystickBindings.clear();
 
 	if (numPlayers > 4)
 	{
@@ -23,6 +26,7 @@ void minigin::InputManager::Init(int numPlayers)
 
 bool minigin::InputManager::ProcessInput(float deltaTime)
 {
+
 	// process keyboard input
 	SDL_Event e;
 	while (SDL_PollEvent(&e))
@@ -53,6 +57,9 @@ bool minigin::InputManager::ProcessInput(float deltaTime)
 		// imgui input handling
 		ImGui_ImplSDL3_ProcessEvent(&e);
 	}
+
+	// 
+	if (!m_IsEnabled) return true;
 
 	// handle controller events
 	// prepare the input context for each command

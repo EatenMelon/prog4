@@ -1,5 +1,4 @@
 #include "SceneManager.h"
-#include "SceneManager.h"
 #include "Scene.h"
 #include <imgui.h>
 #include <string>
@@ -62,10 +61,16 @@ void minigin::SceneManager::Cleanup()
 bool minigin::SceneManager::SetActiveScene(size_t index)
 {
 	if (index >= m_scenes.size()) return false;
-
 	if (index == m_ActiveSceneIdx) return false;
 
+	if (m_ActiveSceneIdx < m_scenes.size())
+	{
+		m_scenes[m_ActiveSceneIdx]->RemoveAll();
+	}
+
 	m_ActiveSceneIdx = index;
+
+	m_scenes[m_ActiveSceneIdx]->Load();
 
 	return true;
 }
@@ -75,8 +80,7 @@ size_t minigin::SceneManager::ActiveSceneId() const
 	return m_ActiveSceneIdx;
 }
 
-minigin::Scene& minigin::SceneManager::CreateScene()
+void minigin::SceneManager::CreateScene(const std::function<void(Scene&)>& loader)
 {
-	m_scenes.emplace_back(new Scene(m_scenes.size()));
-	return *m_scenes.back();
+	m_scenes.emplace_back(new Scene(m_scenes.size(), loader));
 }

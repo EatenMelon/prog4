@@ -29,8 +29,11 @@ namespace minigin
 		void BindInput(const std::string& name, GamepadJoystick joystick, float deadzone, std::shared_ptr<Command> command, int playerID);
 
 		void UnBindInput(const std::string& actionName);
+		void Enable(bool enable) { m_IsEnabled = enable; }
 
 	private:
+		bool m_IsEnabled{ true };
+
 		std::vector<std::unique_ptr<Gamepad>> m_Gamepads{};
 
 		struct ButtonBinding

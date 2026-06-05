@@ -30,12 +30,13 @@
 
 namespace fs = std::filesystem;
 
-static void load()
+static void LoadTestScene(minigin::Scene& scene)
 {
-	auto& scene = minigin::SceneManager::GetInstance().CreateScene();
+	std::cout << "Loading scene: " << scene.GetSceneId() << "\n";
+
 	auto font = minigin::ResourceManager::GetInstance().LoadFont("Fonts/Lingua.otf", 36);
 	auto smallFont = minigin::ResourceManager::GetInstance().LoadFont("Fonts/Lingua.otf", 18);
-	
+
 	float width{ 0 };
 
 	auto sandbox = std::make_unique<minigin::GameObject>();
@@ -55,7 +56,7 @@ static void load()
 			gridComp->SetTileTexture(digdug::DirtGrid::Depth::SubSoil, *dirtTile.get());
 			gridComp->SetTileTexture(digdug::DirtGrid::Depth::Stone, *stoneTile.get());
 			gridComp->SetTileTexture(digdug::DirtGrid::Depth::Bedrock, *bedrockTile.get());
-			
+
 			width = gridComp->GetSize().x;
 		}
 
@@ -168,7 +169,7 @@ static void load()
 		minigin::InputManager::GetInstance().BindInput("Move", SDLK_A, minigin::KeyState::Pressed, moveCommandk, keyboard, minigin::Direction::Left);
 		minigin::InputManager::GetInstance().BindInput("Move", SDLK_S, minigin::KeyState::Pressed, moveCommandk, keyboard, minigin::Direction::Down);
 		minigin::InputManager::GetInstance().BindInput("Move", SDLK_D, minigin::KeyState::Pressed, moveCommandk, keyboard, minigin::Direction::Right);
-		
+
 		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadJoystick::LEFT_JOYSTICK, 0.5f, moveCommand, playerID);
 
 		scene.Add(std::move(TaizoHori));
@@ -265,13 +266,13 @@ static void load()
 	minigin::Renderer::GetInstance().SetBackgroundColor(SDL_Color{ 0, 0, 50, 255 });
 }
 
-static void DoubleLoad()
+static void LoadAllScenes()
 {
-	load();
-	load();
-	load();
-	load();
-	load();
+	minigin::SceneManager::GetInstance().CreateScene(LoadTestScene);
+	minigin::SceneManager::GetInstance().CreateScene(LoadTestScene);
+	minigin::SceneManager::GetInstance().CreateScene(LoadTestScene);
+	minigin::SceneManager::GetInstance().CreateScene(LoadTestScene);
+	minigin::SceneManager::GetInstance().CreateScene(LoadTestScene);
 }
 
 int main(int, char*[])
@@ -295,7 +296,7 @@ int main(int, char*[])
 		data_location = "../Data/";
 #endif
 	minigin::Minigin engine(data_location, 1080, 720);
-	engine.Run(DoubleLoad);
+	engine.Run(LoadAllScenes);
 
     return 0;
 }

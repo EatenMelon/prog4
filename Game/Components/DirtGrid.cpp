@@ -165,7 +165,6 @@ void digdug::DirtGrid::DigTunnel(const DigEvent& digEvent)
 
 void digdug::DirtGrid::DigOneWay(int start, int end, int oppositeAxis, const char axis)
 {
-	oppositeAxis;
 	int diff = start - end;
 
 	//glm::ivec2 dir{ startPos - endPos };

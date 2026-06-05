@@ -48,7 +48,7 @@ void digdug::DirtGrid::Render() const
 {
 	auto origin = glm::vec2(GetOwner().GetWorldPosition());
 
-	for (int c{ 0 }; c < m_Cells.size(); ++c)
+	for (int c{ 0 }; c < static_cast<int>(m_Cells.size()); ++c)
 	{
 		glm::vec2 pos{};
 		pos.x = static_cast<float>(c % m_Width);
@@ -200,7 +200,7 @@ void digdug::DirtGrid::DigOneWay(int start, int end, int oppositeAxis, const cha
 		}
 
 		if (index < 0) continue;
-		if (index >= m_Cells.size()) continue;
+		if (index >= static_cast<int>(m_Cells.size())) continue;
 
 		m_Cells[index].Dig(entryPoint);
 

@@ -16,7 +16,7 @@ namespace minigin
 	class InputManager final : public Singleton<InputManager>
 	{
 	public:
-		void Init(int numPlayers);
+		void Init(int gamepads);
 
 		bool ProcessInput(float deltaTime);
 
@@ -31,7 +31,15 @@ namespace minigin
 		void UnBindInput(const std::string& actionName);
 		void Enable(bool enable) { m_IsEnabled = enable; }
 
+		static int GetGamepadLimit() { return m_MaxGamepads; }
+		static int GetKeyboardID() { return m_KeyboardPlayerID; }
+
 	private:
+		static const int m_MaxGamepads;
+		static const int m_KeyboardPlayerID;
+
+		bool ValidatePlayerId(int playerID, bool canBeKeyboard) const;
+
 		bool m_IsEnabled{ true };
 
 		std::vector<std::unique_ptr<Gamepad>> m_Gamepads{};

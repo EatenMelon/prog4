@@ -2,23 +2,27 @@
 #include <SDL3/SDL.h>
 
 #include <backends/imgui_impl_sdl3.h>
-#include <iostream>
+#include <stdexcept>
 #include <algorithm>
+#include <limits>
 
-void minigin::InputManager::Init(int numPlayers)
+const int minigin::InputManager::m_MaxGamepads{ 4 };
+const int minigin::InputManager::m_KeyboardPlayerID{ -1 };
+
+void minigin::InputManager::Init(int gamepads)
 {
 	m_Gamepads.clear();
-	m_Gamepads.reserve(numPlayers);
+	m_Gamepads.reserve(gamepads);
 	
 	m_ButtonBindings.clear();
 	m_JoystickBindings.clear();
 
-	if (numPlayers > 4)
+	if (gamepads > 4)
 	{
 		throw std::runtime_error("MAx limit of players is 4");
 	}
 
-	for (int p{ 0 }; p < numPlayers; ++p)
+	for (int p{ 0 }; p < gamepads; ++p)
 	{
 		m_Gamepads.push_back(std::make_unique<Gamepad>(p));
 	}
@@ -26,14 +30,13 @@ void minigin::InputManager::Init(int numPlayers)
 
 bool minigin::InputManager::ProcessInput(float deltaTime)
 {
-
 	// process keyboard input
 	SDL_Event e;
 	while (SDL_PollEvent(&e))
 	{
 		PlayerButton pb{};
 		pb.button = e.key.key;
-		pb.playerID = -1;	// keyboard
+		pb.playerID = m_KeyboardPlayerID;
 
 		auto& state = m_KeysDown[pb];
 		switch (e.type)
@@ -58,13 +61,13 @@ bool minigin::InputManager::ProcessInput(float deltaTime)
 		ImGui_ImplSDL3_ProcessEvent(&e);
 	}
 
-	// 
+	// disable any input if needed
 	if (!m_IsEnabled) return true;
 
-	// handle controller events
-	// prepare the input context for each command
+	// prepare all input contexts before execution
 	std::vector<std::pair<Command*, InputContext>> commandContexts;
 
+	// handle controller events
 	for (int playerID{ 0 }; playerID < static_cast<int>(m_Gamepads.size()); ++playerID)
 	{
 		auto& gamepad = m_Gamepads[playerID];
@@ -104,7 +107,7 @@ bool minigin::InputManager::ProcessInput(float deltaTime)
 			context.axis = gamepad->GetJoystick(binding.joystick);
 			context.playerID = binding.playerID;
 
-			if (glm::dot(context.axis, context.axis) < 0.0001f) continue;
+			if (glm::dot(context.axis, context.axis) < std::numeric_limits<float>::epsilon()) continue;
 
 			commandContexts.emplace_back(binding.command.get(), context);
 		}
@@ -117,10 +120,7 @@ bool minigin::InputManager::ProcessInput(float deltaTime)
 		pb.button = binding.button;
 		pb.playerID = binding.playerID;
 
-		auto it = m_KeysDown.find(pb);
-		if (it == m_KeysDown.end()) continue;
-
-		// only prepare context when the desired key state matches
+		if (!m_KeysDown.contains(pb)) continue;
 		if (binding.state != m_KeysDown[pb]) continue;
 
 		InputContext context{};
@@ -149,11 +149,9 @@ bool minigin::InputManager::ProcessInput(float deltaTime)
 		commandContexts.emplace_back(binding.command.get(), context);
 	}
 
-	// execute all necessary commands
 	for (auto& [command, context] : commandContexts)
 	{
 		command->Execute(context, deltaTime);
-		//std::cout << "Executing command for player " << context.playerID << "\n";
 	}
 
 	// make sure on down & on release are single time events
@@ -176,8 +174,10 @@ void minigin::InputManager::BindInput
 	int playerID,
 	Direction axisDirection
 )
-
 {
+	if (!ValidatePlayerId(playerID, true)) return;
+
+
 	ButtonBinding binding{};
 	binding.actionName = name;
 	binding.button = button;
@@ -198,8 +198,10 @@ void minigin::InputManager::BindInput
 	int playerID,
 	Direction axisDirection
 )
-
 {
+	if (!ValidatePlayerId(playerID, false)) return;
+
+
 	ButtonBinding binding{};
 	binding.actionName = name;
 	binding.button = static_cast<unsigned int>(button);
@@ -220,6 +222,8 @@ void minigin::InputManager::BindInput
 	int playerID
 )
 {
+	if (!ValidatePlayerId(playerID, false)) return;
+
 	JoystickBinding binding{};
 	binding.actionName = name;
 	binding.joystick = joystick;
@@ -262,4 +266,21 @@ void minigin::InputManager::UnBindInput(const std::string& actionName)
 		),
 		m_JoystickBindings.end()
 	);
+}
+
+bool minigin::InputManager::ValidatePlayerId(int playerID, bool canBeKeyboard) const
+{
+	if (playerID >= m_MaxGamepads || playerID < m_KeyboardPlayerID)
+	{
+		std::cerr << "ERROR: Binding player index [" << playerID << "] violates device limits!\n";
+		return false;
+	}
+
+	if (playerID == m_KeyboardPlayerID && !canBeKeyboard)
+	{
+		std::cerr << "ERROR: Binding gamepad input to keyboard player is not allowed!\n";
+		return false;
+	}
+
+	return true;
 }

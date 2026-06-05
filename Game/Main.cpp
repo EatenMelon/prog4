@@ -161,7 +161,7 @@ static void LoadTestScene(minigin::Scene& scene)
 		}
 
 		int playerID{ 0 };
-		int keyboard{ -1 };
+		int keyboard{ minigin::InputManager::GetKeyboardID() };
 		auto moveCommand = std::make_shared<minigin::MoveCommand>(TaizoHori.get(), playerID, 250.f);
 		auto moveCommandk = std::make_shared<minigin::MoveCommand>(TaizoHori.get(), keyboard, 250.f);
 
@@ -169,6 +169,11 @@ static void LoadTestScene(minigin::Scene& scene)
 		minigin::InputManager::GetInstance().BindInput("Move", SDLK_A, minigin::KeyState::Pressed, moveCommandk, keyboard, minigin::Direction::Left);
 		minigin::InputManager::GetInstance().BindInput("Move", SDLK_S, minigin::KeyState::Pressed, moveCommandk, keyboard, minigin::Direction::Down);
 		minigin::InputManager::GetInstance().BindInput("Move", SDLK_D, minigin::KeyState::Pressed, moveCommandk, keyboard, minigin::Direction::Right);
+
+		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::DPAD_UP, minigin::KeyState::Pressed, moveCommand, playerID, minigin::Direction::Up);
+		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::DPAD_LEFT, minigin::KeyState::Pressed, moveCommand, playerID, minigin::Direction::Left);
+		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::DPAD_DOWN, minigin::KeyState::Pressed, moveCommand, playerID, minigin::Direction::Down);
+		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::DPAD_RIGHT, minigin::KeyState::Pressed, moveCommand, playerID, minigin::Direction::Right);
 
 		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadJoystick::LEFT_JOYSTICK, 0.5f, moveCommand, playerID);
 

@@ -16,10 +16,22 @@ namespace minigin
 		void Render() const;
 		void Destroy();
 
-		void RenderTexture(const Texture2D& texture, const glm::vec2& pos) const;
-		void RenderTexture(const Texture2D& texture, const glm::vec2& pos, const glm::vec2& size) const;
-		void RenderTexture(const Texture2D& texture, const glm::vec2& pos, const glm::vec2& size, float angle) const;
-		void RenderTexture(const Texture2D& texture, const glm::vec2& pos, const glm::vec2& size, float angle, SDL_FlipMode flipmode) const;
+		void RenderTexture
+		(
+			const Texture2D& texture,
+			const glm::vec2& pos,
+			float angle = 0.f,
+			SDL_FlipMode flipmode = SDL_FLIP_NONE
+		) const;
+
+		void RenderTexture
+		(
+			const Texture2D& texture,
+			const glm::vec2& pos,
+			const glm::vec2& size,
+			float angle = 0.f,
+			SDL_FlipMode flipmode = SDL_FLIP_NONE
+		) const;
 
 		SDL_Renderer* GetSDLRenderer() const;
 

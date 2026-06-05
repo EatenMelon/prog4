@@ -55,11 +55,6 @@ void minigin::SceneManager::Render() const
 
 void minigin::SceneManager::Cleanup()
 {
-	for (auto& scene : m_scenes)
-	{
-		scene->Cleanup();
-	}
-
 	m_scenes.clear();
 	m_ActiveSceneIdx = 0;
 }

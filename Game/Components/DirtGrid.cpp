@@ -131,7 +131,7 @@ glm::ivec2 digdug::DirtGrid::GetPosInGrid(const glm::vec3& pos) const
 {
 	auto inGrid = GetOwner().GetWorldPosition();
 	inGrid += glm::vec3(GetSize(), 0.f);
-	inGrid.x -= pos.x;
+	inGrid.x -= m_Width * m_CellSize - pos.x;
 	inGrid.y -= m_Height * m_CellSize - pos.y;
 	inGrid /= m_CellSize;
 

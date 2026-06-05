@@ -55,6 +55,7 @@ void digdug::GridMoveCmd::ActorExecute(const minigin::InputContext& context, flo
 	{
 		SetGridPosition(newPosInGrid);
 		m_MoveDirection = glm::ivec2(0);
+		std::cout << "Position in grid: [" << m_PosInGrid.x << ", " << m_PosInGrid.y << "]\n";
 	}
 
 	if (!m_CanDig)

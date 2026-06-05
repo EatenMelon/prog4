@@ -68,7 +68,7 @@ void PrintSDLVersion()
 	LogSDLVersion("Linked with SDL_ttf ", SDL_VERSIONNUM_MAJOR(version), SDL_VERSIONNUM_MINOR(version),	SDL_VERSIONNUM_MICRO(version));
 }
 
-minigin::Minigin::Minigin(const std::filesystem::path& dataPath)
+minigin::Minigin::Minigin(const std::filesystem::path& dataPath, int windowWidth, int windowHeight)
 {
 	PrintSDLVersion();
 	
@@ -87,8 +87,8 @@ minigin::Minigin::Minigin(const std::filesystem::path& dataPath)
 	g_window = SDL_CreateWindow
 	(
 		"Programming 4 assignment",		// sometimes a leak happens here!
-		1024,
-		576,
+		windowWidth,
+		windowHeight,
 		SDL_WINDOW_OPENGL
 	);
 	if (g_window == nullptr) 

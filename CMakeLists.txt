@@ -74,6 +74,7 @@ add_executable(${GAME_NAME} ${TARGET_PARAM}
     "${COMPONENTS_DIR}/FpsCounterComponent.cpp"
     "${COMPONENTS_DIR}/HealthComponent.cpp"
     "${COMPONENTS_DIR}/ScoreComponent.cpp"
+    "${COMPONENTS_DIR}/DirtGrid.cpp"
 
     "${UTILITY_DIR}/DirtCell.cpp"
 )

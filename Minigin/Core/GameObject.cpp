@@ -1,5 +1,4 @@
 #include "GameObject.h"
-#include "GameObject.h"
 
 void minigin::GameObject::FixedUpdate(float fixedFrameTime)
 {
@@ -11,10 +10,10 @@ void minigin::GameObject::FixedUpdate(float fixedFrameTime)
 
 void minigin::GameObject::Update(float deltaTime)
 {
-	while (!m_InitQueue.empty())
+	while (!m_StartQueue.empty())
 	{
-		auto id = m_InitQueue.front();
-		m_InitQueue.pop();
+		auto id = m_StartQueue.front();
+		m_StartQueue.pop();
 
 		auto it = m_Components.find(id);
 

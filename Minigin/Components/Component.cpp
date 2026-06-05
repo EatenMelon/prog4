@@ -1,4 +1,5 @@
 #include "Component.h"
+#include "Component.h"
 #include "GameObject.h"
 
 minigin::Component::Component(GameObject* owner)
@@ -7,13 +8,15 @@ minigin::Component::Component(GameObject* owner)
 {
 }
 
+void minigin::Component::Init() { }
+
 void minigin::Component::Start() { }
 
 void minigin::Component::FixedUpdate(float) { }
 
 void minigin::Component::Update(float) { }
 
-void minigin::Component::GuiRender() const { }
+void minigin::Component::GuiRender() { }
 
 void minigin::Component::Render() const { }
 

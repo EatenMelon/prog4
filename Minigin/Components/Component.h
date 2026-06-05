@@ -14,10 +14,11 @@ namespace minigin
 		Component& operator=(const Component& other) = delete;
 		Component& operator=(Component&& other) = delete;
 
+		virtual void Init();
 		virtual void Start();
 		virtual void FixedUpdate(float fixedFrameTime);
 		virtual void Update(float deltaTime);
-		virtual void GuiRender() const;
+		virtual void GuiRender();
 		virtual void Render() const;
 
 		void Destroy();

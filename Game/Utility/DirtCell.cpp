@@ -25,7 +25,7 @@ void digdug::DirtCell::Render(const glm::vec2& pos, float cellSize) const
 	}
 }
 
-void digdug::DirtCell::Dig(const glm::vec2& entryPoint)
+void digdug::DirtCell::Dig(const glm::ivec2& entryPoint)
 {
 	const int near{ 0 };
 	const int middle{ 1 };

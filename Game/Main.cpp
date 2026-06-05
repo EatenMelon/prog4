@@ -20,6 +20,7 @@
 #include <HealthComponent.h>
 #include <ScoreComponent.h>
 #include <Hitbox.h>
+#include <DirtGrid.h>
 
 // input
 #include "InputManager.h"
@@ -34,52 +35,35 @@ static void load()
 	auto font = minigin::ResourceManager::GetInstance().LoadFont("Fonts/Lingua.otf", 36);
 	auto smallFont = minigin::ResourceManager::GetInstance().LoadFont("Fonts/Lingua.otf", 18);
 	
-	auto background = std::make_unique<minigin::GameObject>();
+	float width{ 0 };
+
+	auto sandbox = std::make_unique<minigin::GameObject>();
 	{
-		auto renderComponent = background->AddComponent<minigin::RenderComponent>();
-		if (renderComponent != nullptr) renderComponent->SetTexture("Sprites/background.png");
+		auto gridComp = sandbox->AddComponent<digdug::DirtGrid>();
 
-		scene.Add(std::move(background));
-	}
-
-	auto logo = std::make_unique<minigin::GameObject>();
-	{
-		logo->SetLocalPosition(358.f, 180.f);
-
-		auto renderComp = logo->AddComponent<minigin::RenderComponent>();
-		if (renderComp != nullptr) renderComp->SetTexture("Sprites/logo.png");
-
-		scene.Add(std::move(logo));
-	}
-
-	auto title = std::make_unique<minigin::GameObject>();
-	{
-		title->SetLocalPosition(292.f, 20.f);
-
-		auto renderComp = title->AddComponent<minigin::RenderComponent>();
-
-		if (renderComp != nullptr)
+		if (gridComp != nullptr)
 		{
-			auto text = title->AddComponent<minigin::TextComponent>();
+			auto sandTile = minigin::ResourceManager::GetInstance().LoadTexture("Sprites/SandTile.png");
+			auto dirtTile = minigin::ResourceManager::GetInstance().LoadTexture("Sprites/DirtTile.png");
+			auto stoneTile = minigin::ResourceManager::GetInstance().LoadTexture("Sprites/StoneTile.png");
+			auto bedrockTile = minigin::ResourceManager::GetInstance().LoadTexture("Sprites/BedrockTile.png");
 
-			if (text != nullptr)
-			{
-				SDL_Color color{};
-				color.r = static_cast<unsigned char>(std::rand() % 255);
-				color.g = static_cast<unsigned char>(std::rand() % 255);
-				color.b = static_cast<unsigned char>(std::rand() % 255);
-
-				text->SetFont(font);
-				text->SetColor(color);
-				text->SetText("Programming 4 Assignment");
-			}
+			gridComp->SetCellSize(16.f * 3.f);
+			gridComp->SetTileTexture(digdug::DirtGrid::Depth::Surface, *sandTile.get());
+			gridComp->SetTileTexture(digdug::DirtGrid::Depth::TopSoil, *sandTile.get());
+			gridComp->SetTileTexture(digdug::DirtGrid::Depth::SubSoil, *dirtTile.get());
+			gridComp->SetTileTexture(digdug::DirtGrid::Depth::Stone, *stoneTile.get());
+			gridComp->SetTileTexture(digdug::DirtGrid::Depth::Bedrock, *bedrockTile.get());
+			
+			width = gridComp->GetSize().x;
 		}
-		scene.Add(std::move(title));
+
+		scene.Add(std::move(sandbox));
 	}
-	
+
 	auto fpsCounter = std::make_unique<minigin::GameObject>();
 	{
-		fpsCounter->SetLocalPosition(20.f, 20.f);
+		fpsCounter->SetLocalPosition(width + 20.f, 20.f);
 
 		auto renderComp = fpsCounter->AddComponent<minigin::RenderComponent>();
 
@@ -100,46 +84,6 @@ static void load()
 		scene.Add(std::move(fpsCounter));
 	}
 
-	auto controlsTaizoHori = std::make_unique<minigin::GameObject>();
-	{
-		controlsTaizoHori->SetLocalPosition(15.f, 80.f);
-
-		auto renderComp = controlsTaizoHori->AddComponent<minigin::RenderComponent>();
-
-		if (renderComp != nullptr)
-		{
-			auto text = controlsTaizoHori->AddComponent<minigin::TextComponent>();
-
-			if (text != nullptr)
-			{
-				text->SetFont(smallFont);
-				text->SetColor({ 255, 255, 0, 255 });
-				text->SetText("Use WASD to move Taizo Hori, C to inflict damage, and X to Pick up carrots.");
-			}
-		}
-		scene.Add(std::move(controlsTaizoHori));
-	}
-
-	auto controlsPooka = std::make_unique<minigin::GameObject>();
-	{
-		controlsPooka->SetLocalPosition(15.f, 110.f);
-
-		auto renderComp = controlsPooka->AddComponent<minigin::RenderComponent>();
-
-		if (renderComp != nullptr)
-		{
-			auto text = controlsPooka->AddComponent<minigin::TextComponent>();
-
-			if (text != nullptr)
-			{
-				text->SetFont(smallFont);
-				text->SetColor({ 255, 255, 0, 255 });
-				text->SetText("Use the D-Pad to move Pooka, X to inflict damage, and A to Pick up carrots.");
-			}
-		}
-		scene.Add(std::move(controlsPooka));
-	}
-
 	auto TaizoHori = std::make_unique<minigin::GameObject>();
 	{
 		TaizoHori->SetLocalPosition(300.f, 200.f);
@@ -154,7 +98,7 @@ static void load()
 		}
 
 		auto HealthTaizoHori = std::make_unique<minigin::GameObject>();
-		HealthTaizoHori->SetLocalPosition(15.f, 150.f);
+		HealthTaizoHori->SetLocalPosition(width + 15.f, 150.f);
 
 		auto health = TaizoHori->AddComponent<digdug::HealthComponent>();
 		if (health != nullptr)
@@ -176,7 +120,7 @@ static void load()
 		}
 
 		auto ScoreTaizoHori = std::make_unique<minigin::GameObject>();
-		ScoreTaizoHori->SetLocalPosition(15.f, 170.f);
+		ScoreTaizoHori->SetLocalPosition(width + 15.f, 170.f);
 
 		auto score = TaizoHori->AddComponent<digdug::ScoreComponent>();
 		if (score != nullptr)
@@ -243,7 +187,7 @@ static void load()
 		}
 
 		auto HealthPooka = std::make_unique<minigin::GameObject>();
-		HealthPooka->SetLocalPosition(15.f, 250.f);
+		HealthPooka->SetLocalPosition(width + 15.f, 250.f);
 
 		auto health = Pooka->AddComponent<digdug::HealthComponent>();
 		if (health != nullptr)
@@ -264,7 +208,7 @@ static void load()
 		}
 
 		auto ScorePooka = std::make_unique<minigin::GameObject>();
-		ScorePooka->SetLocalPosition(15.f, 270.f);
+		ScorePooka->SetLocalPosition(width + 15.f, 270.f);
 
 		auto score = Pooka->AddComponent<digdug::ScoreComponent>();
 		if (score != nullptr)
@@ -347,7 +291,7 @@ int main(int, char*[])
 	if(!fs::exists(data_location))
 		data_location = "../Data/";
 #endif
-	minigin::Minigin engine(data_location);
+	minigin::Minigin engine(data_location, 1080, 720);
 	engine.Run(DoubleLoad);
 
     return 0;

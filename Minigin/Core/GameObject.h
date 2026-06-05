@@ -61,8 +61,9 @@ namespace minigin
 
 				// return component
 				auto comp = m_Components.find(typeid(T));
-				m_InitQueue.push(typeid(T));
+				m_StartQueue.push(typeid(T));
 
+				comp->second->Init();
 				return static_cast<T*>(comp->second.get());
 			}
 			catch (const std::exception& e)
@@ -101,7 +102,7 @@ namespace minigin
 		void SetSceneId(size_t id) { m_SceneId = id; }
 
 		std::unordered_map<std::type_index, std::unique_ptr<Component>> m_Components{};
-		std::queue<std::type_index> m_InitQueue{};
+		std::queue<std::type_index> m_StartQueue{};
 
 		GameObject* m_Parent{ nullptr };
 		std::vector<GameObject*> m_Children;

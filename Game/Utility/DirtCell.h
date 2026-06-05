@@ -16,7 +16,7 @@ namespace digdug
 		DirtCell(minigin::Texture2D& tiles, int rowFull = 0, int rowSide = 1, int rowCorner = 2);
 		void Render(const glm::vec2& pos, float cellSize) const;
 
-		void Dig(const glm::vec2& entryPoint);
+		void Dig(const glm::ivec2& entryPoint);
 		void Refill() { m_SubCells = std::numeric_limits<uint8_t>::max(); }
 		bool HasBeenDug() const { return !GetSubCell(1, 1); }
 
@@ -34,7 +34,6 @@ namespace digdug
 		const int m_RowFullTile{};
 		const int m_RowSideTile{};
 		const int m_RowCornerTile{};
-
 		
 		uint8_t m_SubCells{ std::numeric_limits<uint8_t>::max() };
 

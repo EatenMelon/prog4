@@ -23,6 +23,10 @@ namespace digdug
 		void GuiRender() override;
 
 		void Dig(const glm::ivec2& start, const glm::ivec2& end, const char preferredAxis);
+		bool HasBeenDug(const glm::ivec2& gridPos) const;
+
+		glm::vec3 GetCellWorldPos(const glm::ivec2& gridPos) const;
+		glm::ivec2 GetPosInGrid(const glm::vec3& pos) const;
 
 		void SetTileTexture(Depth depth, minigin::Texture2D& texture);
 		void SetCellSize(float size) { m_CellSize = size; }

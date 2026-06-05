@@ -107,6 +107,37 @@ void digdug::DirtGrid::Dig(const glm::ivec2& start, const glm::ivec2& end, const
 	m_DiggingQueue.push(newEvent);
 }
 
+bool digdug::DirtGrid::HasBeenDug(const glm::ivec2& gridPos) const
+{
+	int idx{ gridPos.x + gridPos.y * m_Width };
+
+	if (idx < 0) return false;
+	if (idx >= static_cast<int>(m_Cells.size())) return false;
+
+	return m_Cells[idx].HasBeenDug();
+}
+
+glm::vec3 digdug::DirtGrid::GetCellWorldPos(const glm::ivec2& gridPos) const
+{
+	glm::vec3 pos = GetOwner().GetWorldPosition();
+
+	pos.x += gridPos.x * m_CellSize;
+	pos.y += gridPos.y * m_CellSize;
+
+	return pos;
+}
+
+glm::ivec2 digdug::DirtGrid::GetPosInGrid(const glm::vec3& pos) const
+{
+	auto inGrid = GetOwner().GetWorldPosition();
+	inGrid += glm::vec3(GetSize(), 0.f);
+	inGrid.x -= pos.x;
+	inGrid.y -= m_Height * m_CellSize - pos.y;
+	inGrid /= m_CellSize;
+
+	return glm::ivec2(inGrid);
+}
+
 void digdug::DirtGrid::SetTileTexture(Depth depth, minigin::Texture2D& texture)
 {
 	m_TileTextures.insert_or_assign(depth, &texture);

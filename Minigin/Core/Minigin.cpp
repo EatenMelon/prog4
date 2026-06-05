@@ -96,7 +96,7 @@ minigin::Minigin::Minigin(const std::filesystem::path& dataPath, int windowWidth
 		throw std::runtime_error(std::string("SDL_CreateWindow Error: ") + SDL_GetError());
 	}
 
-	InputManager::GetInstance().Init(2);
+	InputManager::GetInstance().Init(InputManager::GetGamepadLimit());
 	Renderer::GetInstance().Init(g_window);
 	ResourceManager::GetInstance().Init(dataPath);
 
@@ -131,15 +131,18 @@ void minigin::Minigin::Run(const std::function<void()>& load)
 {
 	load();
 	SceneManager::GetInstance().SetActiveScene(0);
-		
+	
+	const int fps{ 60 };
+
+	m_Timer.SetFPS(fps);
+	InputManager::SetFPS(fps);
+
 #ifndef __EMSCRIPTEN__
-	m_Timer.SetFPS(60);
 	m_Timer.Start();
 
 	while (!m_quit)
 		RunOneFrame();
 #else
-	m_Timer.SetFPS(60);		// browser doesn't go faster
 	m_Timer.Start();
 
 	emscripten_set_main_loop_arg(&LoopCallback, this, 0, true);

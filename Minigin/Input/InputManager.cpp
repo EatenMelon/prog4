@@ -1,4 +1,5 @@
 #include "InputManager.h"
+#include "InputManager.h"
 #include <SDL3/SDL.h>
 
 #include <backends/imgui_impl_sdl3.h>
@@ -8,6 +9,7 @@
 
 const int minigin::InputManager::m_MaxGamepads{ 4 };
 const int minigin::InputManager::m_KeyboardPlayerID{ -1 };
+int minigin::InputManager::m_FPS{ 60 };
 
 void minigin::InputManager::Init(int gamepads)
 {
@@ -16,6 +18,8 @@ void minigin::InputManager::Init(int gamepads)
 	
 	m_ButtonBindings.clear();
 	m_JoystickBindings.clear();
+
+	m_FrameCount = 0;
 
 	if (gamepads > 4)
 	{
@@ -30,6 +34,8 @@ void minigin::InputManager::Init(int gamepads)
 
 bool minigin::InputManager::ProcessInput(float deltaTime)
 {
+	UpdateFrameCount();
+
 	// process keyboard input
 	SDL_Event e;
 	while (SDL_PollEvent(&e))
@@ -101,6 +107,7 @@ bool minigin::InputManager::ProcessInput(float deltaTime)
 			if (binding.playerID != playerID) continue;
 
 			InputContext context{};
+			context.frame = m_FrameCount;
 
 			gamepad->SetDeadzone(binding.deadzone);
 
@@ -125,6 +132,7 @@ bool minigin::InputManager::ProcessInput(float deltaTime)
 
 		InputContext context{};
 		context.playerID = binding.playerID;
+		context.frame = m_FrameCount;
 
 		// already changed the axis' y pos to match the screen
 		switch (binding.axisDirection)
@@ -283,4 +291,14 @@ bool minigin::InputManager::ValidatePlayerId(int playerID, bool canBeKeyboard) c
 	}
 
 	return true;
+}
+
+void minigin::InputManager::UpdateFrameCount()
+{
+	++m_FrameCount;
+
+	if (m_FrameCount > m_FPS)
+	{
+		m_FrameCount = 0;
+	}
 }

@@ -10,7 +10,6 @@ minigin::MoveCommand::MoveCommand(GameObject* pActor, int playerID, float moveme
 
 void minigin::MoveCommand::ActorExecute(const InputContext& context, float deltaTime)
 {
-
 	glm::vec3 pos = GetActor().GetLocalPosition();
 
 	pos.x += context.axis.x * m_MovementSpeed * deltaTime;

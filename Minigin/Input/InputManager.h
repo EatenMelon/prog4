@@ -33,14 +33,18 @@ namespace minigin
 
 		static int GetGamepadLimit() { return m_MaxGamepads; }
 		static int GetKeyboardID() { return m_KeyboardPlayerID; }
+		static void SetFPS(unsigned int fps) { m_FPS = fps; }
 
 	private:
 		static const int m_MaxGamepads;
 		static const int m_KeyboardPlayerID;
+		static int m_FPS;
 
 		bool ValidatePlayerId(int playerID, bool canBeKeyboard) const;
+		void UpdateFrameCount();
 
 		bool m_IsEnabled{ true };
+		int m_FrameCount{};
 
 		std::vector<std::unique_ptr<Gamepad>> m_Gamepads{};
 

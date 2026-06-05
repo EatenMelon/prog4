@@ -77,6 +77,8 @@ add_executable(${GAME_NAME} ${TARGET_PARAM}
     "${COMPONENTS_DIR}/DirtGrid.cpp"
 
     "${UTILITY_DIR}/DirtCell.cpp"
+
+    "${INPUT_DIR}/GridMoveCmd.cpp"
 )
 
 target_compile_features(${GAME_NAME} PUBLIC cxx_std_20)

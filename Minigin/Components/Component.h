@@ -24,8 +24,6 @@ namespace minigin
 		void Destroy();
 
 		bool MarkedForDestruction() const;
-
-	protected:
 		GameObject& GetOwner() const;
 
 	private:

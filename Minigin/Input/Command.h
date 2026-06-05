@@ -8,6 +8,7 @@ namespace minigin
 	{
 		glm::vec2 axis{};
 		int playerID{ -1 };
+		int frame{ 0 };
 	};
 
 	class Command

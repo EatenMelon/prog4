@@ -25,7 +25,7 @@ void digdug::HealthComponent::OnNotify(const minigin::IEvent& event)
 
 	--m_Health;
 
-	minigin::ServiceLocator::GetSoundSystem()->Play("Sound/GameOver.mp3", 1.f);
+	minigin::ServiceLocator::GetSoundSystem()->Play("Sound/GameOver.mp3", 0.01f);
 
 	UpdateDisplay();
 }

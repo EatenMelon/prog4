@@ -21,6 +21,7 @@
 #include <ScoreComponent.h>
 #include <Hitbox.h>
 #include <DirtGrid.h>
+#include <GridMoveCmd.h>
 
 // input
 #include "InputManager.h"
@@ -38,6 +39,7 @@ static void LoadTestScene(minigin::Scene& scene)
 	auto smallFont = minigin::ResourceManager::GetInstance().LoadFont("Fonts/Lingua.otf", 18);
 
 	float width{ 0 };
+	digdug::DirtGrid* dirtGrid{ nullptr };
 
 	auto sandbox = std::make_unique<minigin::GameObject>();
 	{
@@ -58,6 +60,8 @@ static void LoadTestScene(minigin::Scene& scene)
 			gridComp->SetTileTexture(digdug::DirtGrid::Depth::Bedrock, *bedrockTile.get());
 
 			width = gridComp->GetSize().x;
+
+			dirtGrid = gridComp;
 		}
 
 		scene.Add(std::move(sandbox));
@@ -160,22 +164,28 @@ static void LoadTestScene(minigin::Scene& scene)
 			hitbox->HitExitEvent().Subscrube(score);
 		}
 
-		int playerID{ 0 };
-		int keyboard{ minigin::InputManager::GetKeyboardID() };
-		auto moveCommand = std::make_shared<minigin::MoveCommand>(TaizoHori.get(), playerID, 250.f);
-		auto moveCommandk = std::make_shared<minigin::MoveCommand>(TaizoHori.get(), keyboard, 250.f);
+		if (dirtGrid != nullptr)
+		{
+			int playerID{ 0 };
+			int keyboard{ minigin::InputManager::GetKeyboardID() };
+			auto moveCommand = std::make_shared<digdug::GridMoveCmd>(TaizoHori.get(), playerID, *dirtGrid, 250.f);
+			auto moveCommandk = std::make_shared<digdug::GridMoveCmd>(TaizoHori.get(), keyboard, *dirtGrid, 250.f);
 
-		minigin::InputManager::GetInstance().BindInput("Move", SDLK_W, minigin::KeyState::Pressed, moveCommandk, keyboard, minigin::Direction::Up);
-		minigin::InputManager::GetInstance().BindInput("Move", SDLK_A, minigin::KeyState::Pressed, moveCommandk, keyboard, minigin::Direction::Left);
-		minigin::InputManager::GetInstance().BindInput("Move", SDLK_S, minigin::KeyState::Pressed, moveCommandk, keyboard, minigin::Direction::Down);
-		minigin::InputManager::GetInstance().BindInput("Move", SDLK_D, minigin::KeyState::Pressed, moveCommandk, keyboard, minigin::Direction::Right);
+			moveCommand->SetGridPosition(glm::ivec2{ 8, 8 });
+			moveCommandk->SetGridPosition(glm::ivec2{ 8, 8 });
 
-		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::DPAD_UP, minigin::KeyState::Pressed, moveCommand, playerID, minigin::Direction::Up);
-		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::DPAD_LEFT, minigin::KeyState::Pressed, moveCommand, playerID, minigin::Direction::Left);
-		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::DPAD_DOWN, minigin::KeyState::Pressed, moveCommand, playerID, minigin::Direction::Down);
-		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::DPAD_RIGHT, minigin::KeyState::Pressed, moveCommand, playerID, minigin::Direction::Right);
+			minigin::InputManager::GetInstance().BindInput("Move", SDLK_W, minigin::KeyState::Pressed, moveCommandk, keyboard, minigin::Direction::Up);
+			minigin::InputManager::GetInstance().BindInput("Move", SDLK_A, minigin::KeyState::Pressed, moveCommandk, keyboard, minigin::Direction::Left);
+			minigin::InputManager::GetInstance().BindInput("Move", SDLK_S, minigin::KeyState::Pressed, moveCommandk, keyboard, minigin::Direction::Down);
+			minigin::InputManager::GetInstance().BindInput("Move", SDLK_D, minigin::KeyState::Pressed, moveCommandk, keyboard, minigin::Direction::Right);
 
-		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadJoystick::LEFT_JOYSTICK, 0.5f, moveCommand, playerID);
+			minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::DPAD_UP, minigin::KeyState::Pressed, moveCommand, playerID, minigin::Direction::Up);
+			minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::DPAD_LEFT, minigin::KeyState::Pressed, moveCommand, playerID, minigin::Direction::Left);
+			minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::DPAD_DOWN, minigin::KeyState::Pressed, moveCommand, playerID, minigin::Direction::Down);
+			minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::DPAD_RIGHT, minigin::KeyState::Pressed, moveCommand, playerID, minigin::Direction::Right);
+
+			minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadJoystick::LEFT_JOYSTICK, 0.5f, moveCommand, playerID);
+		}
 
 		scene.Add(std::move(TaizoHori));
 		scene.Add(std::move(HealthTaizoHori));

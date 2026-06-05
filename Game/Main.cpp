@@ -26,6 +26,7 @@
 #include "InputManager.h"
 
 #include <filesystem>
+#include <Renderer.h>
 
 namespace fs = std::filesystem;
 
@@ -260,6 +261,8 @@ static void load()
 		scene.Add(std::move(HealthPooka));
 		scene.Add(std::move(ScorePooka));
 	}
+
+	minigin::Renderer::GetInstance().SetBackgroundColor(SDL_Color{ 0, 0, 50, 255 });
 }
 
 static void DoubleLoad()

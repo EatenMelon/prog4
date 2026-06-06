@@ -80,8 +80,7 @@ void digdug::DirtGrid::GuiRender()
 	bool open{ true };
 	ImGui::Begin("dirt grid", &open);
 	{
-		bool enable{ m_ShowOutlines };
-		if (ImGui::RadioButton("Outlines", &enable))
+		if (ImGui::RadioButton("Outlines", m_ShowOutlines))
 		{
 			m_ShowOutlines = !m_ShowOutlines;
 		}

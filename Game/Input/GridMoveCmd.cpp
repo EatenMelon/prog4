@@ -42,7 +42,7 @@ void digdug::GridMoveCmd::ActorExecute(const minigin::InputContext& context, flo
 
 	float speed = m_MovementSpeed;
 
-	if (!m_Grid->HasBeenDug(m_TargetGridPos))
+	if (!m_Grid->HasBeenDug(m_TargetGridPos) && m_CanDig)
 	{
 		speed /= 2;
 	}
@@ -52,6 +52,7 @@ void digdug::GridMoveCmd::ActorExecute(const minigin::InputContext& context, flo
 	if (glm::dot(toTarget, toTarget) <= step * step)
 	{
 		m_Grid->Dig(m_PosInGrid, m_TargetGridPos, 'x');
+
 		pos = target;
 		SelectNewTarget(context.axis);
 	}
@@ -101,5 +102,13 @@ void digdug::GridMoveCmd::SelectNewTarget(const glm::vec2& axis)
 	}
 
 	m_PosInGrid = m_TargetGridPos;
-	m_TargetGridPos = m_PosInGrid + newDir;
+
+	auto newTarget{ m_PosInGrid + newDir };
+
+	if (!m_Grid->IsWallOpen(m_PosInGrid, newTarget) && !m_CanDig)
+	{
+		return;
+	}
+
+	m_TargetGridPos = newTarget;
 }

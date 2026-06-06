@@ -25,6 +25,11 @@ namespace digdug
 		void Dig(const glm::ivec2& start, const glm::ivec2& end, const char preferredAxis);
 		bool HasBeenDug(const glm::ivec2& gridPos) const;
 
+		// returns true:
+		// * if start and end are directly connected (non-diagonal),
+		// * assuming both cells have been dug
+		bool IsWallOpen(const glm::ivec2& start, const glm::ivec2& end) const;
+
 		glm::vec3 GetCellLocalPos(const glm::ivec2& gridPos) const;
 		glm::ivec2 GetPosInGrid(const glm::vec3& pos) const;
 

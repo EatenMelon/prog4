@@ -52,6 +52,30 @@ void digdug::DirtCell::Dig(const glm::ivec2& entryPoint)
 	}
 }
 
+bool digdug::DirtCell::GetSide(Side side) const
+{
+	constexpr glm::ivec2 topLeft{ 0, 0 };
+	constexpr glm::ivec2 middle{ 1, 1 };
+	constexpr glm::ivec2 bottomRight{ 2, 2 };
+
+	switch (side)
+	{
+	case digdug::DirtCell::Side::Top:
+		return GetSubCell(middle.x, topLeft.y);
+
+	case digdug::DirtCell::Side::Left:
+		return GetSubCell(topLeft.x, middle.y);
+
+	case digdug::DirtCell::Side::Bottom:
+		return GetSubCell(middle.x, bottomRight.y);
+
+	case digdug::DirtCell::Side::Right:
+		return GetSubCell(bottomRight.x, middle.y);
+	}
+
+	return false;
+}
+
 void digdug::DirtCell::DrawSubCell(const glm::vec2& pos, float subCellSize, int x, int y) const
 {
 	if (!GetSubCell(x, y)) return;

@@ -20,6 +20,9 @@ namespace digdug
 		void Refill() { m_SubCells = std::numeric_limits<uint8_t>::max(); }
 		bool HasBeenDug() const { return !GetSubCell(1, 1); }
 
+		enum class Side{ Top, Bottom, Left, Right };
+		bool GetSide(Side side) const;
+
 	private:
 		void DrawSubCell(const glm::vec2& pos, float subCellSize, int x, int y) const;
 		bool IsCorner(int x, int y) const;

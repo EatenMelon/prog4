@@ -5,6 +5,8 @@
 #include <stdexcept>
 #include <Renderer.h>
 #include <cmath>
+#include <iostream>
+#include <Texture2D.h>
 
 void digdug::DirtGrid::Start()
 {
@@ -101,12 +103,66 @@ void digdug::DirtGrid::Dig(const glm::ivec2& start, const glm::ivec2& end, const
 
 bool digdug::DirtGrid::HasBeenDug(const glm::ivec2& gridPos) const
 {
-	int idx{ gridPos.x + (m_Height - gridPos.y - 1) * m_Width };
+	const int idx{ gridPos.x + (m_Height - gridPos.y - 1) * m_Width };
 
 	if (idx < 0) return false;
 	if (idx >= static_cast<int>(m_Cells.size())) return false;
 
 	return m_Cells[idx].HasBeenDug();
+}
+
+bool digdug::DirtGrid::IsWallOpen(const glm::ivec2& start, const glm::ivec2& end) const
+{
+	if (!HasBeenDug(start)) return false;
+	if (!HasBeenDug(end)) return false;
+
+	const bool horizontal{ glm::abs(start.x - end.x) == 1 };
+	const bool vertical{ glm::abs(start.y - end.y) == 1 };
+
+	if (horizontal && vertical)
+	{
+		std::cerr << "WARNING: DirtGrid::IsWallOpen, a wall cannot be diagonal!\n";
+		return false;
+	}
+
+	if (!horizontal && !vertical)
+	{
+		return false;
+	}
+
+	const glm::ivec2 toEnd = end - start;
+
+	DirtCell::Side sideStart{};
+	DirtCell::Side sideEnd{};
+
+	if (toEnd.x < 0)
+	{
+		sideStart = DirtCell::Side::Left;
+		sideEnd = DirtCell::Side::Right;
+	}
+	else if (toEnd.x > 0)
+	{
+		sideStart = DirtCell::Side::Right;
+		sideEnd = DirtCell::Side::Left;
+	}
+	else if (toEnd.y < 0)
+	{
+		sideStart = DirtCell::Side::Top;
+		sideEnd = DirtCell::Side::Bottom;
+	}
+	else if (toEnd.y > 0)
+	{
+		sideStart = DirtCell::Side::Bottom;
+		sideEnd = DirtCell::Side::Top;
+	}
+
+	const int startIdx{ start.x + (m_Height - start.y - 1) * m_Width };
+	const int endIdx{ end.x + (m_Height - end.y - 1) * m_Width };
+
+	auto& startCell{ m_Cells[startIdx] };
+	auto& endCell{ m_Cells[endIdx] };
+
+	return !startCell.GetSide(sideStart) && !endCell.GetSide(sideEnd);
 }
 
 glm::vec3 digdug::DirtGrid::GetCellLocalPos(const glm::ivec2& gridPos) const

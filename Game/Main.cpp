@@ -62,6 +62,9 @@ static void LoadTestScene(minigin::Scene& scene)
 			width = gridComp->GetSize().x;
 
 			dirtGrid = gridComp;
+
+			gridComp->Dig(glm::ivec2{ 1, 8 }, glm::ivec2{ 12, 8 }, 'x');
+			gridComp->Dig(glm::ivec2{ 12, 2 }, glm::ivec2{ 12, 12 }, 'x');
 		}
 
 		scene.Add(std::move(sandbox));
@@ -164,32 +167,9 @@ static void LoadTestScene(minigin::Scene& scene)
 			hitbox->HitExitEvent().Subscrube(score);
 		}
 
-		if (dirtGrid != nullptr)
-		{
-			int playerID{ 0 };
-			int keyboard{ minigin::InputManager::GetKeyboardID() };
-			auto moveCommand = std::make_shared<digdug::GridMoveCmd>(TaizoHori.get(), playerID, *dirtGrid, 250.f);
-			auto moveCommandk = std::make_shared<digdug::GridMoveCmd>(TaizoHori.get(), keyboard, *dirtGrid, 250.f);
-
-			moveCommand->SetGridPosition(glm::ivec2{ 8, 8 });
-			moveCommandk->SetGridPosition(glm::ivec2{ 8, 8 });
-
-			minigin::InputManager::GetInstance().BindInput("Move", SDLK_W, minigin::KeyState::Pressed, moveCommandk, keyboard, minigin::Direction::Up);
-			minigin::InputManager::GetInstance().BindInput("Move", SDLK_A, minigin::KeyState::Pressed, moveCommandk, keyboard, minigin::Direction::Left);
-			minigin::InputManager::GetInstance().BindInput("Move", SDLK_S, minigin::KeyState::Pressed, moveCommandk, keyboard, minigin::Direction::Down);
-			minigin::InputManager::GetInstance().BindInput("Move", SDLK_D, minigin::KeyState::Pressed, moveCommandk, keyboard, minigin::Direction::Right);
-
-			minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::DPAD_UP, minigin::KeyState::Pressed, moveCommand, playerID, minigin::Direction::Up);
-			minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::DPAD_LEFT, minigin::KeyState::Pressed, moveCommand, playerID, minigin::Direction::Left);
-			minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::DPAD_DOWN, minigin::KeyState::Pressed, moveCommand, playerID, minigin::Direction::Down);
-			minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::DPAD_RIGHT, minigin::KeyState::Pressed, moveCommand, playerID, minigin::Direction::Right);
-
-			minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadJoystick::LEFT_JOYSTICK, 0.5f, moveCommand, playerID);
-		}
-
-		scene.Add(std::move(TaizoHori));
 		scene.Add(std::move(HealthTaizoHori));
 		scene.Add(std::move(ScoreTaizoHori));
+		
 	}
 
 	auto Pooka = std::make_unique<minigin::GameObject>();
@@ -263,19 +243,38 @@ static void LoadTestScene(minigin::Scene& scene)
 			hitbox->HitEnterEvent().Subscrube(score);
 		}
 
-		int playerID{ 1 };
-		auto moveCommand = std::make_shared<minigin::MoveCommand>(Pooka.get(), playerID, 250.f);
-
-		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::DPAD_UP, minigin::KeyState::Pressed, moveCommand, playerID, minigin::Direction::Up);
-		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::DPAD_LEFT, minigin::KeyState::Pressed, moveCommand, playerID, minigin::Direction::Left);
-		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::DPAD_DOWN, minigin::KeyState::Pressed, moveCommand, playerID, minigin::Direction::Down);
-		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::DPAD_RIGHT, minigin::KeyState::Pressed, moveCommand, playerID, minigin::Direction::Right);
-
-		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadJoystick::LEFT_JOYSTICK, 0.5f, moveCommand, playerID);
-
-		scene.Add(std::move(Pooka));
 		scene.Add(std::move(HealthPooka));
 		scene.Add(std::move(ScorePooka));
+	}
+
+	if (dirtGrid != nullptr)
+	{
+		int taizoID{ 0 };
+		auto taizoMove = std::make_shared<digdug::GridMoveCmd>(TaizoHori.get(), taizoID, *dirtGrid, 250.f);
+
+		taizoMove->SetGridPosition(glm::ivec2{ 8, 8 });
+
+		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::DPAD_UP, minigin::KeyState::Pressed, taizoMove, taizoID, minigin::Direction::Up);
+		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::DPAD_LEFT, minigin::KeyState::Pressed, taizoMove, taizoID, minigin::Direction::Left);
+		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::DPAD_DOWN, minigin::KeyState::Pressed, taizoMove, taizoID, minigin::Direction::Down);
+		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::DPAD_RIGHT, minigin::KeyState::Pressed, taizoMove, taizoID, minigin::Direction::Right);
+
+		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadJoystick::LEFT_JOYSTICK, 0.5f, taizoMove, taizoID);
+
+		int pookaID{ 1 };
+		auto pookaMove = std::make_shared<digdug::GridMoveCmd>(Pooka.get(), pookaID, *dirtGrid, 250.f, false);
+
+		pookaMove->SetGridPosition(glm::ivec2{ 12, 3 });
+
+		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::DPAD_UP, minigin::KeyState::Pressed, pookaMove, pookaID, minigin::Direction::Up);
+		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::DPAD_LEFT, minigin::KeyState::Pressed, pookaMove, pookaID, minigin::Direction::Left);
+		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::DPAD_DOWN, minigin::KeyState::Pressed, pookaMove, pookaID, minigin::Direction::Down);
+		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::DPAD_RIGHT, minigin::KeyState::Pressed, pookaMove, pookaID, minigin::Direction::Right);
+
+		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadJoystick::LEFT_JOYSTICK, 0.5f, pookaMove, pookaID);
+		
+		scene.Add(std::move(TaizoHori));
+		scene.Add(std::move(Pooka));
 	}
 
 	minigin::Renderer::GetInstance().SetBackgroundColor(SDL_Color{ 0, 0, 50, 255 });

@@ -25,7 +25,7 @@ namespace digdug
 		void Dig(const glm::ivec2& start, const glm::ivec2& end, const char preferredAxis);
 		bool HasBeenDug(const glm::ivec2& gridPos) const;
 
-		glm::vec3 GetCellWorldPos(const glm::ivec2& gridPos) const;
+		glm::vec3 GetCellLocalPos(const glm::ivec2& gridPos) const;
 		glm::ivec2 GetPosInGrid(const glm::vec3& pos) const;
 
 		void SetTileTexture(Depth depth, minigin::Texture2D& texture);
@@ -34,6 +34,7 @@ namespace digdug
 		Depth GetDepthLevel(const glm::ivec2& pos) const;
 
 		glm::vec2 GetSize() const { return glm::vec2{ m_Width * m_CellSize, m_Height * m_CellSize }; }
+		float GetCellSize() const { return m_CellSize; }
 
 	private:
 		struct DigEvent
@@ -50,6 +51,8 @@ namespace digdug
 
 		const int m_Width{ 14 };
 		const int m_Height{ 15 };
+
+		bool m_ShowOutlines{ false };
 
 		std::vector<DirtCell> m_Cells{};
 		std::queue<DigEvent> m_DiggingQueue{};

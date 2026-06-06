@@ -8,6 +8,7 @@ digdug::GridMoveCmd::GridMoveCmd(minigin::GameObject* pActor, int playerID, Dirt
 	, m_MovementSpeed{ speed }
 	, m_CanDig{ canDig }
 {
+	GetActor().SetParent(&grid.GetOwner());
 	SetGridPosition(m_PosInGrid);
 
 	auto renderComp = GetActor().GetComponent<minigin::RenderComponent>();
@@ -25,65 +26,64 @@ digdug::GridMoveCmd::GridMoveCmd(minigin::GameObject* pActor, int playerID, Dirt
 void digdug::GridMoveCmd::SetGridPosition(const glm::ivec2& gridPos)
 {
 	m_PosInGrid = gridPos;
-	GetActor().SetLocalPosition(m_Grid->GetCellWorldPos(m_PosInGrid));
+	m_TargetGridPos = m_PosInGrid;
+	GetActor().SetLocalPosition(m_Grid->GetCellLocalPos(m_PosInGrid));
 }
 
 void digdug::GridMoveCmd::ActorExecute(const minigin::InputContext& context, float deltaTime)
 {
-	// at worst you skip 1 frame
-	// but prevents sonic behavior
-	if (context.frame == m_LastFrame) return;
+	if (m_LastFrame == context.frame) return;
 	m_LastFrame = context.frame;
 
+	glm::vec3 target = m_Grid->GetCellLocalPos(m_TargetGridPos);
+
 	glm::vec3 pos = GetActor().GetLocalPosition();
+	glm::vec3 toTarget = target - pos;
 
-	pos.x += m_MoveDirection.x * m_MovementSpeed * deltaTime;
-	pos.y += m_MoveDirection.y * m_MovementSpeed * deltaTime;
+	float speed = m_MovementSpeed;
 
-	const auto limitedPos{ KeepInBounds(pos) };
-
-	if (limitedPos != pos)
+	if (!m_Grid->HasBeenDug(m_TargetGridPos))
 	{
-		m_MoveDirection = glm::ivec2(0);
+		speed /= 2;
 	}
 
-	pos = limitedPos;
+	float step = speed * deltaTime;
 
-	auto newPosInGrid = m_Grid->GetPosInGrid(GetActor().GetLocalPosition());
-
-	if (m_PosInGrid != newPosInGrid)
+	if (glm::dot(toTarget, toTarget) <= step * step)
 	{
-		SetGridPosition(newPosInGrid);
-		m_MoveDirection = glm::ivec2(0);
-		std::cout << "Position in grid: [" << m_PosInGrid.x << ", " << m_PosInGrid.y << "]\n";
+		m_Grid->Dig(m_PosInGrid, m_TargetGridPos, 'x');
+		pos = target;
+		SelectNewTarget(context.axis);
+	}
+	else
+	{
+		pos += glm::normalize(toTarget) * step;
 	}
 
-	if (!m_CanDig)
-	{
-		std::cout << "Position in grid: [" << m_PosInGrid.x << ", " << m_PosInGrid.y << "]\n";
-	}
+	const auto locked{ KeepInBounds(pos) };
 
-	m_MoveDirection = ChooseDirection(context.axis);
+	if (pos != locked)
+	{
+		m_TargetGridPos = m_PosInGrid;
+		pos = locked;
+	}
 
 	GetActor().SetLocalPosition(pos);
 }
 
 glm::vec3 digdug::GridMoveCmd::KeepInBounds(const glm::vec3& pos) const
 {
-	auto min = m_Grid->GetOwner().GetWorldPosition();
-	auto max = glm::vec3(m_Grid->GetSize(), 0.f) + min;
+	auto max = glm::vec3(m_Grid->GetSize(), 0.f);
 	
 	glm::vec3 newPos{};
-	newPos.x = std::clamp(pos.x, min.x, max.x - m_ActorSize.x);
-	newPos.y = std::clamp(pos.y, min.y, max.y - m_ActorSize.y);
+	newPos.x = std::clamp(pos.x, 0.f, max.x - m_ActorSize.x);
+	newPos.y = std::clamp(pos.y, 0.f, max.y - m_ActorSize.y);
 
 	return newPos;
 }
 
-glm::ivec2 digdug::GridMoveCmd::ChooseDirection(const glm::vec2& axis)
+void digdug::GridMoveCmd::SelectNewTarget(const glm::vec2& axis)
 {
-	if (m_MoveDirection != glm::ivec2(0)) return m_MoveDirection;
-
 	glm::vec2 absAxis{};
 	absAxis.x = glm::abs(axis.x);
 	absAxis.y = glm::abs(axis.y);
@@ -100,5 +100,6 @@ glm::ivec2 digdug::GridMoveCmd::ChooseDirection(const glm::vec2& axis)
 		newDir.x = std::signbit(axis.x) ? -1 : 1;
 	}
 
-	return newDir;
+	m_PosInGrid = m_TargetGridPos;
+	m_TargetGridPos = m_PosInGrid + newDir;
 }

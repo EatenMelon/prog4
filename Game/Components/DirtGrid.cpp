@@ -13,7 +13,7 @@ void digdug::DirtGrid::Start()
 	for (int cell{ 0 }; cell < m_Width * m_Height; ++cell)
 	{
 		glm::ivec2 pos{};
-		pos.y = cell / m_Width;
+		pos.y = m_Height - 1 - (cell / m_Width);
 
 		auto depth = GetDepthLevel(pos);
 
@@ -28,7 +28,7 @@ void digdug::DirtGrid::Start()
 	// dig out the top of the grid
 	for (int col{ 0 }; col < m_Width; ++col)
 	{
-		auto& cell = m_Cells[col];
+		auto& cell = m_Cells[col + (m_Height - 1) * m_Width];
 
 		cell.Dig(glm::vec2{ 1, -1 });
 		cell.Dig(glm::vec2{ -1, 0 });
@@ -46,52 +46,45 @@ void digdug::DirtGrid::Update(float)
 
 void digdug::DirtGrid::Render() const
 {
-	auto origin = glm::vec2(GetOwner().GetWorldPosition());
+	auto renderer = minigin::Renderer::GetInstance().GetSDLRenderer();
+
+	auto origin = glm::vec2(GetOwner().GetLocalPosition());
 
 	for (int c{ 0 }; c < static_cast<int>(m_Cells.size()); ++c)
 	{
 		glm::vec2 pos{};
 		pos.x = static_cast<float>(c % m_Width);
-		pos.y = static_cast<float>(c / m_Width);
+		pos.y = static_cast<float>(m_Height - 1 - (c / m_Width));
 
 		pos *= glm::vec2(m_CellSize);
 		pos += origin;
 
 		m_Cells[c].Render(pos, m_CellSize);
+
+		if (!m_ShowOutlines) continue;
+
+		SDL_SetRenderDrawColor(renderer, 255, 125, 255, 255);
+
+		SDL_FRect rect{};
+		rect.x = pos.x;
+		rect.y = pos.y;
+		rect.w = m_CellSize;
+		rect.h = m_CellSize;
+
+		SDL_RenderRect(renderer, &rect);
 	}
-
-	auto renderer = minigin::Renderer::GetInstance().GetSDLRenderer();
-
-	SDL_FRect border{};
-	border.x = origin.x;
-	border.y = origin.y;
-	border.w = border.x + m_Width * m_CellSize;
-	border.h = border.y + m_Height * m_CellSize;
-	SDL_RenderRect(renderer, &border);
 }
 
 void digdug::DirtGrid::GuiRender()
 {
 	bool open{ true };
-	ImGui::Begin("sand box", &open);
+	ImGui::Begin("dirt grid", &open);
 	{
-		glm::ivec2 startA{ 1, 1 };
-		glm::ivec2 endA{ 4, 4 };
-
-		if (ImGui::Button("Dig Tunnel A => x")) Dig(startA, endA, 'x');
-		if (ImGui::Button("Dig Tunnel A => y")) Dig(startA, endA, 'y');
-
-		glm::ivec2 startB{ 6, 6 };
-		glm::ivec2 endB{ 10, 10 };
-
-		if (ImGui::Button("Dig Tunnel B => x")) Dig(startB, endB, 'x');
-		if (ImGui::Button("Dig Tunnel B => y")) Dig(startB, endB, 'y');
-
-		glm::ivec2 startC{ 2, 5 };
-		glm::ivec2 endC{ 11, 14 };
-
-		if (ImGui::Button("Dig Tunnel C => x")) Dig(startC, endC, 'x');
-		if (ImGui::Button("Dig Tunnel C => y")) Dig(startC, endC, 'y');
+		bool enable{ m_ShowOutlines };
+		if (ImGui::RadioButton("Outlines", &enable))
+		{
+			m_ShowOutlines = !m_ShowOutlines;
+		}
 	}
 	ImGui::End();
 }
@@ -109,7 +102,7 @@ void digdug::DirtGrid::Dig(const glm::ivec2& start, const glm::ivec2& end, const
 
 bool digdug::DirtGrid::HasBeenDug(const glm::ivec2& gridPos) const
 {
-	int idx{ gridPos.x + gridPos.y * m_Width };
+	int idx{ gridPos.x + (m_Height - gridPos.y - 1) * m_Width };
 
 	if (idx < 0) return false;
 	if (idx >= static_cast<int>(m_Cells.size())) return false;
@@ -117,25 +110,24 @@ bool digdug::DirtGrid::HasBeenDug(const glm::ivec2& gridPos) const
 	return m_Cells[idx].HasBeenDug();
 }
 
-glm::vec3 digdug::DirtGrid::GetCellWorldPos(const glm::ivec2& gridPos) const
+glm::vec3 digdug::DirtGrid::GetCellLocalPos(const glm::ivec2& gridPos) const
 {
-	glm::vec3 pos = GetOwner().GetWorldPosition();
+	glm::vec3 pos{};
 
-	pos.x += gridPos.x * m_CellSize;
-	pos.y += gridPos.y * m_CellSize;
+	pos.x = gridPos.x * m_CellSize;
+	pos.y = gridPos.y * m_CellSize;
 
 	return pos;
 }
 
 glm::ivec2 digdug::DirtGrid::GetPosInGrid(const glm::vec3& pos) const
 {
-	auto inGrid = GetOwner().GetWorldPosition();
-	inGrid += glm::vec3(GetSize(), 0.f);
-	inGrid.x -= m_Width * m_CellSize - pos.x;
-	inGrid.y -= m_Height * m_CellSize - pos.y;
-	inGrid /= m_CellSize;
+	glm::vec3 local = pos;
 
-	return glm::ivec2(inGrid);
+	glm::vec2 grid = local / m_CellSize;
+	grid = glm::floor(grid);
+
+	return glm::ivec2(grid);
 }
 
 void digdug::DirtGrid::SetTileTexture(Depth depth, minigin::Texture2D& texture)
@@ -197,12 +189,20 @@ void digdug::DirtGrid::DigTunnel(const DigEvent& digEvent)
 void digdug::DirtGrid::DigOneWay(int start, int end, int oppositeAxis, const char axis)
 {
 	int diff = start - end;
+	if (diff == 0) return;
 
-	//glm::ivec2 dir{ startPos - endPos };
 	const int increment{ signbit(diff)? 1 : -1 };
-	//std::cout << "dir " << axis << ": " << diff << ", increment = " << increment << "\n";
 
-	for (int axisValue{ start }; axisValue <= end; axisValue += increment)
+	auto condition = [&](int value) -> bool
+		{
+			if (start < end)
+			{
+				return value <= end;
+			}
+			return value >= end;
+		};
+
+	for (int axisValue{ start }; condition(axisValue); axisValue += increment)
 	{
 		int index{ -1 };
 		int dir{ signbit(diff) ? -1 : 1 };
@@ -218,13 +218,13 @@ void digdug::DirtGrid::DigOneWay(int start, int end, int oppositeAxis, const cha
 		{
 		case 'X':
 		case 'x':
-			index = axisValue + oppositeAxis * m_Width;
+			index = axisValue + (m_Height - oppositeAxis - 1) * m_Width;
 			entryPoint = glm::ivec2{ dir, 0 };
 			break;
 
 		case 'Y':
 		case 'y':
-			index = oppositeAxis + axisValue * m_Width;
+			index = oppositeAxis + (m_Height - axisValue - 1) * m_Width;
 			entryPoint = glm::ivec2{ 0, dir };
 			break;
 		}

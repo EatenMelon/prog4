@@ -17,7 +17,7 @@ namespace digdug
 
 	private:
 		glm::vec3 KeepInBounds(const glm::vec3& pos) const;
-		glm::ivec2 ChooseDirection(const glm::vec2& axis);
+		void SelectNewTarget(const glm::vec2& axis);
 
 		DirtGrid* m_Grid{ nullptr };
 
@@ -25,7 +25,7 @@ namespace digdug
 		bool m_CanDig{ false };
 
 		glm::ivec2 m_PosInGrid{ 0, 0 };
-		glm::ivec2 m_MoveDirection{ 0, 0 };
+		glm::ivec2 m_TargetGridPos{ 0, 0 };
 		glm::vec2 m_ActorSize{ 0.f, 0.f };
 
 		int m_LastFrame{ 0 };

@@ -70,6 +70,8 @@ bool minigin::SceneManager::SetActiveScene(size_t index)
 
 	m_ActiveSceneIdx = index;
 
+	SelectSceneEvent event{};
+	m_OnSelectScene.Notify(event);
 	m_scenes[m_ActiveSceneIdx]->Load();
 
 	return true;

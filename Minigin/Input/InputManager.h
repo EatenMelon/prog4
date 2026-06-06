@@ -2,12 +2,14 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include <unordered_map>
+
 #include "Command.h"
 #include "Gamepad.h"
 
-#include "Singleton.h"
-#include <unordered_map>
+#include <Singleton.h>
 #include <MiniginTypes.h>
+#include <Observer.h>
 
 namespace minigin
 {
@@ -19,11 +21,12 @@ namespace minigin
 		Idle
 	};
 
-	class InputManager final : public Singleton<InputManager>
+	class InputManager final : public Singleton<InputManager>, public IObserver
 	{
 	public:
 		void Init(int gamepads);
 		bool ProcessInput(float deltaTime);
+		void OnNotify(const IEvent& event) override;
 
 		void BindInput
 		(
@@ -71,6 +74,7 @@ namespace minigin
 
 		bool m_IsEnabled{ true };
 		int m_FrameCount{};
+		unsigned int m_ResetEventHash{};
 
 		std::vector<std::unique_ptr<Gamepad>> m_Gamepads{};
 

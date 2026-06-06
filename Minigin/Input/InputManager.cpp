@@ -1,6 +1,6 @@
 #include "InputManager.h"
-#include "InputManager.h"
 #include <SDL3/SDL.h>
+#include <SceneManager.h>
 
 #include <backends/imgui_impl_sdl3.h>
 #include <stdexcept>
@@ -15,11 +15,6 @@ void minigin::InputManager::Init(int gamepads)
 {
 	m_Gamepads.clear();
 	m_Gamepads.reserve(gamepads);
-	
-	m_ButtonBindings.clear();
-	m_JoystickBindings.clear();
-
-	m_FrameCount = 0;
 
 	if (gamepads > 4)
 	{
@@ -30,6 +25,11 @@ void minigin::InputManager::Init(int gamepads)
 	{
 		m_Gamepads.push_back(std::make_unique<Gamepad>(p));
 	}
+
+	SelectSceneEvent event{};
+	m_ResetEventHash = event.GetEventHash();
+
+	SceneManager::GetInstance().SceneSelectEvent().Subscrube(this);
 }
 
 bool minigin::InputManager::ProcessInput(float deltaTime)
@@ -171,6 +171,18 @@ bool minigin::InputManager::ProcessInput(float deltaTime)
 	}
 
 	return true;
+}
+
+void minigin::InputManager::OnNotify(const IEvent& event)
+{
+	if (event.GetEventHash() != m_ResetEventHash)
+	{
+		return;
+	}
+
+	m_ButtonBindings.clear();
+	m_JoystickBindings.clear();
+	m_FrameCount = 0;
 }
 
 void minigin::InputManager::BindInput

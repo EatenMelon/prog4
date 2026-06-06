@@ -1,19 +1,11 @@
 #include "Scene.h"
 #include <algorithm>
 #include <cassert>
-#include <InputManager.h>
-#include <HitboxManager.h>
 
 using namespace minigin;
 
 void minigin::Scene::Load()
 {
-	// refresh bindings for the new scene
-	// ensuring the old bindings don't affect
-	// new objects in memory
-	InputManager::GetInstance().Init(4);
-	HitboxManager::GetInstance().Reset();
-
 	m_Loader(*this);
 }
 

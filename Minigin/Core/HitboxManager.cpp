@@ -1,5 +1,14 @@
 #include "HitboxManager.h"
+#include "SceneManager.h"
 #include <Hitbox.h>
+
+void minigin::HitboxManager::Init()
+{
+	SelectSceneEvent event{};
+	m_ResetEventHash = event.GetEventHash();
+
+	SceneManager::GetInstance().SceneSelectEvent().Subscrube(this);
+}
 
 void minigin::HitboxManager::ChechCollisions()
 {
@@ -12,8 +21,13 @@ void minigin::HitboxManager::ChechCollisions()
 	}
 }
 
-void minigin::HitboxManager::Reset()
+void minigin::HitboxManager::OnNotify(const IEvent& event)
 {
+	if (event.GetEventHash() != m_ResetEventHash)
+	{
+		return;
+	}
+
 	m_Hitboxes.clear();
 }
 

@@ -1,12 +1,21 @@
 #pragma once
 #include <vector>
 #include <memory>
+#include <limits>
+
 #include "Scene.h"
 #include "Singleton.h"
-#include <limits>
+#include <Subject.h>
+#include <Events.h>
 
 namespace minigin
 {
+	class SelectSceneEvent final : public PlainEvent
+	{
+	public:
+		SelectSceneEvent() : PlainEvent("OnSceneSelect") {}
+	};
+
 	class Scene;
 	class SceneManager final : public Singleton<SceneManager>
 	{
@@ -21,11 +30,14 @@ namespace minigin
 		bool SetActiveScene(size_t index);
 		size_t ActiveSceneId() const;
 
+		Subject& SceneSelectEvent() { return m_OnSelectScene; }
+
 	private:
 		friend class Singleton<SceneManager>;
 		SceneManager() = default;
 		std::vector<std::unique_ptr<Scene>> m_scenes{};
 
 		size_t m_ActiveSceneIdx{ std::numeric_limits<size_t>::max() };
+		Subject m_OnSelectScene{};
 	};
 }

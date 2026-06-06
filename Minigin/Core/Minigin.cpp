@@ -114,6 +114,7 @@ minigin::Minigin::Minigin(const std::filesystem::path& dataPath, int windowWidth
 #endif
 
 	ServiceLocator::GetSoundSystem()->Init();
+	HitboxManager::GetInstance().Init();
 }
 
 minigin::Minigin::~Minigin()

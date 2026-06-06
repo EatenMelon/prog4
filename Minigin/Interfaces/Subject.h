@@ -5,7 +5,7 @@ namespace minigin
 {
 	class IObserver;
 	class IEvent;
-	class Subject
+	class Subject final
 	{
 	public:
 		bool Subscrube(IObserver* subscriber);

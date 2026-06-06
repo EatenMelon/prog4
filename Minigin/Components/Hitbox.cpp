@@ -10,7 +10,7 @@ minigin::Hitbox::~Hitbox()
 	HitboxManager::GetInstance().Leave(*this);
 }
 
-void minigin::Hitbox::Start()
+void minigin::Hitbox::Init()
 {
 	HitboxManager::GetInstance().Join(*this);
 }
@@ -19,17 +19,19 @@ void minigin::Hitbox::Render() const
 {
 	auto renderer = Renderer::GetInstance().GetSDLRenderer();
 
+	const auto shrink = glm::vec2(m_Shrink, m_Shrink);
+
 	SDL_FRect rect{};
-	rect.x = GetOwner().GetWorldPosition().x;
-	rect.y = GetOwner().GetWorldPosition().y;
-	rect.w = m_Width;
-	rect.h = m_Height;
+	rect.x = GetOwner().GetWorldPosition().x + m_Shrink / 2;
+	rect.y = GetOwner().GetWorldPosition().y + m_Shrink / 2;
+	rect.w = m_Width - shrink.x;
+	rect.h = m_Height - shrink.y;
 
 	SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
 	SDL_RenderRect(renderer, &rect);
 }
 
-void minigin::Hitbox::SetSize(float width, float height)
+void minigin::Hitbox::SetBounds(float width, float height)
 {
 	m_Width = width;
 	m_Height = height;
@@ -40,14 +42,19 @@ bool minigin::Hitbox::IsColliding(const Hitbox& other) const
 	if (&other == this) return false;
 	if (&GetOwner() == &other.GetOwner()) return false;
 
-	auto myPos = GetOwner().GetWorldPosition();
-	auto otherPos = other.GetOwner().GetWorldPosition();
+	const auto shrink = glm::vec3(m_Shrink, m_Shrink, 0.f);
 
-	if (myPos.x > otherPos.x + other.m_Width) return false;
-	if (myPos.x + m_Width < otherPos.x) return false;
+	const auto myPos = GetOwner().GetWorldPosition() + shrink / glm::vec3(2);
+	const auto mySize = glm::vec3(m_Width, m_Height, 0.f) - shrink;
 
-	if (myPos.y > otherPos.y + other.m_Height) return false;
-	if (myPos.y + m_Height < otherPos.y) return false;
+	const auto otherPos = other.GetOwner().GetWorldPosition() + shrink / glm::vec3(2);
+	const auto otherSize = glm::vec3(other.m_Width, other.m_Height, 0.f) - shrink;
+
+	if (myPos.x > otherPos.x + otherSize.x) return false;
+	if (myPos.x + mySize.x < otherPos.x) return false;
+
+	if (myPos.y > otherPos.y + otherSize.y) return false;
+	if (myPos.y + mySize.y < otherPos.y) return false;
 
 	return true;
 }

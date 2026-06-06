@@ -156,11 +156,12 @@ static void LoadTestScene(minigin::Scene& scene)
 			if (renderComp != nullptr)
 			{
 				auto size = renderComp->GetSize();
-				hitbox->SetSize(size.x, size.y);
+				hitbox->SetBounds(size.x, size.y);
+				hitbox->SetShrink(size.x / 6);
 			}
 			else
 			{
-				hitbox->SetSize(16, 16);
+				hitbox->SetBounds(16, 16);
 			}
 
 			hitbox->HitEnterEvent().Subscrube(health);
@@ -232,11 +233,8 @@ static void LoadTestScene(minigin::Scene& scene)
 			if (renderComp != nullptr)
 			{
 				auto size = renderComp->GetSize();
-				hitbox->SetSize(size.x, size.y);
-			}
-			else
-			{
-				hitbox->SetSize(16, 16);
+				hitbox->SetBounds(size.x, size.y);
+				hitbox->SetShrink(size.x / 6);
 			}
 
 			hitbox->HitExitEvent().Subscrube(health);

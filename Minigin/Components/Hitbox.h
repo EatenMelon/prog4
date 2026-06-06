@@ -9,12 +9,19 @@ namespace minigin
 	{
 	public:
 		using Component::Component;
+
+		Hitbox(const Hitbox&) = delete;
+		Hitbox& operator=(const Hitbox&) = delete;
+		Hitbox(Hitbox&&) = delete;
+		Hitbox& operator=(Hitbox&&) = delete;
+
 		~Hitbox() override;
 
-		void Start() override;
+		void Init() override;
 		void Render() const override;
 
-		void SetSize(float width, float height);
+		void SetBounds(float width, float height);
+		void SetShrink(float shrink) { m_Shrink = shrink; }
 		bool IsColliding(const Hitbox& other) const;
 
 		Subject& HitEnterEvent() { return m_OnHitEnter; }
@@ -27,6 +34,7 @@ namespace minigin
 
 		float m_Width{ 1 };
 		float m_Height{ 1 };
+		float m_Shrink{ 0.f };
 
 		std::vector<Hitbox*> m_CurrentlyColliding{};
 		Subject m_OnHitEnter{};

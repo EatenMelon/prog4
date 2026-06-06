@@ -7,26 +7,52 @@
 
 #include "Singleton.h"
 #include <unordered_map>
+#include <MiniginTypes.h>
 
 namespace minigin
 {
-	enum class KeyState { OnDown, OnRelease, Pressed, Idle };
-	enum class Direction { Up, Down, Left, Right, None };
+	enum class KeyState
+	{
+		OnDown,
+		OnRelease,
+		Pressed,
+		Idle
+	};
 
 	class InputManager final : public Singleton<InputManager>
 	{
 	public:
 		void Init(int gamepads);
-
 		bool ProcessInput(float deltaTime);
 
-		void BindInput(const std::string& name, unsigned int button, KeyState state,
-			std::shared_ptr<Command> command, int playerID, Direction axisDirection = Direction::None);
+		void BindInput
+		(
+			const std::string& name,
+			unsigned int button,
+			KeyState state,
+			std::shared_ptr<Command> command,
+			int playerID,
+			Direction axisDirection = Direction::None
+		);
 
-		void BindInput(const std::string& name, GamepadButton button, KeyState state,
-			std::shared_ptr<Command> command, int playerID, Direction axisDirection = Direction::None);
+		void BindInput
+		(
+			const std::string& name,
+			GamepadButton button,
+			KeyState state,
+			std::shared_ptr<Command> command,
+			int playerID,
+			Direction axisDirection = Direction::None
+		);
 
-		void BindInput(const std::string& name, GamepadJoystick joystick, float deadzone, std::shared_ptr<Command> command, int playerID);
+		void BindInput
+		(
+			const std::string& name,
+			GamepadJoystick joystick,
+			float deadzone,
+			std::shared_ptr<Command> command,
+			int playerID
+		);
 
 		void UnBindInput(const std::string& actionName);
 		void Enable(bool enable) { m_IsEnabled = enable; }

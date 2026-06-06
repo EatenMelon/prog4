@@ -1,66 +1,48 @@
 #include "HitboxManager.h"
 #include <Hitbox.h>
-#include <SceneManager.h>
 
 void minigin::HitboxManager::ChechCollisions()
 {
-	auto id = SceneManager::GetInstance().ActiveSceneId();
-
-	if (!m_Hitboxes.contains(id)) return;
-
-	auto& boxes = m_Hitboxes.find(id)->second;
-
-	for (auto boxA : boxes)
+	for (auto boxA : m_Hitboxes)
 	{
-		for (auto boxB : boxes)
+		for (auto boxB : m_Hitboxes)
 		{
 			boxA->CheckCollision(*boxB);
 		}
 	}
 }
 
+void minigin::HitboxManager::Reset()
+{
+	m_Hitboxes.clear();
+}
+
 bool minigin::HitboxManager::Join(Hitbox& box)
 {
-	auto id = box.GetOwner().GetSceneId();
-
-	if (!m_Hitboxes.contains(id))
-	{
-		m_Hitboxes.emplace(id, std::vector<Hitbox*>{&box});
-		return true;
-	}
-
-	auto& boxes = m_Hitboxes.find(id)->second;
-
 	auto itr = std::find
 	(
-		boxes.begin(),
-		boxes.end(),
+		m_Hitboxes.begin(),
+		m_Hitboxes.end(),
 		&box
 	);
 
-	if (itr != boxes.end()) return false;
+	if (itr != m_Hitboxes.end()) return false;
 
-	boxes.push_back(&box);
+	m_Hitboxes.push_back(&box);
 
 	return true;
 }
 
 void minigin::HitboxManager::Leave(const Hitbox& box)
 {
-	auto id = box.GetOwner().GetSceneId();
-
-	if (!m_Hitboxes.contains(id)) return;
-
-	auto& boxes = m_Hitboxes.find(id)->second;
-
 	auto itr = std::find
 	(
-		boxes.begin(),
-		boxes.end(),
+		m_Hitboxes.begin(),
+		m_Hitboxes.end(),
 		&box
 	);
 
-	if (itr == boxes.end()) return;
+	if (itr == m_Hitboxes.end()) return;
 
-	boxes.erase(itr);
+	m_Hitboxes.erase(itr);
 }

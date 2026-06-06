@@ -153,7 +153,7 @@ bool digdug::DirtCell::GetSubCell(int x, int y) const
 	{
 		// center cell (marked as -1) can only be true
 		// if all cells around it are true as well
-		return m_SubCells == 0xFF;
+		return m_SubCells == std::numeric_limits<uint8_t>::max();
 	}
 
 	return (m_SubCells & (1u << bit)) != 0;

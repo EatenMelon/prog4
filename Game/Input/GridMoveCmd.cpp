@@ -125,19 +125,16 @@ void digdug::GridMoveCmd::SelectNewTarget(const glm::vec2& axis)
 void digdug::GridMoveCmd::UpdateAimComponent(const glm::vec2& axis)
 {
 	if (m_AimComp == nullptr) return;
+
+	auto aim = glm::vec2(m_TargetGridPos - m_PosInGrid);
+
 	if (m_TargetGridPos == m_PosInGrid)
 	{
-		if (axis.x > 0)			m_AimComp->SetDirection(minigin::Direction::Right);
-		else if (axis.x < 0)	m_AimComp->SetDirection(minigin::Direction::Left);
-		else if (axis.y > 0)	m_AimComp->SetDirection(minigin::Direction::Down);
-		else if (axis.y < 0)	m_AimComp->SetDirection(minigin::Direction::Up);
-		return;
+		aim = axis;
 	}
 
-	const auto toTarget = m_TargetGridPos - m_PosInGrid;
-
-	if (toTarget.x > 0)			m_AimComp->SetDirection(minigin::Direction::Right);
-	else if (toTarget.x < 0)	m_AimComp->SetDirection(minigin::Direction::Left);
-	else if (toTarget.y > 0)	m_AimComp->SetDirection(minigin::Direction::Down);
-	else if (toTarget.y < 0)	m_AimComp->SetDirection(minigin::Direction::Up);
+	if (aim.x > 0)			m_AimComp->SetDirection(minigin::Direction::Right);
+	else if (aim.x < 0)	m_AimComp->SetDirection(minigin::Direction::Left);
+	else if (aim.y > 0)	m_AimComp->SetDirection(minigin::Direction::Down);
+	else if (aim.y < 0)	m_AimComp->SetDirection(minigin::Direction::Up);
 }

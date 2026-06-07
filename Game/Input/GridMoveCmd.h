@@ -6,6 +6,7 @@
 
 namespace digdug
 {
+	class AimComponent;
 	class GridMoveCmd final : public minigin::ActorCommand
 	{
 	public:
@@ -18,8 +19,10 @@ namespace digdug
 	private:
 		glm::vec3 KeepInBounds(const glm::vec3& pos) const;
 		void SelectNewTarget(const glm::vec2& axis);
+		void UpdateAimComponent(const glm::vec2& axis);
 
 		DirtGrid* m_Grid{ nullptr };
+		AimComponent* m_AimComp{ nullptr };
 
 		float m_MovementSpeed{ 1.f };
 		bool m_CanDig{ false };

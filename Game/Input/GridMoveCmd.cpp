@@ -1,6 +1,7 @@
 #include "GridMoveCmd.h"
 #include <algorithm>
 #include <RenderComponent.h>
+#include <AimComponent.h>
 
 digdug::GridMoveCmd::GridMoveCmd(minigin::GameObject* pActor, int playerID, DirtGrid& grid, float speed, bool canDig)
 	: ActorCommand(pActor, playerID)
@@ -19,7 +20,14 @@ digdug::GridMoveCmd::GridMoveCmd(minigin::GameObject* pActor, int playerID, Dirt
 	}
 	else
 	{
-		std::cerr << "WARNING: GridMoveCmd couldn't find a RenderComponent, size will be zero!\n";
+		std::cerr << "WARNING: GridMoveCmd::GridMoveCmd, couldn't find a RenderComponent, size will be zero!\n";
+	}
+
+	m_AimComp = GetActor().GetComponent<digdug::AimComponent>();
+
+	if (m_AimComp == nullptr)
+	{
+		std::cout << "INFO: GridMoveCmd::GridMoveCmd couldn't find AimComponent.\n";
 	}
 }
 
@@ -55,6 +63,7 @@ void digdug::GridMoveCmd::ActorExecute(const minigin::InputContext& context, flo
 
 		pos = target;
 		SelectNewTarget(context.axis);
+		UpdateAimComponent(context.axis);
 	}
 	else
 	{
@@ -111,4 +120,24 @@ void digdug::GridMoveCmd::SelectNewTarget(const glm::vec2& axis)
 	}
 
 	m_TargetGridPos = newTarget;
+}
+
+void digdug::GridMoveCmd::UpdateAimComponent(const glm::vec2& axis)
+{
+	if (m_AimComp == nullptr) return;
+	if (m_TargetGridPos == m_PosInGrid)
+	{
+		if (axis.x > 0)			m_AimComp->SetDirection(minigin::Direction::Right);
+		else if (axis.x < 0)	m_AimComp->SetDirection(minigin::Direction::Left);
+		else if (axis.y > 0)	m_AimComp->SetDirection(minigin::Direction::Down);
+		else if (axis.y < 0)	m_AimComp->SetDirection(minigin::Direction::Up);
+		return;
+	}
+
+	const auto toTarget = m_TargetGridPos - m_PosInGrid;
+
+	if (toTarget.x > 0)			m_AimComp->SetDirection(minigin::Direction::Right);
+	else if (toTarget.x < 0)	m_AimComp->SetDirection(minigin::Direction::Left);
+	else if (toTarget.y > 0)	m_AimComp->SetDirection(minigin::Direction::Down);
+	else if (toTarget.y < 0)	m_AimComp->SetDirection(minigin::Direction::Up);
 }

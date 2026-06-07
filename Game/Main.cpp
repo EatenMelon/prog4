@@ -22,6 +22,7 @@
 #include <Hitbox.h>
 #include <DirtGrid.h>
 #include <GridMoveCmd.h>
+#include <AimComponent.h>
 
 // input
 #include "InputManager.h"
@@ -102,8 +103,6 @@ static void LoadTestScene(minigin::Scene& scene)
 		{
 			renderComp->SetTexture("Sprites/TaizoHori.png");
 			renderComp->SetUniformScale(3);
-			renderComp->SetRotation(0);
-			renderComp->SetHorizontalFlip(true);
 		}
 
 		auto HealthTaizoHori = std::make_unique<minigin::GameObject>();
@@ -166,6 +165,12 @@ static void LoadTestScene(minigin::Scene& scene)
 
 			hitbox->HitEnterEvent().Subscrube(health);
 			hitbox->HitExitEvent().Subscrube(score);
+		}
+
+		auto aimComp = TaizoHori->AddComponent<digdug::AimComponent>();
+		if (aimComp != nullptr)
+		{
+			aimComp->SetDirection(minigin::Direction::Right);
 		}
 
 		scene.Add(std::move(HealthTaizoHori));
@@ -239,6 +244,13 @@ static void LoadTestScene(minigin::Scene& scene)
 
 			hitbox->HitExitEvent().Subscrube(health);
 			hitbox->HitEnterEvent().Subscrube(score);
+		}
+
+		auto aimComp = Pooka->AddComponent<digdug::AimComponent>();
+		if (aimComp != nullptr)
+		{
+			aimComp->SetDirection(minigin::Direction::Up);
+			aimComp->LockAxis(glm::bvec2{ false, true });
 		}
 
 		scene.Add(std::move(HealthPooka));

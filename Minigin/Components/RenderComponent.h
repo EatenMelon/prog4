@@ -24,6 +24,7 @@ namespace minigin
 		void SetVerticalFlip(bool flip) { m_VerFlip = flip; };
 
 		glm::vec2 GetSize() const;
+		float GetUniformScale() const;
 
 	private:
 

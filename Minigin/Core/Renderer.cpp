@@ -1,8 +1,10 @@
-﻿#include <stdexcept>
-#include <iostream>
+﻿#include "Renderer.h"
 #include "Renderer.h"
+#include <stdexcept>
+#include <iostream>
 #include "SceneManager.h"
 #include "Texture2D.h"
+#include "SpriteSheet.h"
 
 // imgui
 #include <imgui.h>
@@ -72,7 +74,13 @@ void minigin::Renderer::Destroy()
 	}
 }
 
-void minigin::Renderer::RenderTexture(const Texture2D& texture, const glm::vec2& pos, float angle, SDL_FlipMode flipmode) const
+void minigin::Renderer::RenderTexture
+(
+	const Texture2D& texture,
+	const glm::vec2& pos,
+	float angle,
+	SDL_FlipMode flipmode
+) const
 {
 	SDL_FRect dst{};
 	dst.x = pos.x;
@@ -81,7 +89,14 @@ void minigin::Renderer::RenderTexture(const Texture2D& texture, const glm::vec2&
 	SDL_RenderTextureRotated(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst, angle, nullptr, flipmode);
 }
 
-void minigin::Renderer::RenderTexture(const Texture2D& texture, const glm::vec2& pos, const glm::vec2& size, float angle, SDL_FlipMode flipmode) const
+void minigin::Renderer::RenderTexture
+(
+	const Texture2D& texture,
+	const glm::vec2& pos,
+	const glm::vec2& size,
+	float angle,
+	SDL_FlipMode flipmode
+) const
 {
 	SDL_FRect dst{};
 	dst.x = pos.x;
@@ -94,6 +109,31 @@ void minigin::Renderer::RenderTexture(const Texture2D& texture, const glm::vec2&
 	center.y = size.y / 2;
 
 	SDL_RenderTextureRotated(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst, angle, &center, flipmode);
+}
+
+void minigin::Renderer::RenderSprite
+(
+	const SpriteSheet& spriteSheet,
+	const glm::vec2& pos,
+	const glm::ivec2& spritePos,
+	float scale,
+	float angle,
+	SDL_FlipMode flipmode
+) const
+{
+	auto src = spriteSheet.GetSpriteCutout(spritePos);
+
+	SDL_FRect dst{};
+	dst.x = pos.x;
+	dst.y = pos.y;
+	dst.w = spriteSheet.GetSpriteSize().x * scale;
+	dst.h = spriteSheet.GetSpriteSize().y * scale;
+
+	SDL_FPoint center{};
+	center.x = dst.w / 2;
+	center.y = dst.h / 2;
+
+	SDL_RenderTextureRotated(GetSDLRenderer(), spriteSheet.GetSDLTexture(), &src, &dst, angle, &center, flipmode);
 }
 
 SDL_Renderer* minigin::Renderer::GetSDLRenderer() const { return m_renderer; }

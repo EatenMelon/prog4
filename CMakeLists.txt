@@ -34,6 +34,7 @@ add_library(${ENGINE_NAME} STATIC
     "${CORE_DIR}/Transform.cpp"
     "${CORE_DIR}/Timer.cpp"
     "${CORE_DIR}/HitboxManager.cpp"
+    "${CORE_DIR}/SpriteSheet.cpp"
 
     "${COMPONENTS_DIR}/Component.cpp"
     "${COMPONENTS_DIR}/TextComponent.cpp"

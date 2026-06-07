@@ -56,3 +56,8 @@ glm::vec2 minigin::RenderComponent::GetSize() const
 
 	return m_Texture->GetSize() * m_UniformScale;
 }
+
+float minigin::RenderComponent::GetUniformScale() const
+{
+	return m_UniformScale;
+}

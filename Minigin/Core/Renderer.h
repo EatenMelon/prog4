@@ -6,9 +6,7 @@
 namespace minigin
 {
 	class Texture2D;
-	/**
-	 * Simple RAII wrapper for the SDL renderer
-	 */
+	class SpriteSheet;
 	class Renderer final : public Singleton<Renderer>
 	{
 	public:
@@ -29,6 +27,16 @@ namespace minigin
 			const Texture2D& texture,
 			const glm::vec2& pos,
 			const glm::vec2& size,
+			float angle = 0.f,
+			SDL_FlipMode flipmode = SDL_FLIP_NONE
+		) const;
+
+		void RenderSprite
+		(
+			const SpriteSheet& spriteSheet,
+			const glm::vec2& pos,
+			const glm::ivec2& spritePos,
+			float scale = 1.f,
 			float angle = 0.f,
 			SDL_FlipMode flipmode = SDL_FLIP_NONE
 		) const;

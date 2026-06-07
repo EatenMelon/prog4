@@ -77,8 +77,11 @@ add_executable(${GAME_NAME} ${TARGET_PARAM}
     "${COMPONENTS_DIR}/ScoreComponent.cpp"
     "${COMPONENTS_DIR}/DirtGrid.cpp"
     "${COMPONENTS_DIR}/AimComponent.cpp"
+    "${COMPONENTS_DIR}/Harpoon.cpp"
+    "${COMPONENTS_DIR}/Inflatable.cpp"
 
     "${UTILITY_DIR}/DirtCell.cpp"
+    "${UTILITY_DIR}/HarpoonState.cpp"
 
     "${INPUT_DIR}/GridMoveCmd.cpp"
 )

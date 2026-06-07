@@ -80,24 +80,32 @@ void digdug::HarpoonState::UpdatePosition()
 	m_Harpoon->GetOwner().SetLocalPosition(pos);
 }
 
-std::unique_ptr<digdug::HarpoonState> digdug::IdleState::Update(float)
+void digdug::HarpoonState::UpdateHitbox()
 {
-	UpdatePosition();
-
 	auto hitbox = GetHarpoon()->GetHitbox();
 	auto size = GetHarpoonSize();
 
 	hitbox->SetBounds(size.x, size.y);
+}
+
+std::unique_ptr<digdug::HarpoonState> digdug::HarpoonIdleState::Update(float)
+{
+	auto hitbox = GetHarpoon()->GetHitbox();
+
+	if (hitbox->Enabled())
+	{
+		hitbox->Enable(false);
+	}
 
 	return nullptr;
 }
 
-std::unique_ptr<digdug::HarpoonState> digdug::IdleState::StartShoot()
+std::unique_ptr<digdug::HarpoonState> digdug::HarpoonIdleState::StartShoot()
 {
 	return nullptr;
 }
 
-std::unique_ptr<digdug::HarpoonState> digdug::IdleState::StartRetract()
+std::unique_ptr<digdug::HarpoonState> digdug::HarpoonIdleState::StartRetract()
 {
 	return nullptr;
 }

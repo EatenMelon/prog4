@@ -41,7 +41,7 @@ void digdug::Harpoon::Start()
 		throw std::runtime_error("Harpoon doesn't have a hitbox!");
 	}
 
-	m_State = std::make_unique<IdleState>(this, 0.8f);
+	m_State = std::make_unique<HarpoonIdleState>(this, 1.f);
 }
 
 void digdug::Harpoon::Update(float deltaTime)
@@ -77,18 +77,12 @@ void digdug::Harpoon::Render() const
 	point.y = 0.f;
 
 	const auto size{ m_State->GetHarpoonSize() };
+
 	switch (m_AimComp->GetDirection())
 	{
-	case minigin::Direction::Down:
-		dst.x += size.x;
-		break;
-
-	case minigin::Direction::Up:
-		dst.y += size.y;
-		break;
-
-	default:
-		break;
+	case minigin::Direction::Down:	dst.x += size.x;	break;
+	case minigin::Direction::Up:	dst.y += size.y;	break;
+	default: break;
 	}
 
 	SDL_RenderTextureRotated

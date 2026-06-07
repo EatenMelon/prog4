@@ -35,6 +35,7 @@ namespace digdug
 	{
 	public:
 		HarpoonState(Harpoon* harpoon, float extend);
+		virtual ~HarpoonState() = default;
 
 		virtual std::unique_ptr<HarpoonState> Update(float) = 0;
 		virtual std::unique_ptr<HarpoonState> StartShoot() = 0;
@@ -50,6 +51,7 @@ namespace digdug
 		void Retract(float percent) { m_Extended -= percent; }
 
 		void UpdatePosition();
+		void UpdateHitbox();
 
 	private:
 		float m_Extended{ 0.f };
@@ -60,7 +62,7 @@ namespace digdug
 		static std::unordered_map<minigin::Direction, glm::ivec2> m_PositionMap;
 	};
 
-	class IdleState final : public HarpoonState
+	class HarpoonIdleState final : public HarpoonState
 	{
 	public:
 		using HarpoonState::HarpoonState;

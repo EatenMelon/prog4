@@ -98,6 +98,8 @@ namespace minigin
 		GameObject& operator=(GameObject&& other) = delete;
 
 	private:
+		void HandleStartEvents();
+
 		void AddChild(GameObject* child);
 		void RemoveChild(GameObject* child);
 

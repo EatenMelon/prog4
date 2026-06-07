@@ -39,7 +39,7 @@ namespace minigin
 
 		void Execute(const InputContext& context, float deltaTime) override final
 		{
-			if (m_Actor->Enabled())
+			if (!m_Actor->Enabled())
 			{
 				return;
 			}

@@ -1,30 +1,22 @@
 #include "GameObject.h"
+#include "GameObject.h"
 
 void minigin::GameObject::FixedUpdate(float fixedFrameTime)
 {
 	for (auto& comp : m_Components)
 	{
+		if (!comp.second->Enabled()) continue;
 		comp.second->FixedUpdate(fixedFrameTime);
 	}
 }
 
 void minigin::GameObject::Update(float deltaTime)
 {
-	while (!m_StartQueue.empty())
-	{
-		auto id = m_StartQueue.front();
-		m_StartQueue.pop();
-
-		auto it = m_Components.find(id);
-
-		if (it != m_Components.end())
-		{
-			it->second->Start();
-		}
-	}
+	HandleStartEvents();
 
 	for (auto& comp : m_Components)
 	{
+		if (!comp.second->Enabled()) continue;
 		comp.second->Update(deltaTime);
 	}
 }
@@ -33,6 +25,7 @@ void minigin::GameObject::GuiRender() const
 {
 	for (auto& comp : m_Components)
 	{
+		if (!comp.second->Enabled()) continue;
 		comp.second->GuiRender();
 	}
 }
@@ -41,6 +34,7 @@ void minigin::GameObject::Render() const
 {
 	for (auto& comp : m_Components)
 	{
+		if (!comp.second->Enabled()) continue;
 		comp.second->Render();
 	}
 }
@@ -186,6 +180,39 @@ minigin::GameObject* minigin::GameObject::GetChildAt(size_t index) const
 bool minigin::GameObject::IsChild(GameObject* parent) const
 {
 	return std::find(m_Children.begin(), m_Children.end(), parent) != m_Children.end();
+}
+
+void minigin::GameObject::HandleStartEvents()
+{
+	const size_t startSize = m_StartQueue.size();
+	size_t skipped{ 0 };
+	size_t started{ 0 };
+
+	while (!m_StartQueue.empty())
+	{
+		if (skipped + started == startSize) break;
+
+		auto id = m_StartQueue.front();
+		auto it = m_Components.find(id);
+
+		if (it == m_Components.end())
+		{
+			std::cerr << "ERROR: GameObject::Update, unknown object among components!\n";
+			std::cout << "INFO: GameObject::Update, removing unknown object mentioned in previous error!\n";
+			m_Components.erase(it);
+			m_StartQueue.pop();
+		}
+
+		if (it->second->Enabled())
+		{
+			it->second->Start();
+			m_StartQueue.pop();
+			++started;
+			continue;
+		}
+
+		++skipped;
+	}
 }
 
 void minigin::GameObject::AddChild(GameObject* child)

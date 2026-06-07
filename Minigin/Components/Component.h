@@ -21,12 +21,17 @@ namespace minigin
 		virtual void GuiRender();
 		virtual void Render() const;
 
+		bool Enabled() const { return m_Enabled; }
+		void Enable(bool enable) { m_Enabled = enable; }
+
 		void Destroy();
 
 		bool MarkedForDestruction() const;
 		GameObject& GetOwner() const;
 
 	private:
+		bool m_Enabled{ true };
+
 		GameObject* m_Owner;
 		bool m_Destroyed;
 	};

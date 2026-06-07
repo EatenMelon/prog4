@@ -61,6 +61,8 @@ bool minigin::Hitbox::IsColliding(const Hitbox& other) const
 
 void minigin::Hitbox::CheckCollision(Hitbox& other)
 {
+	if (!Enabled()) return;
+
 	bool isColliding = IsColliding(other);
 
 	auto itr = std::find
@@ -75,10 +77,23 @@ void minigin::Hitbox::CheckCollision(Hitbox& other)
 	if (isColliding && wasColliding)
 	{
 		HitEvent event{ &other };
+
+		if (!other.GetOwner().Enabled() || !other.Enabled())
+		{
+			m_CurrentlyColliding.erase(itr);
+			m_OnHitExit.Notify(event);
+			return;
+		}
+
 		m_OnHitStay.Notify(event);
 	}
 	else if (isColliding && !wasColliding)
 	{
+		if (!other.GetOwner().Enabled() || !other.Enabled())
+		{
+			return;
+		}
+
 		m_CurrentlyColliding.push_back(&other);
 		
 		HitEvent event{ &other };

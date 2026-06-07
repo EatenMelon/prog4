@@ -4,6 +4,7 @@
 
 #include "Component.h"
 #include <memory>
+#include <SDL3/SDL_surface.h>
 
 namespace minigin
 {
@@ -25,6 +26,8 @@ namespace minigin
 
 		glm::vec2 GetSize() const;
 		float GetUniformScale() const;
+		float GetRotation() const;
+		SDL_FlipMode GetSDLFlipMode() const;
 
 	private:
 

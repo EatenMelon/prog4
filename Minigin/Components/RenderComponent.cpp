@@ -1,4 +1,6 @@
 #include "RenderComponent.h"
+#include "RenderComponent.h"
+#include "RenderComponent.h"
 
 #include "GameObject.h"
 #include "ResourceManager.h"
@@ -15,22 +17,7 @@ void minigin::RenderComponent::Render() const
 	auto pos = GetOwner().GetWorldPosition();
 	auto size = m_Texture->GetSize() * m_UniformScale;
 
-	SDL_FlipMode flipMode{ SDL_FLIP_NONE };
-
-	if (m_HorFlip && m_VerFlip)
-	{
-		flipMode = SDL_FLIP_HORIZONTAL_AND_VERTICAL;
-	}
-	else if (m_HorFlip)
-	{
-		flipMode = SDL_FLIP_HORIZONTAL;
-	}
-	else if (m_VerFlip)
-	{
-		flipMode = SDL_FLIP_VERTICAL;
-	}
-
-	Renderer::GetInstance().RenderTexture(*m_Texture, pos, size, m_Rotation, flipMode);
+	Renderer::GetInstance().RenderTexture(*m_Texture, pos, size, m_Rotation, GetSDLFlipMode());
 }
 
 void minigin::RenderComponent::SetTexture(const std::string& filename)
@@ -60,4 +47,27 @@ glm::vec2 minigin::RenderComponent::GetSize() const
 float minigin::RenderComponent::GetUniformScale() const
 {
 	return m_UniformScale;
+}
+
+float minigin::RenderComponent::GetRotation() const
+{
+	return m_Rotation;
+}
+
+SDL_FlipMode minigin::RenderComponent::GetSDLFlipMode() const
+{
+	if (m_HorFlip && m_VerFlip)
+	{
+		return SDL_FLIP_HORIZONTAL_AND_VERTICAL;
+	}
+	else if (m_HorFlip)
+	{
+		return SDL_FLIP_HORIZONTAL;
+	}
+	else if (m_VerFlip)
+	{
+		return SDL_FLIP_VERTICAL;
+	}
+
+	return SDL_FLIP_NONE;
 }

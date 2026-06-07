@@ -29,7 +29,7 @@ void minigin::InputManager::Init(int gamepads)
 	SelectSceneEvent event{};
 	m_ResetEventHash = event.GetEventHash();
 
-	SceneManager::GetInstance().SceneSelectEvent().Subscrube(this);
+	SceneManager::GetInstance().SceneSelectEvent().Subscribe(this);
 }
 
 bool minigin::InputManager::ProcessInput(float deltaTime)

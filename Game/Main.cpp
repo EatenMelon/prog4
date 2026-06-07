@@ -23,12 +23,14 @@
 #include <DirtGrid.h>
 #include <GridMoveCmd.h>
 #include <AimComponent.h>
+#include <Inflatable.h>
 
 // input
 #include "InputManager.h"
 
 #include <filesystem>
 #include <Renderer.h>
+#include <Harpoon.h>
 
 namespace fs = std::filesystem;
 
@@ -163,8 +165,8 @@ static void LoadTestScene(minigin::Scene& scene)
 				hitbox->SetBounds(16, 16);
 			}
 
-			hitbox->HitEnterEvent().Subscrube(health);
-			hitbox->HitExitEvent().Subscrube(score);
+			hitbox->HitEnterEvent().Subscribe(health);
+			hitbox->HitExitEvent().Subscribe(score);
 		}
 
 		auto aimComp = TaizoHori->AddComponent<digdug::AimComponent>();
@@ -175,7 +177,21 @@ static void LoadTestScene(minigin::Scene& scene)
 
 		scene.Add(std::move(HealthTaizoHori));
 		scene.Add(std::move(ScoreTaizoHori));
+	}
+
+	auto harpoon = std::make_unique<minigin::GameObject>();
+	{
+		auto harpoonComp = harpoon->AddComponent<digdug::Harpoon>();
 		
+		if (harpoonComp != nullptr)
+		{
+			harpoonComp->EquipOnUser(*TaizoHori.get());
+			harpoonComp->SetHarpoonSprite("Sprites/Attacks/Harpoon.png");
+		}
+
+		harpoon->AddComponent<minigin::Hitbox>();
+
+		scene.Add(std::move(harpoon));
 	}
 
 	auto Pooka = std::make_unique<minigin::GameObject>();
@@ -242,8 +258,8 @@ static void LoadTestScene(minigin::Scene& scene)
 				hitbox->SetShrink(size.x / 6);
 			}
 
-			hitbox->HitExitEvent().Subscrube(health);
-			hitbox->HitEnterEvent().Subscrube(score);
+			hitbox->HitExitEvent().Subscribe(health);
+			hitbox->HitEnterEvent().Subscribe(score);
 		}
 
 		auto aimComp = Pooka->AddComponent<digdug::AimComponent>();
@@ -251,6 +267,12 @@ static void LoadTestScene(minigin::Scene& scene)
 		{
 			aimComp->SetDirection(minigin::Direction::Up);
 			aimComp->LockAxis(glm::bvec2{ false, true });
+		}
+
+		auto inflate = Pooka->AddComponent<digdug::Inflatable>();
+		if (inflate != nullptr)
+		{
+			inflate->SetSpriteSheet("Sprites/Characters/InflatingPooka.png");
 		}
 
 		scene.Add(std::move(HealthPooka));

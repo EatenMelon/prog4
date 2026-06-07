@@ -3,7 +3,7 @@
 #include "Events.h"
 #include <algorithm>
 
-bool minigin::Subject::Subscrube(minigin::IObserver* subscriber)
+bool minigin::Subject::Subscribe(minigin::IObserver* subscriber)
 {
 	if (subscriber == nullptr) return false;
 

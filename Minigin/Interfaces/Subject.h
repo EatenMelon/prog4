@@ -8,7 +8,7 @@ namespace minigin
 	class Subject final
 	{
 	public:
-		bool Subscrube(IObserver* subscriber);
+		bool Subscribe(IObserver* subscriber);
 		bool UnSubscribe(IObserver* subscriber);
 
 		void Notify(const IEvent& event);

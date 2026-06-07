@@ -5,22 +5,16 @@
 void digdug::AimComponent::Start()
 {
 	m_RenderComp = GetOwner().GetComponent<minigin::RenderComponent>();
+
+	if (m_RenderComp == nullptr)
+	{
+		throw std::runtime_error("AimComponent requires a RenderComponent!");
+	}
 }
 
 void digdug::AimComponent::Update(float)
 {
 	if (!m_IsDirty) return;
-
-	if (m_RenderComp == nullptr)
-	{
-		m_RenderComp = GetOwner().GetComponent<minigin::RenderComponent>();
-
-		if (m_RenderComp == nullptr)
-		{
-			std::cerr << "WARNING: AimComponent::SetDirection, no renderComponent found!\n";
-			return;
-		}
-	}
 
 	switch (m_AimDirection)
 	{

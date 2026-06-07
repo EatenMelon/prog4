@@ -7,7 +7,7 @@ void minigin::HitboxManager::Init()
 	SelectSceneEvent event{};
 	m_ResetEventHash = event.GetEventHash();
 
-	SceneManager::GetInstance().SceneSelectEvent().Subscrube(this);
+	SceneManager::GetInstance().SceneSelectEvent().Subscribe(this);
 }
 
 void minigin::HitboxManager::ChechCollisions()

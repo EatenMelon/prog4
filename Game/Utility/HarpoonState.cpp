@@ -47,15 +47,9 @@ void digdug::HarpoonState::UpdatePosition()
 	const auto currentDir = m_Harpoon->GetAimComponent()->GetDirection();
 
 	if (m_LastDir == currentDir) return;
-
 	m_LastDir = currentDir;
 
 	glm::vec2 selectedSize{};
-
-	const auto harpoonSize = GetHarpoonSize();
-	const auto userSize = m_Harpoon->GetUserSize();
-
-	auto pos = m_Harpoon->GetOwner().GetLocalPosition();
 
 	switch (currentDir)
 	{
@@ -75,6 +69,7 @@ void digdug::HarpoonState::UpdatePosition()
 	auto itr = m_PositionMap.find(currentDir);
 	if (itr == m_PositionMap.end()) return;
 
+	auto pos = m_Harpoon->GetOwner().GetLocalPosition();
 	pos = glm::vec3(selectedSize, 0) * glm::vec3(itr->second, 0);
 
 	m_Harpoon->GetOwner().SetLocalPosition(pos);

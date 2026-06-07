@@ -133,7 +133,7 @@ void digdug::GridMoveCmd::UpdateAimComponent(const glm::vec2& axis)
 		aim = axis;
 	}
 
-	if (aim.x > 0)			m_AimComp->SetDirection(minigin::Direction::Right);
+	if (aim.x > 0)		m_AimComp->SetDirection(minigin::Direction::Right);
 	else if (aim.x < 0)	m_AimComp->SetDirection(minigin::Direction::Left);
 	else if (aim.y > 0)	m_AimComp->SetDirection(minigin::Direction::Down);
 	else if (aim.y < 0)	m_AimComp->SetDirection(minigin::Direction::Up);

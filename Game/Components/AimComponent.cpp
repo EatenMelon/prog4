@@ -55,6 +55,7 @@ void digdug::AimComponent::Update(float)
 		m_RenderComp->SetRotation(turnAngle * 0);
 		break;
 
+	case::minigin::Direction::None:
 	case minigin::Direction::Right:
 		m_RenderComp->SetHorizontalFlip(false);
 		m_RenderComp->SetRotation(turnAngle * 0);

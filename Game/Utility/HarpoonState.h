@@ -34,7 +34,7 @@ namespace digdug
 	class HarpoonState
 	{
 	public:
-		HarpoonState(Harpoon* harpoon, float extend);
+		HarpoonState(Harpoon* harpoon, float extend = 0.f);
 		virtual ~HarpoonState() = default;
 
 		virtual std::unique_ptr<HarpoonState> Update(float) = 0;
@@ -54,11 +54,10 @@ namespace digdug
 		void UpdateHitbox();
 
 	private:
-		float m_Extended{ 0.f };
-		minigin::Direction m_LastDir{ minigin::Direction::None };
-
 		Harpoon* m_Harpoon{ nullptr };
+		float m_Extended{ 0.f };
 
+		minigin::Direction m_LastDir{ minigin::Direction::None };
 		static std::unordered_map<minigin::Direction, glm::ivec2> m_PositionMap;
 	};
 

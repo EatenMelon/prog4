@@ -17,8 +17,11 @@ namespace minigin
 		virtual ~Command() = default;
 		virtual void Execute(const InputContext& context, float deltaTime) = 0;
 
-	private:
+		bool Enabled() const { return m_Enabled; }
+		void Enable(bool enable) { m_Enabled = enable; }
 
+	private:
+		bool m_Enabled{ true };
 	};
 
 	class GameObject;
@@ -36,6 +39,11 @@ namespace minigin
 
 		void Execute(const InputContext& context, float deltaTime) override final
 		{
+			if (m_Actor->Enabled())
+			{
+				return;
+			}
+
 			if (SceneManager::GetInstance().ActiveSceneId() != m_Actor->GetSceneId())
 			{
 				return;

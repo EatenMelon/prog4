@@ -159,6 +159,7 @@ bool minigin::InputManager::ProcessInput(float deltaTime)
 
 	for (auto& [command, context] : commandContexts)
 	{
+		if (!command->Enabled()) continue;
 		command->Execute(context, deltaTime);
 	}
 

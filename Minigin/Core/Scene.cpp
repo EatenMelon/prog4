@@ -37,6 +37,7 @@ void Scene::FixedUpdate(float fixedFrameTime)
 {
 	for (auto& object : m_objects)
 	{
+		if (!object->Enabled()) continue;
 		object->Update(fixedFrameTime);
 	}
 }
@@ -45,6 +46,7 @@ void Scene::Update(float deltaTime)
 {
 	for(auto& object : m_objects)
 	{
+		if (!object->Enabled()) continue;
 		object->Update(deltaTime);
 	}
 }
@@ -53,6 +55,7 @@ void minigin::Scene::GuiRender() const
 {
 	for (const auto& object : m_objects)
 	{
+		if (!object->Enabled()) continue;
 		object->GuiRender();
 	}
 }
@@ -61,6 +64,7 @@ void Scene::Render() const
 {
 	for (const auto& object : m_objects)
 	{
+		if (!object->Enabled()) continue;
 		object->Render();
 	}
 }

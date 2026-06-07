@@ -48,10 +48,10 @@ static void LoadTestScene(minigin::Scene& scene)
 
 		if (gridComp != nullptr)
 		{
-			auto sandTile = minigin::ResourceManager::GetInstance().LoadTexture("Sprites/SandTile.png");
-			auto dirtTile = minigin::ResourceManager::GetInstance().LoadTexture("Sprites/DirtTile.png");
-			auto stoneTile = minigin::ResourceManager::GetInstance().LoadTexture("Sprites/StoneTile.png");
-			auto bedrockTile = minigin::ResourceManager::GetInstance().LoadTexture("Sprites/BedrockTile.png");
+			auto sandTile = minigin::ResourceManager::GetInstance().LoadTexture("Sprites/Tiles/SandTile.png");
+			auto dirtTile = minigin::ResourceManager::GetInstance().LoadTexture("Sprites/Tiles/DirtTile.png");
+			auto stoneTile = minigin::ResourceManager::GetInstance().LoadTexture("Sprites/Tiles/StoneTile.png");
+			auto bedrockTile = minigin::ResourceManager::GetInstance().LoadTexture("Sprites/Tiles/BedrockTile.png");
 
 			gridComp->SetCellSize(16.f * 3.f);
 			gridComp->SetTileTexture(digdug::DirtGrid::Depth::Surface, *sandTile.get());
@@ -101,7 +101,7 @@ static void LoadTestScene(minigin::Scene& scene)
 		auto renderComp = TaizoHori->AddComponent<minigin::RenderComponent>();
 		if (renderComp != nullptr)
 		{
-			renderComp->SetTexture("Sprites/TaizoHori.png");
+			renderComp->SetTexture("Sprites/Characters/TaizoHori.png");
 			renderComp->SetUniformScale(3);
 		}
 
@@ -185,7 +185,7 @@ static void LoadTestScene(minigin::Scene& scene)
 		auto renderComp = Pooka->AddComponent<minigin::RenderComponent>();
 		if (renderComp != nullptr)
 		{
-			renderComp->SetTexture("Sprites/Pooka.png");
+			renderComp->SetTexture("Sprites/Characters/Pooka.png");
 			renderComp->SetUniformScale(3);
 		}
 

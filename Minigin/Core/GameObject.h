@@ -33,6 +33,9 @@ namespace minigin
 		void SetPositionDirty();
 		void UpdateWorldPosition();
 
+		bool Enabled() const { return m_Enabled; }
+		void Enable(bool enable) { m_Enabled = enable; }
+
 		void Destroy();
 		bool MarkedForDestruction() const;
 		size_t GetSceneId() const;
@@ -111,6 +114,7 @@ namespace minigin
 		Transform m_WorldTransform{ };
 		bool m_PositionIsDirty{ false };
 
+		bool m_Enabled{ true };
 		bool m_Destroyed{ false };
 		size_t m_SceneId{ 0 };
 	};

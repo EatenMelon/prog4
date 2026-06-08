@@ -182,26 +182,31 @@ static void LoadTestScene(minigin::Scene& scene)
 		scene.Add(std::move(ScoreTaizoHori));
 	}
 
-	auto harpoon = std::make_unique<minigin::GameObject>();
+	digdug::Harpoon* myHarpoon{ nullptr };
+
+	auto Harpoon = std::make_unique<minigin::GameObject>();
 	{
-		auto harpoonComp = harpoon->AddComponent<digdug::Harpoon>();
+		auto harpoonComp = Harpoon->AddComponent<digdug::Harpoon>();
 		
 		if (harpoonComp != nullptr)
 		{
 			harpoonComp->EquipOnUser(*TaizoHori.get());
 			harpoonComp->SetHarpoonSprite("Sprites/Attacks/Harpoon.png");
 
-			auto launchCmd = std::make_shared<digdug::HarpoonCmd>(harpoonComp, [](digdug::Harpoon* h) { h->Shoot(); });
-			auto retractCmd = std::make_shared<digdug::HarpoonCmd>(harpoonComp, [](digdug::Harpoon* h) { h->Retract(); });
-
 			int taizoID{ 0 };
+			auto launchCmd = std::make_shared<digdug::HarpoonCmd>(taizoID, harpoonComp, [](digdug::Harpoon* h) { h->Shoot(); });
+			auto retractCmd = std::make_shared<digdug::HarpoonCmd>(taizoID, harpoonComp, [](digdug::Harpoon* h) { h->Retract(); });
+
 			minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::SOUTH, minigin::KeyState::OnDown, launchCmd, taizoID);
 			minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::SOUTH, minigin::KeyState::OnRelease, retractCmd, taizoID);
+
+			harpoonComp->AddDirtdGrid(dirtGrid);
+			myHarpoon = harpoonComp;
 		}
 
-		harpoon->AddComponent<minigin::Hitbox>();
+		Harpoon->AddComponent<minigin::Hitbox>();
 
-		scene.Add(std::move(harpoon));
+		scene.Add(std::move(Harpoon));
 	}
 
 	auto Pooka = std::make_unique<minigin::GameObject>();
@@ -293,6 +298,11 @@ static void LoadTestScene(minigin::Scene& scene)
 	{
 		int taizoID{ 0 };
 		auto taizoMove = std::make_shared<digdug::GridMoveCmd>(TaizoHori.get(), taizoID, *dirtGrid, 250.f);
+
+		if (myHarpoon != nullptr)
+		{
+			myHarpoon->DisableDuringUse(taizoMove.get());
+		}
 
 		taizoMove->SetGridPosition(glm::ivec2{ 8, 8 });
 

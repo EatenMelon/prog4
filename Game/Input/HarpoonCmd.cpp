@@ -1,13 +1,14 @@
 #include "HarpoonCmd.h"
 #include <Harpoon.h>
 
-digdug::HarpoonCmd::HarpoonCmd(Harpoon* harpoon, const std::function<void(Harpoon*)>& callback)
-	: m_Harpoon{ harpoon }
+digdug::HarpoonCmd::HarpoonCmd(int playerID, Harpoon* harpoon, const std::function<void(Harpoon*)>& callback)
+	: ActorCommand(harpoon->GetUser(), playerID)
+	, m_Harpoon{ harpoon }
 	, m_Callback{ callback }
 {
 }
 
-void digdug::HarpoonCmd::Execute(const minigin::InputContext&, float)
+void digdug::HarpoonCmd::ActorExecute(const minigin::InputContext&, float)
 {
 	if (m_Harpoon == nullptr)
 	{

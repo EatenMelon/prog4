@@ -18,8 +18,9 @@ namespace minigin
 namespace digdug
 {
 	class Harpoon;
-	class AimComponent;
 	class Inflatable;
+	class AimComponent;
+	class DirtGrid;
 
 	// 0. do nothing
 	// 1. shoot harpoon
@@ -42,10 +43,12 @@ namespace digdug
 		HarpoonState(Harpoon* harpoon, float extend = 0.f);
 		virtual ~HarpoonState() = default;
 
-		virtual std::unique_ptr<HarpoonState> Update(float) = 0;
+		virtual std::unique_ptr<HarpoonState> Update(float, DirtGrid*) = 0;
 		virtual std::unique_ptr<HarpoonState> StartShoot() = 0;
 		virtual std::unique_ptr<HarpoonState> StartRetract() = 0;
 		virtual std::unique_ptr<HarpoonState> OnAttach(Inflatable*) = 0;
+
+		virtual bool UsingHarpoon() { return false; }
 
 		float GetExtend() const { return std::clamp(m_Extended, 0.f, 1.f); };
 		glm::vec2 GetHarpoonSize() const;
@@ -58,12 +61,13 @@ namespace digdug
 
 		void UpdatePosition();
 		void UpdateHitbox();
+		static const std::unordered_map<minigin::Direction, glm::ivec2>& GetPositionMap() { return m_PositionMap; }
 
 	private:
 		Harpoon* m_Harpoon{ nullptr };
 		float m_Extended{ 0.f };
 
-		static std::unordered_map<minigin::Direction, glm::ivec2> m_PositionMap;
+		static const std::unordered_map<minigin::Direction, glm::ivec2> m_PositionMap;
 	};
 
 	// Do nothing, wait until harpoon is launched.
@@ -74,7 +78,7 @@ namespace digdug
 
 		std::unique_ptr<HarpoonState> StartShoot() override;
 
-		std::unique_ptr<HarpoonState> Update(float) override { return nullptr; }
+		std::unique_ptr<HarpoonState> Update(float, DirtGrid*) override { return nullptr; }
 		std::unique_ptr<HarpoonState> StartRetract() override { return nullptr; }
 		std::unique_ptr<HarpoonState> OnAttach(Inflatable*) override { return nullptr; }
 	};
@@ -85,7 +89,9 @@ namespace digdug
 	public:
 		HarpoonShootState(Harpoon* harpoon);
 
-		std::unique_ptr<HarpoonState> Update(float deltaTime) override;
+		bool UsingHarpoon() override { return true; }
+
+		std::unique_ptr<HarpoonState> Update(float deltaTime, DirtGrid*) override;
 		std::unique_ptr<HarpoonState> OnAttach(Inflatable* inflatable) override;
 		std::unique_ptr<HarpoonState> StartRetract() override;
 
@@ -115,11 +121,13 @@ namespace digdug
 		HarpoonPumpingState(Harpoon* harpoon, float extend, Inflatable* inflatable);
 		~HarpoonPumpingState() override;
 
-		std::unique_ptr<HarpoonState> Update(float deltaTime) override;
-		void OnNotify(const minigin::IEvent& event) override;
+		bool UsingHarpoon() override { return true; }
 
+		std::unique_ptr<HarpoonState> Update(float deltaTime, DirtGrid*) override;
+		void OnNotify(const minigin::IEvent& event) override;
 		std::unique_ptr<HarpoonState> StartShoot() override;
 		std::unique_ptr<HarpoonState> StartRetract() override;
+
 		std::unique_ptr<HarpoonState> OnAttach(Inflatable*) override { return nullptr; };
 
 	private:
@@ -143,7 +151,7 @@ namespace digdug
 	public:
 		HarpoonRetractState(Harpoon* harpoon, float extend);
 
-		std::unique_ptr<HarpoonState> Update(float deltaTime) override;
+		std::unique_ptr<HarpoonState> Update(float deltaTime, DirtGrid*) override;
 
 		std::unique_ptr<HarpoonState> StartShoot() override { return nullptr; }
 		std::unique_ptr<HarpoonState> StartRetract() override { return nullptr; }

@@ -4,6 +4,7 @@
 #include <RenderComponent.h>
 #include <GameObject.h>
 #include <HarpoonState.h>
+#include <Hitbox.h>
 
 void digdug::Inflatable::Start()
 {
@@ -95,6 +96,13 @@ void digdug::Inflatable::OnNotify(const minigin::IEvent& event)
 
 	InflatablePoppedEvent popEvent{};
 	m_OnPopEvent.Notify(popEvent);
+
+	auto hitbox = GetOwner().GetComponent<minigin::Hitbox>();
+	
+	if (hitbox != nullptr)
+	{
+		hitbox->Enable(false);
+	}
 }
 
 void digdug::Inflatable::SetSpriteSheet(const std::string& path)

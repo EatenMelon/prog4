@@ -16,6 +16,7 @@ namespace minigin
 
 namespace digdug
 {
+	class DirtGrid;
 	class AimComponent;
 	class Harpoon final : public minigin::Component, public minigin::IObserver
 	{
@@ -33,11 +34,11 @@ namespace digdug
 		void OnNotify(const minigin::IEvent& event) override;
 
 		void EquipOnUser(minigin::GameObject& user);
+		void AddDirtdGrid(DirtGrid* dirtGrid) { m_DirtGrid = dirtGrid; }
 
 		void SetHarpoonSprite(const std::string& path);
 
-		void DisableWhileUsing(minigin::Command* command);
-		void DisableUntilReusable(minigin::Command* command);
+		void DisableDuringUse(minigin::Command* command);
 
 		minigin::GameObject* GetUser() const { return m_User; }
 		AimComponent* GetAimComponent() const { return m_AimComp; }
@@ -47,6 +48,8 @@ namespace digdug
 		minigin::Hitbox* GetHitbox() const { return m_Hitbox; }
 
 	private:
+		void TryEnableCommands();
+
 		std::unique_ptr<HarpoonState> m_State{};
 
 		minigin::GameObject* m_User{ nullptr };
@@ -59,7 +62,8 @@ namespace digdug
 		minigin::Hitbox* m_Hitbox{ nullptr };
 		unsigned int m_HitEventHash{ 0 };
 
-		std::vector<minigin::Command*> m_NotWhileUsing{};
-		std::vector<minigin::Command*> m_NotUntilReusable{};
+		DirtGrid* m_DirtGrid{ nullptr };
+
+		std::vector<minigin::Command*> m_DisableDuringUse{};
 	};
 }

@@ -5,7 +5,9 @@
 #include <Inflatable.h>
 #include <AimComponent.h>
 
-std::unordered_map<minigin::Direction, glm::ivec2> digdug::HarpoonState::m_PositionMap
+#include <DirtGrid.h>
+
+const std::unordered_map<minigin::Direction, glm::ivec2> digdug::HarpoonState::m_PositionMap
 {
 	{minigin::Direction::Up,	glm::ivec2{0, -1}},
 	{minigin::Direction::Down,	glm::ivec2{0, 1}},
@@ -103,14 +105,45 @@ digdug::HarpoonShootState::HarpoonShootState(Harpoon* harpoon)
 	hitbox->Enable(true);
 }
 
-std::unique_ptr<digdug::HarpoonState> digdug::HarpoonShootState::Update(float deltaTime)
+std::unique_ptr<digdug::HarpoonState> digdug::HarpoonShootState::Update(float deltaTime, DirtGrid* grid)
 {
 	UpdatePosition();
 	UpdateHitbox();
 
 	Extend(m_LaunchSpeed * deltaTime);
 
-	if (GetExtend() >= 1.f)
+	const float maxExtend{ 1.f };
+	float extendLimit{ maxExtend };
+
+	if (grid != nullptr)
+	{
+
+		const auto aimDir = GetHarpoon()->GetAimComponent()->GetDirection();
+		const auto itr = GetPositionMap().find(aimDir);
+		glm::ivec2 direction{};
+
+		if (itr != GetPositionMap().end())
+		{
+			direction = itr->second;
+		}
+
+		auto pos = GetHarpoon()->GetUser()->GetLocalPosition();
+		pos += glm::vec3(GetHarpoon()->GetUserSize() / 2.f, 0);
+
+		const auto gridPosUser = grid->GetPosInGrid(pos);
+		const int harpoonLength{ 2 };
+
+		for (int ext{ harpoonLength }; ext > 0; --ext)
+		{
+			const auto cellInFront = gridPosUser + direction * ext;
+
+			if (grid->HasBeenDug(cellInFront)) continue;
+
+			extendLimit -= maxExtend / harpoonLength;
+		}
+	}
+
+	if (GetExtend() >= extendLimit)
 	{
 		// retract
 		return std::make_unique<HarpoonRetractState>(GetHarpoon(), GetExtend());
@@ -146,7 +179,7 @@ digdug::HarpoonPumpingState::~HarpoonPumpingState()
 	m_PumpEvent.UnSubscribe(m_Inflatable);
 }
 
-std::unique_ptr<digdug::HarpoonState> digdug::HarpoonPumpingState::Update(float deltaTime)
+std::unique_ptr<digdug::HarpoonState> digdug::HarpoonPumpingState::Update(float deltaTime, DirtGrid*)
 {
 	UpdatePosition();
 	UpdateHitbox();
@@ -218,7 +251,7 @@ digdug::HarpoonRetractState::HarpoonRetractState(Harpoon* harpoon, float extend)
 	hitbox->Enable(false);
 }
 
-std::unique_ptr<digdug::HarpoonState> digdug::HarpoonRetractState::Update(float deltaTime)
+std::unique_ptr<digdug::HarpoonState> digdug::HarpoonRetractState::Update(float deltaTime, DirtGrid*)
 {
 	UpdatePosition();
 	UpdateHitbox();

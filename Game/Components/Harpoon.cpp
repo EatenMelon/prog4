@@ -1,14 +1,16 @@
 #include "Harpoon.h"
 
+#include <utility>
+#include <unordered_set>
+
 #include <Hitbox.h>
 #include <Texture2D.h>
 #include <Renderer.h>
 #include <ResourceManager.h>
 
+#include <Inflatable.h>
 #include <HarpoonState.h>
 #include <AimComponent.h>
-#include <Inflatable.h>
-#include <utility>
 
 void digdug::Harpoon::Start()
 {
@@ -53,10 +55,12 @@ void digdug::Harpoon::Start()
 
 void digdug::Harpoon::Update(float deltaTime)
 {
-	auto newState = m_State->Update(deltaTime);
+	auto newState = m_State->Update(deltaTime, m_DirtGrid);
 
 	if (newState == nullptr) return;
 	m_State = std::move(newState);
+
+	TryEnableCommands();
 }
 
 void digdug::Harpoon::Render() const
@@ -110,6 +114,8 @@ void digdug::Harpoon::Shoot()
 
 	if (newState == nullptr) return;
 	m_State = std::move(newState);
+
+	TryEnableCommands();
 }
 
 void digdug::Harpoon::Retract()
@@ -118,6 +124,8 @@ void digdug::Harpoon::Retract()
 
 	if (newState == nullptr) return;
 	m_State = std::move(newState);
+
+	TryEnableCommands();
 }
 
 void digdug::Harpoon::OnNotify(const minigin::IEvent& event)
@@ -134,6 +142,8 @@ void digdug::Harpoon::OnNotify(const minigin::IEvent& event)
 
 	if (newState == nullptr) return;
 	m_State = std::move(newState);
+
+	TryEnableCommands();
 }
 
 void digdug::Harpoon::EquipOnUser(minigin::GameObject& user)
@@ -147,24 +157,50 @@ void digdug::Harpoon::SetHarpoonSprite(const std::string& path)
 	m_Size = m_Sprite->GetSize();
 }
 
-void digdug::Harpoon::DisableWhileUsing(minigin::Command* command)
+void digdug::Harpoon::DisableDuringUse(minigin::Command* command)
 {
 	if (command == nullptr) return;
 
-	auto itr = std::find(m_NotWhileUsing.begin(), m_NotWhileUsing.end(), command);
+	auto itr = std::find(m_DisableDuringUse.begin(), m_DisableDuringUse.end(), command);
 
-	if (itr != m_NotWhileUsing.end()) return;
+	if (itr != m_DisableDuringUse.end()) return;
 
-	m_NotWhileUsing.push_back(command);
+	m_DisableDuringUse.push_back(command);
 }
 
-void digdug::Harpoon::DisableUntilReusable(minigin::Command* command)
+void digdug::Harpoon::TryEnableCommands()
 {
-	if (command == nullptr) return;
+	if (m_DisableDuringUse.empty()) return;
 
-	auto itr = std::find(m_NotUntilReusable.begin(), m_NotUntilReusable.end(), command);
+	std::unordered_set<minigin::Command*> toRemove{};
 
-	if (itr != m_NotUntilReusable.end()) return;
+	for (auto command : m_DisableDuringUse)
+	{
+		try
+		{
+			command->Enable(!m_State->UsingHarpoon());
+		}
+		catch (const std::exception& e)
+		{
+			std::cerr << "ERROR: Harpoon::Update" << e.what() << "\n";
+			toRemove.emplace(command);
+		}
+	}
 
-	m_NotUntilReusable.push_back(command);
+	if (toRemove.empty()) return;
+
+	m_DisableDuringUse.erase
+	(
+		std::remove_if
+		(
+			m_DisableDuringUse.begin(),
+			m_DisableDuringUse.end(),
+
+			[&](minigin::Command* cmd)
+			{
+				return toRemove.contains(cmd);
+			}
+		),
+		m_DisableDuringUse.end()
+	);
 }

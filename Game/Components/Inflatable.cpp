@@ -3,6 +3,7 @@
 #include <Renderer.h>
 #include <RenderComponent.h>
 #include <GameObject.h>
+#include <HarpoonState.h>
 
 void digdug::Inflatable::Start()
 {
@@ -12,11 +13,30 @@ void digdug::Inflatable::Start()
 	{
 		std::cerr << "WARNING: InflatableComponent doesn't have a sprite sheet!\n";
 	}
+
+	PumpInflatableEvent pumpEvent{};
+	m_PumpEventHash = pumpEvent.GetEventHash();
+
+	PumpDetachEvent detachEvent{};
+	m_DetachPumpEventHash = detachEvent.GetEventHash();
 }
 
 void digdug::Inflatable::Update(float deltaTime)
 {
+	if (m_Inflation >= m_MaxInflation - 1)
+	{
+		if (m_TimeUntilDestroy >= 0.f)
+		{
+			m_TimeUntilDestroy -= deltaTime;
+			return;
+		}
+
+		GetOwner().Destroy();
+		return;
+	}
+
 	if (m_Inflation < 0) return;
+	if (!m_CanDefalte) return;
 
 	m_TimeUntilDeflate -= deltaTime;
 
@@ -55,20 +75,26 @@ void digdug::Inflatable::Render() const
 	minigin::Renderer::GetInstance().RenderSprite(*m_SpriteSheet.get(), pos, spritePos, scale);
 }
 
-void digdug::Inflatable::OnNotify(const minigin::IEvent&)
+void digdug::Inflatable::OnNotify(const minigin::IEvent& event)
 {
+	if (m_DetachPumpEventHash == event.GetEventHash())
+	{
+		m_CanDefalte = true;
+		return;
+	}
+
+	if (m_PumpEventHash != event.GetEventHash()) return;
+
+	m_CanDefalte = false;
 	m_TimeUntilDeflate = m_DeflationDelay;
 	m_RenderComp->Enable(false);
 
 	++m_Inflation;
 
-	if (m_Inflation >= m_MaxInflation)
-	{
-		m_Inflation = m_MaxInflation - 1;
-		
-		InflatablePoppedEvent event{};
-		m_OnPopEvent.Notify(event);
-	}
+	if (m_Inflation < m_MaxInflation - 1) return;
+
+	InflatablePoppedEvent popEvent{};
+	m_OnPopEvent.Notify(popEvent);
 }
 
 void digdug::Inflatable::SetSpriteSheet(const std::string& path)

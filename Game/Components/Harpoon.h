@@ -17,7 +17,7 @@ namespace minigin
 namespace digdug
 {
 	class AimComponent;
-	class Harpoon final : public minigin::Component
+	class Harpoon final : public minigin::Component, public minigin::IObserver
 	{
 	public:
 		using minigin::Component::Component;
@@ -29,6 +29,8 @@ namespace digdug
 
 		void Shoot();
 		void Retract();
+
+		void OnNotify(const minigin::IEvent& event) override;
 
 		void EquipOnUser(minigin::GameObject& user);
 
@@ -53,7 +55,9 @@ namespace digdug
 
 		std::shared_ptr<minigin::Texture2D> m_Sprite{ nullptr };
 		glm::vec2 m_Size{ 0.f, 0.f };
+
 		minigin::Hitbox* m_Hitbox{ nullptr };
+		unsigned int m_HitEventHash{ 0 };
 
 		std::vector<minigin::Command*> m_NotWhileUsing{};
 		std::vector<minigin::Command*> m_NotUntilReusable{};

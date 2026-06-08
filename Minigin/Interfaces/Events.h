@@ -8,7 +8,7 @@ namespace minigin
 	public:
 		virtual ~IEvent() = default;
 
-		virtual const std::string& GetEventName() = 0;
+		virtual const std::string& GetEventName() const = 0;
 		virtual unsigned int GetEventHash() const = 0;
 	};
 
@@ -19,7 +19,7 @@ namespace minigin
 			: m_Name{ name }, m_Hash{ CreateHashSDBM(name) } 
 		{};
 
-		const std::string& GetEventName() override final { return m_Name; }
+		const std::string& GetEventName() const override final { return m_Name; }
 		unsigned int GetEventHash() const override final { return m_Hash; }
 
 		static unsigned int CreateHashSDBM(const std::string& string);
@@ -38,7 +38,7 @@ namespace minigin
 			, m_Other{ hitWith }
 		{}
 
-		Hitbox* Who();
+		Hitbox* Who() const;
 
 	private:
 		Hitbox* m_Other{ nullptr };

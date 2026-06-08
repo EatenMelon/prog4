@@ -14,3 +14,8 @@ unsigned int minigin::PlainEvent::CreateHashSDBM(const std::string& string)
 
 	return hash;
 }
+
+minigin::Hitbox* minigin::HitEvent::Who() const
+{
+	return m_Other;
+}

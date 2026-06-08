@@ -78,7 +78,7 @@ namespace minigin
 		}
 
 		template<typename T>
-		T* GetComponent()
+		T* GetComponent() const
 		{
 			auto comp = m_Components.find(typeid(T));
 

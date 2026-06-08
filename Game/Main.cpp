@@ -19,11 +19,14 @@
 #include <FpsCounterComponent.h>
 #include <HealthComponent.h>
 #include <ScoreComponent.h>
+
 #include <Hitbox.h>
 #include <DirtGrid.h>
-#include <GridMoveCmd.h>
 #include <AimComponent.h>
 #include <Inflatable.h>
+
+#include <GridMoveCmd.h>
+#include <HarpoonCmd.h>
 
 // input
 #include "InputManager.h"
@@ -187,6 +190,13 @@ static void LoadTestScene(minigin::Scene& scene)
 		{
 			harpoonComp->EquipOnUser(*TaizoHori.get());
 			harpoonComp->SetHarpoonSprite("Sprites/Attacks/Harpoon.png");
+
+			auto launchCmd = std::make_shared<digdug::HarpoonCmd>(harpoonComp, [](digdug::Harpoon* h) { h->Shoot(); });
+			auto retractCmd = std::make_shared<digdug::HarpoonCmd>(harpoonComp, [](digdug::Harpoon* h) { h->Retract(); });
+
+			int taizoID{ 0 };
+			minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::SOUTH, minigin::KeyState::OnDown, launchCmd, taizoID);
+			minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::SOUTH, minigin::KeyState::OnRelease, retractCmd, taizoID);
 		}
 
 		harpoon->AddComponent<minigin::Hitbox>();

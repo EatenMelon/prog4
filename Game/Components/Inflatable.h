@@ -41,14 +41,19 @@ namespace digdug
 
 	private:
 		minigin::Subject m_OnPopEvent{};
+		unsigned int m_PumpEventHash{ 0 };
 
 		minigin::RenderComponent* m_RenderComp{ nullptr };
 		std::unique_ptr<minigin::SpriteSheet> m_SpriteSheet{ nullptr };
 
+		bool m_CanDefalte{ true };
 		const float m_DeflationDelay{ 1.f };
 		float m_TimeUntilDeflate{ 0.f };
+		unsigned int m_DetachPumpEventHash{ 0 };
 
 		int m_Inflation{ -1 };
 		const int m_MaxInflation{ 4 };
+
+		float m_TimeUntilDestroy{ 0.5f };
 	};
 }

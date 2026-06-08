@@ -18,6 +18,7 @@ bool minigin::Subject::Subscribe(minigin::IObserver* subscriber)
 bool minigin::Subject::UnSubscribe(minigin::IObserver* subscriber)
 {
 	if (subscriber == nullptr) return false;
+	if (m_Observers.empty()) return false;
 
 	auto itr = std::find(m_Observers.begin(), m_Observers.end(), subscriber);
 

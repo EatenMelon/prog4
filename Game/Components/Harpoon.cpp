@@ -7,6 +7,8 @@
 
 #include <HarpoonState.h>
 #include <AimComponent.h>
+#include <Inflatable.h>
+#include <utility>
 
 void digdug::Harpoon::Start()
 {
@@ -41,7 +43,12 @@ void digdug::Harpoon::Start()
 		throw std::runtime_error("Harpoon doesn't have a hitbox!");
 	}
 
-	m_State = std::make_unique<HarpoonIdleState>(this, 1.f);
+	m_State = std::make_unique<HarpoonIdleState>(this);
+
+	minigin::HitEvent event{ nullptr };
+	m_HitEventHash = event.GetEventHash();
+
+	m_Hitbox->HitEnterEvent().Subscribe(this);
 }
 
 void digdug::Harpoon::Update(float deltaTime)
@@ -108,6 +115,22 @@ void digdug::Harpoon::Shoot()
 void digdug::Harpoon::Retract()
 {
 	auto newState = m_State->StartRetract();
+
+	if (newState == nullptr) return;
+	m_State = std::move(newState);
+}
+
+void digdug::Harpoon::OnNotify(const minigin::IEvent& event)
+{
+	if (m_HitEventHash != event.GetEventHash()) return;
+
+	const auto& hitEvent = static_cast<const minigin::HitEvent&>(event);
+
+	auto inflatable = hitEvent.Who()->GetOwner().GetComponent<Inflatable>();
+
+	if (inflatable == nullptr) return;
+
+	auto newState = m_State->OnAttach(inflatable);
 
 	if (newState == nullptr) return;
 	m_State = std::move(newState);

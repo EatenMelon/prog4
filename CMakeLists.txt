@@ -84,6 +84,7 @@ add_executable(${GAME_NAME} ${TARGET_PARAM}
     "${UTILITY_DIR}/HarpoonState.cpp"
 
     "${INPUT_DIR}/GridMoveCmd.cpp"
+    "Game/Input/HarpoonCmd.cpp"
 )
 
 target_compile_features(${GAME_NAME} PUBLIC cxx_std_20)

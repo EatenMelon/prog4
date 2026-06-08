@@ -22,6 +22,7 @@ namespace minigin
 	public:
 		void CreateScene(const std::function<void(Scene&)>& loader);
 
+		void StartNextFrame();
 		void FixedUpdate(float fixedFrameTime);
 		void Update(float deltaTime);
 		void GuiRender();
@@ -39,5 +40,6 @@ namespace minigin
 
 		size_t m_ActiveSceneIdx{ std::numeric_limits<size_t>::max() };
 		Subject m_OnSelectScene{};
+		bool m_ChangedScene{ false };
 	};
 }

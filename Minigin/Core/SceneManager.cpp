@@ -1,10 +1,18 @@
 #include "SceneManager.h"
+#include "SceneManager.h"
 #include "Scene.h"
 #include <imgui.h>
 #include <string>
 
+void minigin::SceneManager::StartNextFrame()
+{
+	if (!m_ChangedScene) return;
+	m_ChangedScene = false;
+}
+
 void minigin::SceneManager::FixedUpdate(float fixedFrameTime)
 {
+	if (m_ChangedScene) return;
 	if (m_ActiveSceneIdx >= m_scenes.size()) return;
 
 	m_scenes[m_ActiveSceneIdx]->FixedUpdate(fixedFrameTime);
@@ -12,6 +20,7 @@ void minigin::SceneManager::FixedUpdate(float fixedFrameTime)
 
 void minigin::SceneManager::Update(float deltaTime)
 {
+	if (m_ChangedScene) return;
 	if (m_ActiveSceneIdx >= m_scenes.size()) return;
 
 	m_scenes[m_ActiveSceneIdx]->Update(deltaTime);
@@ -19,6 +28,7 @@ void minigin::SceneManager::Update(float deltaTime)
 
 void minigin::SceneManager::GuiRender()
 {
+	if (m_ChangedScene) return;
 	if (m_ActiveSceneIdx >= m_scenes.size()) return;
 
 	m_scenes[m_ActiveSceneIdx]->GuiRender();
@@ -47,6 +57,7 @@ void minigin::SceneManager::GuiRender()
 
 void minigin::SceneManager::Render() const
 {
+	if (m_ChangedScene) return;
 	if (m_ActiveSceneIdx >= m_scenes.size()) return;
 
 	m_scenes[m_ActiveSceneIdx]->Render();
@@ -54,8 +65,10 @@ void minigin::SceneManager::Render() const
 
 void minigin::SceneManager::Cleanup()
 {
-	m_scenes.clear();
-	m_ActiveSceneIdx = 0;
+	if (m_ChangedScene) return;
+	if (m_ActiveSceneIdx >= m_scenes.size()) return;
+
+	m_scenes[m_ActiveSceneIdx]->Cleanup();
 }
 
 bool minigin::SceneManager::SetActiveScene(size_t index)
@@ -73,6 +86,7 @@ bool minigin::SceneManager::SetActiveScene(size_t index)
 	SelectSceneEvent event{};
 	m_OnSelectScene.Notify(event);
 	m_scenes[m_ActiveSceneIdx]->Load();
+	m_ChangedScene = true;
 
 	return true;
 }

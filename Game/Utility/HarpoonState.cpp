@@ -92,7 +92,7 @@ digdug::HarpoonIdleState::HarpoonIdleState(Harpoon* harpoon)
 
 std::unique_ptr<digdug::HarpoonState> digdug::HarpoonIdleState::StartShoot()
 {
-	return std::move(std::make_unique<HarpoonShootState>(GetHarpoon()));
+	return std::make_unique<HarpoonShootState>(GetHarpoon());
 }
 
 digdug::HarpoonShootState::HarpoonShootState(Harpoon* harpoon)
@@ -113,7 +113,7 @@ std::unique_ptr<digdug::HarpoonState> digdug::HarpoonShootState::Update(float de
 	if (GetExtend() >= 1.f)
 	{
 		// retract
-		return std::move(std::make_unique<HarpoonRetractState>(GetHarpoon(), GetExtend()));
+		return std::make_unique<HarpoonRetractState>(GetHarpoon(), GetExtend());
 	}
 
 	return  nullptr;
@@ -121,12 +121,12 @@ std::unique_ptr<digdug::HarpoonState> digdug::HarpoonShootState::Update(float de
 
 std::unique_ptr<digdug::HarpoonState> digdug::HarpoonShootState::OnAttach(Inflatable* inflatable)
 {
-	return std::move(std::make_unique<HarpoonPumpingState>(GetHarpoon(), GetExtend(), inflatable));
+	return std::make_unique<HarpoonPumpingState>(GetHarpoon(), GetExtend(), inflatable);
 }
 
 std::unique_ptr<digdug::HarpoonState> digdug::HarpoonShootState::StartRetract()
 {
-	return std::move(std::make_unique<HarpoonRetractState>(GetHarpoon(), GetExtend()));
+	return std::make_unique<HarpoonRetractState>(GetHarpoon(), GetExtend());
 }
 
 digdug::HarpoonPumpingState::HarpoonPumpingState(Harpoon* harpoon, float extend, Inflatable* inflatable)
@@ -165,7 +165,7 @@ std::unique_ptr<digdug::HarpoonState> digdug::HarpoonPumpingState::Update(float 
 		PumpDetachEvent event{};
 		m_PumpEvent.Notify(event);
 
-		return std::move(std::make_unique<HarpoonRetractState>(GetHarpoon(), GetExtend()));
+		return std::make_unique<HarpoonRetractState>(GetHarpoon(), GetExtend());
 	}
 
 	m_TimeUntilNextPump -= deltaTime;
@@ -228,7 +228,7 @@ std::unique_ptr<digdug::HarpoonState> digdug::HarpoonRetractState::Update(float 
 	if (GetExtend() <= 0.f)
 	{
 		// idle
-		return std::move(std::make_unique<HarpoonIdleState>(GetHarpoon()));
+		return std::make_unique<HarpoonIdleState>(GetHarpoon());
 	}
 
 	return nullptr;

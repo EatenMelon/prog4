@@ -19,6 +19,7 @@ namespace digdug
 	// 1 => 0	on deflated
 	// 
 	// 1 => 2	randomized choice
+	// 2 => 0	entered a new tunnel
 	//
 	class EnemyBehaviorState
 	{
@@ -51,7 +52,7 @@ namespace digdug
 
 		std::unique_ptr<EnemyBehaviorState> Update(float deltaTime) override;
 		std::unique_ptr<EnemyBehaviorState> OnInflatedEnter() override;
-		std::unique_ptr<EnemyBehaviorState> OnDeflatedEnter() { return nullptr; }
+		std::unique_ptr<EnemyBehaviorState> OnDeflatedEnter() override { return nullptr; }
 
 	private:
 		void SelectTarget();

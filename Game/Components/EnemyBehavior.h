@@ -18,7 +18,7 @@ namespace digdug
 		void Start() override;
 		void Update(float deltaTime) override;
 
-		void OnNotify(const minigin::IEvent& event);
+		void OnNotify(const minigin::IEvent& event) override;
 
 		void SetGrid(DirtGrid* grid) { m_Grid = grid; }
 		void SetPositionInGrid(const glm::ivec2& pos);

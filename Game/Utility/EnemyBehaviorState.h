@@ -15,16 +15,18 @@ namespace digdug
 	//
 	// 0. wandering
 	// 1. frozen
-	// 2. ghost
+	// 2. attacking
+	// 3. ghost
 	// 
-	// 0 => 1	when starting attack
-	// 0 => 1	on inflated
-	// 0 => 1	randomized choice => attack
-	// 0 => 2	randomized choice => ghost
+	// 0 => 1	when pump inflates enemy
+	// 0 => 2	random choice every couple of seconds
+	// 0 => 3	random choice every couple of seconds
 	// 
-	// 1 => 0	at end of attack
-	// 1 => 0	on deflated
-	// 2 => 0	entered a new tunnel
+	// 1 => 0	when you are fully deflated
+	// 2 => 0	when you are done with your attack
+	// 3 => 0	when you enter a tunnel
+	// 
+	// 2 => 1	when pump inflates enemy
 	//
 	class EnemyBehaviorState
 	{
@@ -105,6 +107,7 @@ namespace digdug
 		std::unique_ptr<EnemyBehaviorState> Update(float) override { return nullptr; }
 	};
 
+	// be spooky
 	class EnemyGhostState final : public EnemyBehaviorState
 	{
 	public:

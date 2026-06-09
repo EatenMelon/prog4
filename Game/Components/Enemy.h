@@ -1,11 +1,14 @@
 #pragma once
 #include <memory>
 #include <string>
+#include <vector>
+
 #include <Component.h>
 #include <Subject.h>
+#include <Observer.h>
 #include <Events.h>
 #include <glm/glm.hpp>
-#include <vector>
+#include <Attack.h>
 
 namespace minigin
 {
@@ -39,7 +42,7 @@ namespace digdug
 	class Attack;
 	class Inflatable;
 	class AimComponent;
-	class Enemy final : public minigin::Component
+	class Enemy final : public minigin::Component, public minigin::IObserver
 	{
 	public:
 		using minigin::Component::Component;
@@ -49,15 +52,21 @@ namespace digdug
 
 		void BecomeDefault();
 		void BecomeGhost();
+		void DoAttack();
 
 		void SetDefaultSprite(const std::string& path);
 		void SetGhostSprite(const std::string& path);
 
+		void SetAttack(std::shared_ptr<Attack> attack);
+
 		void SetMovementSpeed(float speed) { m_MovementSpeed = speed; }
 		float GetMovementSpeed() const { return m_MovementSpeed; }
 
+		void OnNotify(const minigin::IEvent& event) override;
+
 		minigin::Subject& OnInflatedEnter() { return m_OnInflatedEnter; }
 		minigin::Subject& OnDeflatedEnter() { return m_OnDeflatedEnter; }
+		minigin::Subject& OnAttackEnded() { return m_OnEndAttack; }
 
 		glm::vec2 GetSize();
 		AimComponent* GetAimComponent() { return m_AimComponent; }
@@ -72,10 +81,13 @@ namespace digdug
 		std::shared_ptr<minigin::Texture2D> m_DefaultSprite{ nullptr };
 		std::shared_ptr<minigin::Texture2D> m_GhostSprite{ nullptr };
 
+		std::shared_ptr<digdug::Attack> m_Attack{ nullptr };
+
 		Inflatable* m_Inflatable{ nullptr };
 		bool m_WasInflated{ false };
 		minigin::Subject m_OnInflatedEnter{};
 		minigin::Subject m_OnDeflatedEnter{};
+		minigin::Subject m_OnEndAttack{};
 
 		float m_MovementSpeed{ 100.f };
 

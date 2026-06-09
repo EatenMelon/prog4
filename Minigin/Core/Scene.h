@@ -36,6 +36,7 @@ namespace minigin
 		{ }
 
 		std::vector<std::unique_ptr<GameObject>> m_objects{};
+		std::queue<std::unique_ptr<GameObject>> m_WaitingObjects{};
 		size_t m_Id{ 0 };
 
 		std::function<void(Scene&)> m_Loader{};

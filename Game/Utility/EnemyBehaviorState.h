@@ -38,6 +38,7 @@ namespace digdug
 		virtual std::unique_ptr<EnemyBehaviorState> Update(float deltaTime) = 0;
 		virtual std::unique_ptr<EnemyBehaviorState> OnInflatedEnter(minigin::GameObject* pumpUser) = 0;
 		virtual std::unique_ptr<EnemyBehaviorState> OnDeflatedEnter() = 0;
+		virtual std::unique_ptr<EnemyBehaviorState> OnAttackEnded() = 0;
 
 	protected:
 		glm::ivec2 GetEnemyGridPos();
@@ -59,15 +60,17 @@ namespace digdug
 		std::unique_ptr<EnemyBehaviorState> Update(float deltaTime) override;
 		std::unique_ptr<EnemyBehaviorState> OnInflatedEnter(minigin::GameObject*) override;
 		std::unique_ptr<EnemyBehaviorState> OnDeflatedEnter() override { return nullptr; }
+		std::unique_ptr<EnemyBehaviorState> OnAttackEnded() override { return nullptr; }
 
 	private:
 		void SelectTarget();
+		bool CanAttack();
 
 		glm::ivec2 m_CurrentGridPos{};
 		glm::ivec2 m_TargetGridPos{};
 
 		float m_TimeUntilNewAction{ 0.f };
-		const float m_TryNewActionDelay{ 1.f };
+		const float m_TryNewActionDelay{ 5.f };
 
 		const int m_NumActions{ 3 };
 		enum class NewAction
@@ -84,9 +87,22 @@ namespace digdug
 	public:
 		EnemyFrozenState(Enemy* enemy, DirtGrid* grid);
 
-		std::unique_ptr<EnemyBehaviorState> Update(float) override { return nullptr; }
 		std::unique_ptr<EnemyBehaviorState> OnDeflatedEnter() override;
+		std::unique_ptr<EnemyBehaviorState> Update(float) override { return nullptr; }
 		std::unique_ptr<EnemyBehaviorState> OnInflatedEnter(minigin::GameObject*) override { return nullptr; }
+		std::unique_ptr<EnemyBehaviorState> OnAttackEnded() override { return nullptr; };
+	};
+
+	// also do nothing
+	class EnemyAttackingState final : public EnemyBehaviorState
+	{
+	public:
+		EnemyAttackingState(Enemy* enemy, DirtGrid* grid);
+
+		std::unique_ptr<EnemyBehaviorState> OnAttackEnded() override;
+		std::unique_ptr<EnemyBehaviorState> OnInflatedEnter(minigin::GameObject*) override;
+		std::unique_ptr<EnemyBehaviorState> OnDeflatedEnter() override { return nullptr; };
+		std::unique_ptr<EnemyBehaviorState> Update(float) override { return nullptr; }
 	};
 
 	class EnemyGhostState final : public EnemyBehaviorState
@@ -97,6 +113,7 @@ namespace digdug
 		std::unique_ptr<EnemyBehaviorState> Update(float deltaTime) override;
 		std::unique_ptr<EnemyBehaviorState> OnInflatedEnter(minigin::GameObject* pumpUser) override;
 		std::unique_ptr<EnemyBehaviorState> OnDeflatedEnter() override { return nullptr; }
+		std::unique_ptr<EnemyBehaviorState> OnAttackEnded() override { return nullptr; }
 
 	private:
 		void ChangeDirection();

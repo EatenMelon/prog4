@@ -20,12 +20,16 @@ void digdug::EnemyBehavior::Start()
 
 	m_Enemy->OnInflatedEnter().Subscribe(this);
 	m_Enemy->OnDeflatedEnter().Subscribe(this);
+	m_Enemy->OnAttackEnded().Subscribe(this);
 
 	EnemyInflatedEvent inflateEvent{ nullptr };
 	m_InflatedEnetrHash = inflateEvent.GetEventHash();
 
 	EnemyDeflatedEvent deflateEvent{};
 	m_DeflatedEnetrHash = deflateEvent.GetEventHash();
+
+	AttackEndedEvent attackEnd{};
+	m_AttackEndedHash = attackEnd.GetEventHash();
 
 	m_State = std::make_unique<EnemyWanderState>(m_Enemy, m_Grid);
 }
@@ -52,6 +56,14 @@ void digdug::EnemyBehavior::OnNotify(const minigin::IEvent& event)
 	if (event.GetEventHash() == m_DeflatedEnetrHash)
 	{
 		auto newState = m_State->OnDeflatedEnter();
+
+		if (newState == nullptr) return;
+		m_State = std::move(newState);
+	}
+
+	if (event.GetEventHash() == m_AttackEndedHash)
+	{
+		auto newState = m_State->OnAttackEnded();
 
 		if (newState == nullptr) return;
 		m_State = std::move(newState);

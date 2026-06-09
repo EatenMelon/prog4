@@ -66,6 +66,19 @@ void digdug::Enemy::BecomeGhost()
 	m_RenderComp->SetTexture(m_GhostSprite);
 }
 
+void digdug::Enemy::DoAttack()
+{
+
+	if (m_Attack == nullptr)
+	{
+		AttackEndedEvent event{};
+		m_OnEndAttack.Notify(event);
+		return;
+	}
+
+	m_Attack->Execute(this);
+}
+
 void digdug::Enemy::SetDefaultSprite(const std::string& path)
 {
 	m_DefaultSprite = minigin::ResourceManager::GetInstance().LoadTexture(path);
@@ -74,6 +87,16 @@ void digdug::Enemy::SetDefaultSprite(const std::string& path)
 void digdug::Enemy::SetGhostSprite(const std::string& path)
 {
 	m_GhostSprite = minigin::ResourceManager::GetInstance().LoadTexture(path);
+}
+
+void digdug::Enemy::SetAttack(std::shared_ptr<Attack> attack)
+{
+	m_Attack = attack;
+}
+
+void digdug::Enemy::OnNotify(const minigin::IEvent& event)
+{
+	m_OnEndAttack.Notify(event);
 }
 
 glm::vec2 digdug::Enemy::GetSize()

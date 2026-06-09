@@ -13,7 +13,7 @@ void Scene::Add(std::unique_ptr<GameObject> object)
 {
 	assert(object != nullptr && "Cannot add a null GameObject to the scene.");
 	object->SetSceneId(m_Id);
-	m_objects.emplace_back(std::move(object));
+	m_WaitingObjects.emplace(std::move(object));
 }
 
 void Scene::Remove(const GameObject& object)
@@ -44,6 +44,13 @@ void Scene::FixedUpdate(float fixedFrameTime)
 
 void Scene::Update(float deltaTime)
 {
+	while (!m_WaitingObjects.empty())
+	{
+		auto& object = m_WaitingObjects.front();
+		m_objects.emplace_back(std::move(object));
+		m_WaitingObjects.pop();
+	}
+
 	for(auto& object : m_objects)
 	{
 		if (!object->Enabled()) continue;

@@ -36,6 +36,7 @@
 #include <filesystem>
 #include <Renderer.h>
 #include <Harpoon.h>
+#include <Attack.h>
 
 namespace fs = std::filesystem;
 
@@ -306,7 +307,7 @@ static void LoadTestScene(minigin::Scene& scene)
 			}
 
 			enemyComp->AddPossibleTarget(TaizoHori.get());
-
+			enemyComp->SetAttack(std::make_shared<digdug::FireAttack>());
 		}
 
 		scene.Add(std::move(HealthPooka));

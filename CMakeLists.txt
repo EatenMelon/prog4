@@ -81,10 +81,12 @@ add_executable(${GAME_NAME} ${TARGET_PARAM}
     "${COMPONENTS_DIR}/Inflatable.cpp"
     "${COMPONENTS_DIR}/Enemy.cpp"
     "${COMPONENTS_DIR}/EnemyBehavior.cpp"
+    "${COMPONENTS_DIR}/FireBreath.cpp"
 
     "${UTILITY_DIR}/DirtCell.cpp"
     "${UTILITY_DIR}/HarpoonState.cpp"
     "${UTILITY_DIR}/EnemyBehaviorState.cpp"
+    "${UTILITY_DIR}/Attack.cpp"
 
     "${INPUT_DIR}/GridMoveCmd.cpp"
     "Game/Input/HarpoonCmd.cpp"

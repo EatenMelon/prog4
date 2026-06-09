@@ -29,6 +29,7 @@ namespace minigin
 		void Render() const;
 		void Cleanup();
 		bool SetActiveScene(size_t index);
+		Scene& GetActiveScene();
 		size_t ActiveSceneId() const;
 
 		Subject& SceneSelectEvent() { return m_OnSelectScene; }

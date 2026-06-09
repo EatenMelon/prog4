@@ -31,5 +31,6 @@ namespace digdug
 
 		unsigned int m_InflatedEnetrHash{ 0 };
 		unsigned int m_DeflatedEnetrHash{ 0 };
+		unsigned int m_AttackEndedHash{ 0 };
 	};
 }

@@ -65,13 +65,20 @@ void digdug::DirtGrid::Render() const
 
 		if (!m_ShowOutlines) continue;
 
-		SDL_SetRenderDrawColor(renderer, 255, 125, 255, 255);
+		SDL_SetRenderDrawColor(renderer, 0, 255, 255, 255);
 
 		SDL_FRect rect{};
 		rect.x = pos.x;
 		rect.y = pos.y;
 		rect.w = m_CellSize;
 		rect.h = m_CellSize;
+
+		const float margin{ 5.f };
+		const auto gridPos = GetPosInGrid(glm::vec3(pos, 0.f));
+
+		std::string posMessage = std::to_string(gridPos.x) + "," + std::to_string(gridPos.x);
+
+		SDL_RenderDebugText(renderer, pos.x + margin, pos.y + margin, posMessage.c_str());
 
 		SDL_RenderRect(renderer, &rect);
 	}

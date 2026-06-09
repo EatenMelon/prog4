@@ -47,6 +47,9 @@ void digdug::FireBreath::Start()
 	case minigin::Direction::Right:
 		addedDistance.x = m_Enemy->GetSize().x;
 		break;
+
+	default:
+		break;
 	}
 
 	m_OnAttackEnded.Subscribe(m_Enemy);

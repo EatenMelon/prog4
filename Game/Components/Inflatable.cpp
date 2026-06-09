@@ -15,7 +15,7 @@ void digdug::Inflatable::Start()
 		std::cerr << "WARNING: InflatableComponent doesn't have a sprite sheet!\n";
 	}
 
-	PumpInflatableEvent pumpEvent{};
+	PumpInflatableEvent pumpEvent{ nullptr };
 	m_PumpEventHash = pumpEvent.GetEventHash();
 
 	PumpDetachEvent detachEvent{};
@@ -85,6 +85,9 @@ void digdug::Inflatable::OnNotify(const minigin::IEvent& event)
 	}
 
 	if (m_PumpEventHash != event.GetEventHash()) return;
+
+	const auto& pumpEvent = static_cast<const PumpInflatableEvent&>(event);
+	m_PumpUser = pumpEvent.GetPumpUser();
 
 	m_CanDefalte = false;
 	m_TimeUntilDeflate = m_DeflationDelay;

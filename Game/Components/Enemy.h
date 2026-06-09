@@ -5,11 +5,13 @@
 #include <Subject.h>
 #include <Events.h>
 #include <glm/glm.hpp>
+#include <vector>
 
 namespace minigin
 {
 	class Texture2D;
 	class RenderComponent;
+	class GameObject;
 }
 
 namespace digdug
@@ -17,7 +19,15 @@ namespace digdug
 	class EnemyInflatedEvent final : public minigin::PlainEvent
 	{
 	public:
-		EnemyInflatedEvent() : minigin::PlainEvent("EnemyInflated") {}
+		EnemyInflatedEvent(minigin::GameObject* pumpUser)
+			: minigin::PlainEvent("EnemyInflated")
+			, m_PumpUser{ pumpUser }
+		{}
+
+		minigin::GameObject* GetPumpUser() const { return m_PumpUser; }
+
+	private:
+		minigin::GameObject* m_PumpUser{ nullptr };
 	};
 
 	class EnemyDeflatedEvent final : public minigin::PlainEvent
@@ -52,6 +62,9 @@ namespace digdug
 		glm::vec2 GetSize();
 		AimComponent* GetAimComponent() { return m_AimComponent; }
 
+		void AddPossibleTarget(minigin::GameObject* obj);
+		minigin::GameObject* GetRandomTarget();
+
 	private:
 		minigin::RenderComponent* m_RenderComp{ nullptr };
 		AimComponent* m_AimComponent{ nullptr };
@@ -65,5 +78,7 @@ namespace digdug
 		minigin::Subject m_OnDeflatedEnter{};
 
 		float m_MovementSpeed{ 100.f };
+
+		std::vector<minigin::GameObject*> m_PossibleTargets{};
 	};
 }

@@ -296,7 +296,7 @@ static void LoadTestScene(minigin::Scene& scene)
 		if (enemyComp != nullptr)
 		{
 			enemyComp->SetDefaultSprite("Sprites/Characters/Pooka.png");
-			enemyComp->SetGhostSprite("Sprites/Characters/Pooka.png");
+			enemyComp->SetGhostSprite("Sprites/Characters/SpookyPooka.png");
 
 			auto behaviorComp = Pooka->AddComponent<digdug::EnemyBehavior>();
 			if (behaviorComp != nullptr)
@@ -304,6 +304,8 @@ static void LoadTestScene(minigin::Scene& scene)
 				behaviorComp->SetGrid(dirtGrid);
 				behaviorComp->SetPositionInGrid(glm::ivec2(12, 8));
 			}
+
+			enemyComp->AddPossibleTarget(TaizoHori.get());
 
 		}
 
@@ -329,7 +331,7 @@ static void LoadTestScene(minigin::Scene& scene)
 		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::DPAD_DOWN, minigin::KeyState::Pressed, taizoMove, taizoID, minigin::Direction::Down);
 		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::DPAD_RIGHT, minigin::KeyState::Pressed, taizoMove, taizoID, minigin::Direction::Right);
 
-		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadJoystick::LEFT_JOYSTICK, 0.5f, taizoMove, taizoID);
+		//minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadJoystick::LEFT_JOYSTICK, 0.5f, taizoMove, taizoID);
 		
 		scene.Add(std::move(TaizoHori));
 	}

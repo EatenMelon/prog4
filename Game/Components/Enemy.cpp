@@ -1,7 +1,11 @@
 #include "Enemy.h"
-#include <ResourceManager.h>
+
+#include <algorithm>
+
 #include <GameObject.h>
+#include <ResourceManager.h>
 #include <RenderComponent.h>
+
 #include <Inflatable.h>
 #include <AimComponent.h>
 
@@ -27,6 +31,8 @@ void digdug::Enemy::Start()
 	{
 		throw std::runtime_error("Enemy cannot be aimed!");
 	}
+
+	m_WasInflated = m_Inflatable->IsInflated();
 }
 
 void digdug::Enemy::Update(float)
@@ -37,7 +43,7 @@ void digdug::Enemy::Update(float)
 	if (!m_WasInflated && isInflated)
 	{
 		// inflate enter
-		EnemyInflatedEvent event{};
+		EnemyInflatedEvent event{ m_Inflatable->GetPumpUser() };
 		m_OnInflatedEnter.Notify(event);
 	}
 	else if (m_WasInflated && !isInflated)
@@ -73,4 +79,22 @@ void digdug::Enemy::SetGhostSprite(const std::string& path)
 glm::vec2 digdug::Enemy::GetSize()
 {
 	return m_RenderComp->GetSize();
+}
+
+void digdug::Enemy::AddPossibleTarget(minigin::GameObject* obj)
+{
+	const auto itr = std::find(m_PossibleTargets.begin(), m_PossibleTargets.end(), obj);
+
+	if (itr != m_PossibleTargets.end()) return;
+
+	m_PossibleTargets.push_back(obj);
+}
+
+minigin::GameObject* digdug::Enemy::GetRandomTarget()
+{
+	if (m_PossibleTargets.empty()) return nullptr;
+
+	const size_t randomIdx{ rand() % m_PossibleTargets.size() };
+
+	return m_PossibleTargets[randomIdx];
 }

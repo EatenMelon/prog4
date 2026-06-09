@@ -1,5 +1,7 @@
 #include "EnemyBehaviorState.h"
+
 #include <GameObject.h>
+#include <RenderComponent.h>
 
 #include <Enemy.h>
 #include <DirtGrid.h>
@@ -14,17 +16,44 @@ glm::ivec2 digdug::EnemyBehaviorState::GetEnemyGridPos()
 	return GetGrid()->GetPosInGrid(center);
 }
 
-digdug::EnemyRoamingState::EnemyRoamingState(Enemy* enemy, DirtGrid* grid)
+digdug::EnemyWanderState::EnemyWanderState(Enemy* enemy, DirtGrid* grid)
 	: EnemyBehaviorState(enemy, grid)
 {
 	m_CurrentGridPos = GetEnemyGridPos();
 	m_TargetGridPos = m_CurrentGridPos;
 
 	SelectTarget();
+	GetEnemy()->BecomeDefault();
+
+	m_TimeUntilNewAction = m_TryNewActionDelay;
 }
 
-std::unique_ptr<digdug::EnemyBehaviorState> digdug::EnemyRoamingState::Update(float deltaTime)
+std::unique_ptr<digdug::EnemyBehaviorState> digdug::EnemyWanderState::Update(float deltaTime)
 {
+	if (m_TimeUntilNewAction <= 0.f)
+	{
+		const NewAction tryAction{ static_cast<NewAction>(rand() % m_NumActions) };
+
+		switch (tryAction)
+		{
+		//case digdug::EnemyWanderState::NewAction::Attack:
+			//break;
+
+		case digdug::EnemyWanderState::NewAction::TurnGhost:
+			return std::make_unique<EnemyGhostState>(GetEnemy(), GetGrid());
+			break;
+
+		default:
+			break;
+		}
+
+		m_TimeUntilNewAction = m_TryNewActionDelay;
+	}
+	else
+	{
+		m_TimeUntilNewAction -= deltaTime;
+	}
+
 	glm::vec3 target = GetGrid()->GetCellLocalPos(m_TargetGridPos);
 
 	glm::vec3 pos = GetEnemy()->GetOwner().GetLocalPosition();
@@ -47,12 +76,12 @@ std::unique_ptr<digdug::EnemyBehaviorState> digdug::EnemyRoamingState::Update(fl
 	return nullptr;
 }
 
-std::unique_ptr<digdug::EnemyBehaviorState> digdug::EnemyRoamingState::OnInflatedEnter()
+std::unique_ptr<digdug::EnemyBehaviorState> digdug::EnemyWanderState::OnInflatedEnter(minigin::GameObject*)
 {
-	return nullptr;
+	return std::make_unique<EnemyFrozenState>(GetEnemy(), GetGrid());
 }
 
-void digdug::EnemyRoamingState::SelectTarget()
+void digdug::EnemyWanderState::SelectTarget()
 {
 	std::vector<glm::ivec2> directions{};
 
@@ -92,4 +121,133 @@ void digdug::EnemyRoamingState::SelectTarget()
 
 	const auto newDir = directions[randomIdx];
 	m_TargetGridPos = m_CurrentGridPos + newDir;
+}
+
+digdug::EnemyFrozenState::EnemyFrozenState(Enemy* enemy, DirtGrid* grid)
+	: EnemyBehaviorState(enemy, grid)
+{
+	GetEnemy()->BecomeDefault();
+}
+
+std::unique_ptr<digdug::EnemyBehaviorState> digdug::EnemyFrozenState::OnDeflatedEnter()
+{
+	return std::make_unique<EnemyWanderState>(GetEnemy(), GetGrid());
+}
+
+digdug::EnemyGhostState::EnemyGhostState(Enemy* enemy, DirtGrid* grid)
+	: EnemyBehaviorState(enemy, grid)
+{
+	// select a gameobject (player) as a target to fly toward
+	GetEnemy()->BecomeGhost();
+
+	m_Target = GetEnemy()->GetRandomTarget();
+
+	if (m_Target == nullptr) return;
+
+	const auto renderComp = m_Target->GetComponent<minigin::RenderComponent>();
+
+	if (renderComp != nullptr)
+	{
+		m_TargetSize = renderComp->GetSize();
+	}
+
+	m_CellOfTransformation = GetEnemyGridPos();
+}
+
+std::unique_ptr<digdug::EnemyBehaviorState> digdug::EnemyGhostState::Update(float deltaTime)
+{
+	if (m_Target == nullptr)
+	{
+		return std::make_unique<EnemyWanderState>(GetEnemy(), GetGrid());
+	}
+
+	m_TimeUntilRedirect -= deltaTime;
+	if (m_TimeUntilRedirect <= 0.f)
+	{
+		if (EneteredNewTunnel())
+		{
+			return std::make_unique<EnemyWanderState>(GetEnemy(), GetGrid());
+		}
+
+		m_TimeUntilRedirect = m_RedirectionDelay;
+		ChangeDirection();
+	}
+
+	// fly towards target player until you end up in a tunnel
+	auto pos = GetEnemy()->GetOwner().GetLocalPosition();
+	pos += glm::vec3(m_Direction * (GetEnemy()->GetMovementSpeed() / 2.f) * deltaTime, 0.f);
+
+	GetEnemy()->GetOwner().SetLocalPosition(pos);
+
+	return nullptr;
+}
+
+std::unique_ptr<digdug::EnemyBehaviorState> digdug::EnemyGhostState::OnInflatedEnter(minigin::GameObject* pumpUser)
+{
+	glm::ivec2 gridPosUser{};
+	minigin::Direction aimDirUser{};
+
+	try
+	{
+		glm::vec2 userSize{};
+
+		auto renderComp = pumpUser->GetComponent<minigin::RenderComponent>();
+		if (renderComp != nullptr)
+		{
+			userSize = renderComp->GetSize();
+		}
+		const auto posUser = pumpUser->GetLocalPosition() + glm::vec3(userSize / 2.f, 0.f);
+		gridPosUser = GetGrid()->GetPosInGrid(posUser);
+
+		auto aimComp = pumpUser->GetComponent<AimComponent>();
+		if (aimComp != nullptr)
+		{
+			aimDirUser = aimComp->GetDirection();
+		}
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << "ERROR: EnemyGhostState::OnInflatedEnter, " << e.what() << "\n";
+		return nullptr;
+	}
+
+	auto enemyGridPos = GetEnemyGridPos();
+
+	switch (aimDirUser)
+	{
+	case minigin::Direction::Up:
+	case minigin::Direction::Down:
+		enemyGridPos.x = gridPosUser.x;
+		break;
+
+	default:
+		enemyGridPos.y = gridPosUser.y;
+		break;
+	}
+
+	GetEnemy()->GetOwner().SetLocalPosition(GetGrid()->GetCellLocalPos(enemyGridPos));
+
+	return std::make_unique<EnemyFrozenState>(GetEnemy(), GetGrid());
+}
+
+void digdug::EnemyGhostState::ChangeDirection()
+{
+	const auto targetPos = m_Target->GetLocalPosition() - glm::vec3(m_TargetSize / 2.f, 0.f);
+	const auto startPos = GetEnemy()->GetOwner().GetLocalPosition() - glm::vec3(GetEnemy()->GetSize() / 2.f, 0.f);
+
+	const auto toTarget = targetPos - startPos;
+
+	m_Direction = glm::normalize(toTarget);
+}
+
+bool digdug::EnemyGhostState::EneteredNewTunnel()
+{
+	const auto gridPos = GetEnemyGridPos();
+
+	if (gridPos == m_CellOfTransformation) return false;
+	if (!GetGrid()->HasBeenDug(gridPos)) return false;
+
+	GetEnemy()->GetOwner().SetLocalPosition(GetGrid()->GetCellLocalPos(gridPos));
+
+	return true;
 }

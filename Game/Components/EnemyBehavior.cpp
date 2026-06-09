@@ -21,13 +21,13 @@ void digdug::EnemyBehavior::Start()
 	m_Enemy->OnInflatedEnter().Subscribe(this);
 	m_Enemy->OnDeflatedEnter().Subscribe(this);
 
-	EnemyInflatedEvent inflateEvent{};
+	EnemyInflatedEvent inflateEvent{ nullptr };
 	m_InflatedEnetrHash = inflateEvent.GetEventHash();
 
 	EnemyDeflatedEvent deflateEvent{};
 	m_DeflatedEnetrHash = deflateEvent.GetEventHash();
 
-	m_State = std::make_unique<EnemyRoamingState>(m_Enemy, m_Grid);
+	m_State = std::make_unique<EnemyWanderState>(m_Enemy, m_Grid);
 }
 
 void digdug::EnemyBehavior::Update(float deltaTime)
@@ -42,7 +42,8 @@ void digdug::EnemyBehavior::OnNotify(const minigin::IEvent& event)
 {
 	if (event.GetEventHash() == m_InflatedEnetrHash)
 	{
-		auto newState = m_State->OnInflatedEnter();
+		const auto& inflatedEvent = static_cast<const EnemyInflatedEvent&>(event);
+		auto newState = m_State->OnInflatedEnter(inflatedEvent.GetPumpUser());
 
 		if (newState == nullptr) return;
 		m_State = std::move(newState);

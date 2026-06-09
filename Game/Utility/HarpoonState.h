@@ -103,7 +103,15 @@ namespace digdug
 	class PumpInflatableEvent final : public minigin::PlainEvent
 	{
 	public:
-		PumpInflatableEvent() : minigin::PlainEvent("PumpEvent") {}
+		PumpInflatableEvent(minigin::GameObject* pumpUser)
+			: minigin::PlainEvent("PumpEvent")
+			, m_PumpUser{ pumpUser }
+		{}
+
+		minigin::GameObject* GetPumpUser() const { return m_PumpUser; }
+
+	private:
+		minigin::GameObject* m_PumpUser{ nullptr };
 	};
 
 	class PumpDetachEvent final : public minigin::PlainEvent

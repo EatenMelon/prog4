@@ -8,6 +8,7 @@
 namespace minigin
 {
 	class RenderComponent;
+	class GameObject;
 }
 
 namespace digdug
@@ -37,7 +38,10 @@ namespace digdug
 		void SetSpriteSheet(const std::string& path);
 
 		minigin::Subject& PoppedEvent() { return m_OnPopEvent; };
-		bool IsInflated() const { return m_Inflation < 0; }
+		bool IsInflated() const { return m_Inflation >= 0; }
+
+		// get the gameobject that is pumping the inflatable
+		minigin::GameObject* GetPumpUser() { return m_PumpUser; }
 
 	private:
 		minigin::Subject m_OnPopEvent{};
@@ -50,6 +54,7 @@ namespace digdug
 		const float m_DeflationDelay{ 1.f };
 		float m_TimeUntilDeflate{ 0.f };
 		unsigned int m_DetachPumpEventHash{ 0 };
+		minigin::GameObject* m_PumpUser{ nullptr };
 
 		int m_Inflation{ -1 };
 		const int m_MaxInflation{ 4 };

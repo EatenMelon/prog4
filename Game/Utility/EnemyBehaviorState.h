@@ -2,6 +2,11 @@
 #include <memory>
 #include <glm/glm.hpp>
 
+namespace minigin
+{
+	class GameObject;
+}
+
 namespace digdug
 {
 	class Enemy;
@@ -14,11 +19,11 @@ namespace digdug
 	// 
 	// 0 => 1	when starting attack
 	// 0 => 1	on inflated
+	// 0 => 1	randomized choice => attack
+	// 0 => 2	randomized choice => ghost
 	// 
 	// 1 => 0	at end of attack
 	// 1 => 0	on deflated
-	// 
-	// 1 => 2	randomized choice
 	// 2 => 0	entered a new tunnel
 	//
 	class EnemyBehaviorState
@@ -31,7 +36,7 @@ namespace digdug
 		virtual ~EnemyBehaviorState() = default;
 
 		virtual std::unique_ptr<EnemyBehaviorState> Update(float deltaTime) = 0;
-		virtual std::unique_ptr<EnemyBehaviorState> OnInflatedEnter() = 0;
+		virtual std::unique_ptr<EnemyBehaviorState> OnInflatedEnter(minigin::GameObject* pumpUser) = 0;
 		virtual std::unique_ptr<EnemyBehaviorState> OnDeflatedEnter() = 0;
 
 	protected:
@@ -45,13 +50,14 @@ namespace digdug
 		DirtGrid* m_Grid{ nullptr };
 	};
 
-	class EnemyRoamingState final : public EnemyBehaviorState
+	// wander around
+	class EnemyWanderState final : public EnemyBehaviorState
 	{
 	public:
-		EnemyRoamingState(Enemy* enemy, DirtGrid* grid);
+		EnemyWanderState(Enemy* enemy, DirtGrid* grid);
 
 		std::unique_ptr<EnemyBehaviorState> Update(float deltaTime) override;
-		std::unique_ptr<EnemyBehaviorState> OnInflatedEnter() override;
+		std::unique_ptr<EnemyBehaviorState> OnInflatedEnter(minigin::GameObject*) override;
 		std::unique_ptr<EnemyBehaviorState> OnDeflatedEnter() override { return nullptr; }
 
 	private:
@@ -60,5 +66,50 @@ namespace digdug
 		glm::ivec2 m_CurrentGridPos{};
 		glm::ivec2 m_TargetGridPos{};
 
+		float m_TimeUntilNewAction{ 0.f };
+		const float m_TryNewActionDelay{ 1.f };
+
+		const int m_NumActions{ 3 };
+		enum class NewAction
+		{
+			None = 0,
+			TurnGhost = 1,
+			Attack = 2
+		};
 	};
+
+	// do nothing
+	class EnemyFrozenState final : public EnemyBehaviorState
+	{
+	public:
+		EnemyFrozenState(Enemy* enemy, DirtGrid* grid);
+
+		std::unique_ptr<EnemyBehaviorState> Update(float) override { return nullptr; }
+		std::unique_ptr<EnemyBehaviorState> OnDeflatedEnter() override;
+		std::unique_ptr<EnemyBehaviorState> OnInflatedEnter(minigin::GameObject*) override { return nullptr; }
+	};
+
+	class EnemyGhostState final : public EnemyBehaviorState
+	{
+	public:
+		EnemyGhostState(Enemy* enemy, DirtGrid* grid);
+
+		std::unique_ptr<EnemyBehaviorState> Update(float deltaTime) override;
+		std::unique_ptr<EnemyBehaviorState> OnInflatedEnter(minigin::GameObject* pumpUser) override;
+		std::unique_ptr<EnemyBehaviorState> OnDeflatedEnter() override { return nullptr; }
+
+	private:
+		void ChangeDirection();
+		bool EneteredNewTunnel();
+
+		glm::ivec2 m_CellOfTransformation{ 0, 0 };
+
+		minigin::GameObject* m_Target{ nullptr };
+		glm::vec2 m_TargetSize{ 0.f, 0.f };
+
+		const float m_RedirectionDelay{ 2.f };
+		float m_TimeUntilRedirect{ 0.f };
+		glm::vec2 m_Direction{ 0.f };
+	};
+	
 }

@@ -4,6 +4,7 @@
 #include <Harpoon.h>
 #include <Inflatable.h>
 #include <AimComponent.h>
+#include <GameObject.h>
 
 #include <DirtGrid.h>
 
@@ -191,7 +192,7 @@ std::unique_ptr<digdug::HarpoonState> digdug::HarpoonPumpingState::Update(float 
 	if (m_TimeUntilNextPump <= 0.f)
 	{
 		// pump
-		PumpInflatableEvent event{};
+		PumpInflatableEvent event{ GetHarpoon()->GetUser() };
 		m_PumpEvent.Notify(event);
 
 		m_TimeUntilNextPump = m_PumpDelay;
@@ -213,7 +214,7 @@ std::unique_ptr<digdug::HarpoonState> digdug::HarpoonPumpingState::StartShoot()
 {
 	m_TryRetract = false;
 
-	PumpInflatableEvent event{};
+	PumpInflatableEvent event{ GetHarpoon()->GetUser() };
 	m_PumpEvent.Notify(event);
 	m_TimeUntilNextPump = m_PumpDelay;
 

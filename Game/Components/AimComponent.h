@@ -21,6 +21,9 @@ namespace digdug
 		void SetDirection(minigin::Direction direction);
 		minigin::Direction GetDirection() const { return m_AimDirection; }
 
+		glm::ivec2 GetDirectionAsVector() const;
+		static glm::ivec2 GetDirectionAsVector(minigin::Direction dir);
+
 		void LockAxis(const glm::bvec2& axisLocks);
 
 	private:
@@ -31,5 +34,6 @@ namespace digdug
 		bool m_IsDirty{ true };
 		minigin::RenderComponent* m_RenderComp{ nullptr };
 
+		static const std::unordered_map<minigin::Direction, glm::ivec2> m_ToVecMap;
 	};
 }

@@ -2,6 +2,15 @@
 #include <RenderComponent.h>
 #include <GameObject.h>
 
+const std::unordered_map<minigin::Direction, glm::ivec2> digdug::AimComponent::m_ToVecMap
+{
+	{minigin::Direction::Up,	glm::ivec2{0, -1}},
+	{minigin::Direction::Down,	glm::ivec2{0, 1}},
+	{minigin::Direction::Left,	glm::ivec2{-1, 0}},
+	{minigin::Direction::Right,	glm::ivec2{1, 0}},
+	{minigin::Direction::None,	glm::ivec2{0, 0}}
+};
+
 void digdug::AimComponent::Start()
 {
 	m_RenderComp = GetOwner().GetComponent<minigin::RenderComponent>();
@@ -62,6 +71,20 @@ void digdug::AimComponent::SetDirection(minigin::Direction direction)
 	m_LastDirection = m_AimDirection;
 	m_AimDirection = direction;
 	m_IsDirty = true;
+}
+
+glm::ivec2 digdug::AimComponent::GetDirectionAsVector() const
+{
+	return GetDirectionAsVector(m_AimDirection);
+}
+
+glm::ivec2 digdug::AimComponent::GetDirectionAsVector(minigin::Direction dir)
+{
+	auto itr = m_ToVecMap.find(dir);
+
+	if (itr == m_ToVecMap.end()) return glm::ivec2(0);
+
+	return itr->second;
 }
 
 void digdug::AimComponent::LockAxis(const glm::bvec2& axisLocks)

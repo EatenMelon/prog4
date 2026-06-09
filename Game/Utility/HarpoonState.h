@@ -22,6 +22,7 @@ namespace digdug
 	class AimComponent;
 	class DirtGrid;
 
+	//
 	// 0. do nothing
 	// 1. shoot harpoon
 	// 2. pump enemy
@@ -36,7 +37,7 @@ namespace digdug
 	// 2 => 3	force cancel
 	// 
 	// 3 => 0	fully retracted
-
+	//
 	class HarpoonState
 	{
 	public:
@@ -61,13 +62,10 @@ namespace digdug
 
 		void UpdatePosition();
 		void UpdateHitbox();
-		static const std::unordered_map<minigin::Direction, glm::ivec2>& GetPositionMap() { return m_PositionMap; }
 
 	private:
 		Harpoon* m_Harpoon{ nullptr };
 		float m_Extended{ 0.f };
-
-		static const std::unordered_map<minigin::Direction, glm::ivec2> m_PositionMap;
 	};
 
 	// Do nothing, wait until harpoon is launched.

@@ -55,7 +55,7 @@ void digdug::GridMoveCmd::ActorExecute(const minigin::InputContext& context, flo
 		speed /= 2;
 	}
 
-	float step = speed * deltaTime;
+	const float step = speed * deltaTime;
 
 	if (glm::dot(toTarget, toTarget) <= step * step)
 	{

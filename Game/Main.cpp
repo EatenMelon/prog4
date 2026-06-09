@@ -27,6 +27,8 @@
 
 #include <GridMoveCmd.h>
 #include <HarpoonCmd.h>
+#include <Enemy.h>
+#include <EnemyBehavior.h>
 
 // input
 #include "InputManager.h"
@@ -290,8 +292,24 @@ static void LoadTestScene(minigin::Scene& scene)
 			inflate->SetSpriteSheet("Sprites/Characters/InflatingPooka.png");
 		}
 
+		auto enemyComp = Pooka->AddComponent<digdug::Enemy>();
+		if (enemyComp != nullptr)
+		{
+			enemyComp->SetDefaultSprite("Sprites/Characters/Pooka.png");
+			enemyComp->SetGhostSprite("Sprites/Characters/Pooka.png");
+
+			auto behaviorComp = Pooka->AddComponent<digdug::EnemyBehavior>();
+			if (behaviorComp != nullptr)
+			{
+				behaviorComp->SetGrid(dirtGrid);
+				behaviorComp->SetPositionInGrid(glm::ivec2(12, 8));
+			}
+
+		}
+
 		scene.Add(std::move(HealthPooka));
 		scene.Add(std::move(ScorePooka));
+		scene.Add(std::move(Pooka));
 	}
 
 	if (dirtGrid != nullptr)
@@ -312,21 +330,8 @@ static void LoadTestScene(minigin::Scene& scene)
 		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::DPAD_RIGHT, minigin::KeyState::Pressed, taizoMove, taizoID, minigin::Direction::Right);
 
 		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadJoystick::LEFT_JOYSTICK, 0.5f, taizoMove, taizoID);
-
-		int pookaID{ 1 };
-		auto pookaMove = std::make_shared<digdug::GridMoveCmd>(Pooka.get(), pookaID, *dirtGrid, 250.f, false);
-
-		pookaMove->SetGridPosition(glm::ivec2{ 12, 3 });
-
-		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::DPAD_UP, minigin::KeyState::Pressed, pookaMove, pookaID, minigin::Direction::Up);
-		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::DPAD_LEFT, minigin::KeyState::Pressed, pookaMove, pookaID, minigin::Direction::Left);
-		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::DPAD_DOWN, minigin::KeyState::Pressed, pookaMove, pookaID, minigin::Direction::Down);
-		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::DPAD_RIGHT, minigin::KeyState::Pressed, pookaMove, pookaID, minigin::Direction::Right);
-
-		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadJoystick::LEFT_JOYSTICK, 0.5f, pookaMove, pookaID);
 		
 		scene.Add(std::move(TaizoHori));
-		scene.Add(std::move(Pooka));
 	}
 
 	minigin::Renderer::GetInstance().SetBackgroundColor(SDL_Color{ 0, 0, 50, 255 });

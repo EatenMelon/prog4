@@ -7,14 +7,6 @@
 
 #include <DirtGrid.h>
 
-const std::unordered_map<minigin::Direction, glm::ivec2> digdug::HarpoonState::m_PositionMap
-{
-	{minigin::Direction::Up,	glm::ivec2{0, -1}},
-	{minigin::Direction::Down,	glm::ivec2{0, 1}},
-	{minigin::Direction::Left,	glm::ivec2{-1, 0}},
-	{minigin::Direction::Right,	glm::ivec2{1, 0}}
-};
-
 digdug::HarpoonState::HarpoonState(Harpoon* harpoon, float extend)
 	: m_Harpoon{ harpoon }
 	, m_Extended{ extend }
@@ -67,11 +59,12 @@ void digdug::HarpoonState::UpdatePosition()
 	default: break;
 	}
 
-	auto itr = m_PositionMap.find(currentDir);
-	if (itr == m_PositionMap.end()) return;
+	const auto dirVec = GetHarpoon()->GetAimComponent()->GetDirectionAsVector();
+
+	if (dirVec == glm::ivec2(0)) return;
 
 	auto pos = m_Harpoon->GetOwner().GetLocalPosition();
-	pos = glm::vec3(selectedSize, 0) * glm::vec3(itr->second, 0);
+	pos = glm::vec3(selectedSize, 0) * glm::vec3(dirVec, 0);
 
 	m_Harpoon->GetOwner().SetLocalPosition(pos);
 }
@@ -117,15 +110,7 @@ std::unique_ptr<digdug::HarpoonState> digdug::HarpoonShootState::Update(float de
 
 	if (grid != nullptr)
 	{
-
-		const auto aimDir = GetHarpoon()->GetAimComponent()->GetDirection();
-		const auto itr = GetPositionMap().find(aimDir);
-		glm::ivec2 direction{};
-
-		if (itr != GetPositionMap().end())
-		{
-			direction = itr->second;
-		}
+		const auto direction = GetHarpoon()->GetAimComponent()->GetDirectionAsVector();
 
 		auto pos = GetHarpoon()->GetUser()->GetLocalPosition();
 		pos += glm::vec3(GetHarpoon()->GetUserSize() / 2.f, 0);

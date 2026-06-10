@@ -301,7 +301,7 @@ static void LoadAllScenes()
 	(
 		[](minigin::Scene& scene)
 		{
-			digdug::LevelLoader::GetInstance().LoadLevel(scene, "Level1.json");
+			digdug::LevelLoader::GetInstance().LoadLevel(scene, "Level1.json", 2);
 		}
 	);
 
@@ -309,7 +309,7 @@ static void LoadAllScenes()
 	(
 		[](minigin::Scene& scene)
 		{
-			digdug::LevelLoader::GetInstance().LoadLevel(scene, "Level2.json");
+			digdug::LevelLoader::GetInstance().LoadLevel(scene, "Level2.json", 2);
 		}
 	);
 
@@ -317,7 +317,7 @@ static void LoadAllScenes()
 	(
 		[](minigin::Scene& scene)
 		{
-			digdug::LevelLoader::GetInstance().LoadLevel(scene, "Level3.json");
+			digdug::LevelLoader::GetInstance().LoadLevel(scene, "Level3.json", 2);
 		}
 	);
 

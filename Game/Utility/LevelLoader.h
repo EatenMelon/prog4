@@ -5,8 +5,11 @@
 #include <vector>
 
 #include <glm/glm.hpp>
+
 #include <Scene.h>
 #include <Singleton.h>
+#include <Subject.h>
+#include <Events.h>
 
 namespace digdug::JsonLevelKeys
 {
@@ -26,7 +29,7 @@ namespace digdug::JsonLevelKeys
 	constexpr std::string_view PlayerSpawnPoints{ "spawn_points" };
 }
 
-namespace mingin
+namespace minigin
 {
 	class GameObject;
 }
@@ -34,14 +37,35 @@ namespace mingin
 namespace digdug
 {
 	class DirtGrid;
+	class LevelLoadedEvent final : public minigin::PlainEvent
+	{
+	public:
+		LevelLoadedEvent
+		(
+			DirtGrid* grid,
+			const std::vector<minigin::GameObject*>& players,
+			const std::vector<minigin::GameObject*>& enemies
+		);
+
+		DirtGrid* GetDirtGrid() const { return m_Grid; }
+
+	private:
+		DirtGrid* m_Grid{ nullptr };
+		std::vector<minigin::GameObject*> m_Players{};
+		std::vector<minigin::GameObject*> m_Enemies{};
+	};
+
 	class LevelLoader final : public minigin::Singleton<LevelLoader>
 	{
 	public:
 		void Init(const std::filesystem::path& root);
 		bool AddLevel(const std::string& file);
-		void LoadLevel(minigin::Scene& scene, const std::string& file);
+		void LoadLevel(minigin::Scene& scene, const std::string& file, int requiredPlayers);
+		minigin::Subject& OnLevelLoadedEvent() { return m_OnLevelLoaded; }
 
 	private:
+		minigin::Subject m_OnLevelLoaded{};
+
 		struct TunnelData
 		{
 			glm::ivec2 start{};

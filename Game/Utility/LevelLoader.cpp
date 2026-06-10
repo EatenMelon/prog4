@@ -25,6 +25,19 @@
 
 using Json = nlohmann::json;
 
+digdug::LevelLoadedEvent::LevelLoadedEvent
+(
+	DirtGrid* grid,
+	const std::vector<minigin::GameObject*>& players,
+	const std::vector<minigin::GameObject*>& enemies
+)
+	: PlainEvent("LevelLoaded")
+	, m_Grid{ grid }
+	, m_Players{ players }
+	, m_Enemies{ enemies }
+{
+}
+
 void digdug::LevelLoader::Init(const std::filesystem::path& root)
 {
 	m_Root = root;
@@ -105,7 +118,7 @@ bool digdug::LevelLoader::AddLevel(const std::string& file)
 	return true;
 }
 
-void digdug::LevelLoader::LoadLevel(minigin::Scene& scene, const std::string& file)
+void digdug::LevelLoader::LoadLevel(minigin::Scene& scene, const std::string& file, int requiredPlayers)
 {
 	auto it = m_Levels.find(file);
 
@@ -134,15 +147,56 @@ void digdug::LevelLoader::LoadLevel(minigin::Scene& scene, const std::string& fi
 		dirtGrid->Dig(tunnel.start, tunnel.end, tunnel.axis);
 	}
 
+	std::vector<minigin::GameObject*> enemies{};
 	for (const auto& enemy : level.enemies)
 	{
-		AddEnemy(scene, dirtGrid, enemy);
+		auto newObj = AddEnemy(scene, dirtGrid, enemy);
+
+		if (newObj == nullptr) continue;
+		enemies.push_back(newObj);
 	}
 
-	if (level.playerSpawnPositions.empty()) return;
+	if (level.playerSpawnPositions.empty())
+	{
+		std::cerr << "ERROR: LevelLoader::LoadLevel, no player can be spawned in this level since there are no swpawn positions!\n";
+		return;
+	}
 
-	AddPlayer(scene, dirtGrid, level.playerSpawnPositions.front());
-	
+	if (static_cast<int>(level.playerSpawnPositions.size()) < requiredPlayers)
+	{
+		std::cerr << "ERROR: LevelLoader::LoadLevel, not enough spawn positions for all players!\n";
+		return;
+	}
+
+	std::vector<minigin::GameObject*> players{};
+	for (int sp{ 0 }; sp < requiredPlayers; ++sp)
+	{
+		const auto pos = level.playerSpawnPositions[sp];
+		auto newObj = AddPlayer(scene, dirtGrid, pos);
+
+		if (newObj == nullptr) continue;
+		players.push_back(newObj);
+	}
+
+	if (players.empty())
+	{
+		std::cerr << "ERROR: LevelLoader::LoadLevel, no player where spawned!\n";
+		return;
+	}
+
+	// Now i can be sure that all components are on the enemy gameobjects, so less checks won't hurt
+	for (const auto& enemy : enemies)
+	{
+		auto enemyComp = enemy->GetComponent<Enemy>();
+		
+		for (const auto& player : players)
+		{
+			enemyComp->AddPossibleTarget(player);
+		}
+	}
+
+	LevelLoadedEvent event{ dirtGrid, players, enemies };
+	m_OnLevelLoaded.Notify(event);
 }
 
 digdug::DirtGrid* digdug::LevelLoader::AddDirtGrid(minigin::Scene& scene, float cellSize)

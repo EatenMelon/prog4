@@ -55,7 +55,7 @@ namespace digdug
 		float m_CellSize{ 1.f };
 
 		const int m_Width{ 14 };
-		const int m_Height{ 15 };
+		const int m_Height{ 17 };
 
 		bool m_ShowOutlines{ false };
 

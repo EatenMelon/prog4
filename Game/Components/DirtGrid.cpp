@@ -76,7 +76,7 @@ void digdug::DirtGrid::Render() const
 		const float margin{ 5.f };
 		const auto gridPos = GetPosInGrid(glm::vec3(pos, 0.f));
 
-		std::string posMessage = std::to_string(gridPos.x) + "," + std::to_string(gridPos.x);
+		std::string posMessage = std::to_string(gridPos.x) + "," + std::to_string(gridPos.y);
 
 		SDL_RenderDebugText(renderer, pos.x + margin, pos.y + margin, posMessage.c_str());
 
@@ -200,24 +200,21 @@ void digdug::DirtGrid::SetTileTexture(Depth depth, minigin::Texture2D& texture)
 digdug::DirtGrid::Depth digdug::DirtGrid::GetDepthLevel(const glm::ivec2& pos) const
 {
 	constexpr int levels{ 4 };
-
-	constexpr int surfaceY{ 0 };
 	const int outerHeights{ m_Height / levels };
-	const int middleHeights{ outerHeights + 1 };
 
-	if (pos.y == surfaceY)
+	if (pos.y <= outerHeights * 0)
 	{
 		return Depth::Surface;
 	}
-	else if (pos.y <= outerHeights)
+	else if (pos.y <= outerHeights * 1)
 	{
 		return Depth::TopSoil;
 	}
-	else if (pos.y <= outerHeights + middleHeights)
+	else if (pos.y <= outerHeights * 2)
 	{
 		return Depth::SubSoil;
 	}
-	else if (pos.y <= outerHeights + middleHeights * 2)
+	else if (pos.y <= outerHeights * 3)
 	{
 		return Depth::Stone;
 	}

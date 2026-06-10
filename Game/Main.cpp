@@ -369,7 +369,7 @@ int main(int, char*[])
 	if(!fs::exists(data_location))
 		data_location = "../Data/";
 #endif
-	minigin::Minigin engine(data_location, 1080, 720);
+	minigin::Minigin engine(data_location, 1080, 820);
 	engine.Run(LoadAllScenes);
 
     return 0;

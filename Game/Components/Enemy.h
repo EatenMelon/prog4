@@ -58,6 +58,7 @@ namespace digdug
 		void SetGhostSprite(const std::string& path);
 
 		void SetAttack(std::shared_ptr<Attack> attack);
+		bool HasAttack() const { return m_Attack != nullptr; }
 
 		void SetMovementSpeed(float speed) { m_MovementSpeed = speed; }
 		float GetMovementSpeed() const { return m_MovementSpeed; }

@@ -1,6 +1,7 @@
 #pragma once
 #include "Component.h"
 #include <vector>
+#include <glm/glm.hpp>
 #include <Subject.h>
 
 namespace minigin
@@ -21,6 +22,7 @@ namespace minigin
 		void Render() const override;
 
 		void SetBounds(float width, float height);
+		void SetBounds(const glm::vec2& size);
 		void SetShrink(float shrink) { m_Shrink = shrink; }
 		bool IsColliding(const Hitbox& other) const;
 

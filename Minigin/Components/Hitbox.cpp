@@ -1,4 +1,5 @@
 #include "Hitbox.h"
+#include "Hitbox.h"
 #include <GameObject.h>
 #include <Subject.h>
 #include <Events.h>
@@ -35,6 +36,12 @@ void minigin::Hitbox::SetBounds(float width, float height)
 {
 	m_Width = width;
 	m_Height = height;
+}
+
+void minigin::Hitbox::SetBounds(const glm::vec2& size)
+{
+	m_Width = size.x;
+	m_Height = size.y;
 }
 
 bool minigin::Hitbox::IsColliding(const Hitbox& other) const

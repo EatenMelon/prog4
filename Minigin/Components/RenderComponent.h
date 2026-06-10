@@ -24,6 +24,10 @@ namespace minigin
 		void SetHorizontalFlip(bool flip) { m_HorFlip = flip; };
 		void SetVerticalFlip(bool flip) { m_VerFlip = flip; };
 
+
+		void MatchWidth(float width);
+		void MatchHeight(float height);
+
 		glm::vec2 GetSize() const;
 		float GetUniformScale() const;
 		float GetRotation() const;

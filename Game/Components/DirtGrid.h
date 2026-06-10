@@ -7,6 +7,7 @@
 #include <vector>
 #include <queue>
 #include <unordered_map>
+#include <memory>
 
 namespace digdug
 {
@@ -33,7 +34,7 @@ namespace digdug
 		glm::vec3 GetCellLocalPos(const glm::ivec2& gridPos) const;
 		glm::ivec2 GetPosInGrid(const glm::vec3& pos) const;
 
-		void SetTileTexture(Depth depth, minigin::Texture2D& texture);
+		void SetTileTexture(Depth depth, std::shared_ptr<minigin::Texture2D> texture);
 		void SetCellSize(float size) { m_CellSize = size; }
 
 		Depth GetDepthLevel(const glm::ivec2& pos) const;
@@ -61,6 +62,6 @@ namespace digdug
 
 		std::vector<DirtCell> m_Cells{};
 		std::queue<DigEvent> m_DiggingQueue{};
-		std::unordered_map<Depth, minigin::Texture2D*> m_TileTextures{};
+		std::unordered_map<Depth, std::shared_ptr<minigin::Texture2D>> m_TileTextures{};
 	};
 }

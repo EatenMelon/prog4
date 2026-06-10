@@ -192,9 +192,9 @@ glm::ivec2 digdug::DirtGrid::GetPosInGrid(const glm::vec3& pos) const
 	return glm::ivec2(grid);
 }
 
-void digdug::DirtGrid::SetTileTexture(Depth depth, minigin::Texture2D& texture)
+void digdug::DirtGrid::SetTileTexture(Depth depth, std::shared_ptr<minigin::Texture2D> texture)
 {
-	m_TileTextures.insert_or_assign(depth, &texture);
+	m_TileTextures.insert_or_assign(depth, texture);
 }
 
 digdug::DirtGrid::Depth digdug::DirtGrid::GetDepthLevel(const glm::ivec2& pos) const

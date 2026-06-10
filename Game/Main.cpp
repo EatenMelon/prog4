@@ -37,6 +37,7 @@
 #include <Renderer.h>
 #include <Harpoon.h>
 #include <Attack.h>
+#include <LevelLoader.h>
 
 namespace fs = std::filesystem;
 
@@ -62,11 +63,11 @@ static void LoadTestScene(minigin::Scene& scene)
 			auto bedrockTile = minigin::ResourceManager::GetInstance().LoadTexture("Sprites/Tiles/BedrockTile.png");
 
 			gridComp->SetCellSize(16.f * 3.f);
-			gridComp->SetTileTexture(digdug::DirtGrid::Depth::Surface, *sandTile.get());
-			gridComp->SetTileTexture(digdug::DirtGrid::Depth::TopSoil, *sandTile.get());
-			gridComp->SetTileTexture(digdug::DirtGrid::Depth::SubSoil, *dirtTile.get());
-			gridComp->SetTileTexture(digdug::DirtGrid::Depth::Stone, *stoneTile.get());
-			gridComp->SetTileTexture(digdug::DirtGrid::Depth::Bedrock, *bedrockTile.get());
+			gridComp->SetTileTexture(digdug::DirtGrid::Depth::Surface, sandTile);
+			gridComp->SetTileTexture(digdug::DirtGrid::Depth::TopSoil, sandTile);
+			gridComp->SetTileTexture(digdug::DirtGrid::Depth::SubSoil, dirtTile);
+			gridComp->SetTileTexture(digdug::DirtGrid::Depth::Stone, stoneTile);
+			gridComp->SetTileTexture(digdug::DirtGrid::Depth::Bedrock, bedrockTile);
 
 			width = gridComp->GetSize().x;
 
@@ -223,49 +224,6 @@ static void LoadTestScene(minigin::Scene& scene)
 			renderComp->SetUniformScale(3);
 		}
 
-		auto HealthPooka = std::make_unique<minigin::GameObject>();
-		HealthPooka->SetLocalPosition(width + 15.f, 250.f);
-
-		auto health = Pooka->AddComponent<digdug::HealthComponent>();
-		if (health != nullptr)
-		{
-			auto renderCompDisplay = HealthPooka->AddComponent<minigin::RenderComponent>();
-			if (renderCompDisplay != nullptr)
-			{
-				auto text = HealthPooka->AddComponent<minigin::TextComponent>();
-				if (text != nullptr)
-				{
-					text->SetFont(smallFont);
-					text->SetColor({ 255, 255, 0, 255 });
-					text->SetText("...");
-
-					health->LinkTextComponent(text);
-				}
-			}
-		}
-
-		auto ScorePooka = std::make_unique<minigin::GameObject>();
-		ScorePooka->SetLocalPosition(width + 15.f, 270.f);
-
-		auto score = Pooka->AddComponent<digdug::ScoreComponent>();
-		if (score != nullptr)
-		{
-			auto renderCompDisplay = ScorePooka->AddComponent<minigin::RenderComponent>();
-			if (renderCompDisplay != nullptr)
-			{
-				auto text = ScorePooka->AddComponent<minigin::TextComponent>();
-
-				if (text != nullptr)
-				{
-					text->SetFont(smallFont);
-					text->SetColor({ 255, 255, 0, 255 });
-					text->SetText("...");
-
-					score->LinkTextComponent(text);
-				}
-			}
-		}
-
 		auto hitbox = Pooka->AddComponent<minigin::Hitbox>();
 		if (hitbox != nullptr)
 		{
@@ -275,9 +233,6 @@ static void LoadTestScene(minigin::Scene& scene)
 				hitbox->SetBounds(size.x, size.y);
 				hitbox->SetShrink(size.x / 6);
 			}
-
-			hitbox->HitExitEvent().Subscribe(health);
-			hitbox->HitEnterEvent().Subscribe(score);
 		}
 
 		auto aimComp = Pooka->AddComponent<digdug::AimComponent>();
@@ -310,8 +265,6 @@ static void LoadTestScene(minigin::Scene& scene)
 			enemyComp->SetAttack(std::make_shared<digdug::FireAttack>());
 		}
 
-		scene.Add(std::move(HealthPooka));
-		scene.Add(std::move(ScorePooka));
 		scene.Add(std::move(Pooka));
 	}
 
@@ -342,11 +295,36 @@ static void LoadTestScene(minigin::Scene& scene)
 
 static void LoadAllScenes()
 {
+	digdug::LevelLoader::GetInstance().AddLevel("Level1.json");
+	digdug::LevelLoader::GetInstance().AddLevel("Level2.json");
+	digdug::LevelLoader::GetInstance().AddLevel("Level3.json");
+
 	minigin::SceneManager::GetInstance().CreateScene(LoadTestScene);
-	minigin::SceneManager::GetInstance().CreateScene(LoadTestScene);
-	minigin::SceneManager::GetInstance().CreateScene(LoadTestScene);
-	minigin::SceneManager::GetInstance().CreateScene(LoadTestScene);
-	minigin::SceneManager::GetInstance().CreateScene(LoadTestScene);
+
+	minigin::SceneManager::GetInstance().CreateScene
+	(
+		[](minigin::Scene& scene)
+		{
+			digdug::LevelLoader::GetInstance().LoadLevel(scene, "Level1.json");
+		}
+	);
+
+	minigin::SceneManager::GetInstance().CreateScene
+	(
+		[](minigin::Scene& scene)
+		{
+			digdug::LevelLoader::GetInstance().LoadLevel(scene, "Level2.json");
+		}
+	);
+
+	minigin::SceneManager::GetInstance().CreateScene
+	(
+		[](minigin::Scene& scene)
+		{
+			digdug::LevelLoader::GetInstance().LoadLevel(scene, "Level3.json");
+		}
+	);
+
 }
 
 int main(int, char*[])
@@ -367,8 +345,12 @@ int main(int, char*[])
 #else
 	fs::path data_location = "./Data/";
 	if(!fs::exists(data_location))
+	{
 		data_location = "../Data/";
+	}
 #endif
+
+	digdug::LevelLoader::GetInstance().Init(data_location/"Levels");
 	minigin::Minigin engine(data_location, 1080, 820);
 	engine.Run(LoadAllScenes);
 

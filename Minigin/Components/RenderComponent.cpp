@@ -1,6 +1,8 @@
 #include "RenderComponent.h"
 #include "RenderComponent.h"
 #include "RenderComponent.h"
+#include "RenderComponent.h"
+#include "RenderComponent.h"
 
 #include "GameObject.h"
 #include "ResourceManager.h"
@@ -35,6 +37,24 @@ void minigin::RenderComponent::SetTexture(std::shared_ptr<Texture2D> texture)
 void minigin::RenderComponent::SetUniformScale(float scale)
 {
 	m_UniformScale = std::max({ scale, std::numeric_limits<float>::min()});
+}
+
+void minigin::RenderComponent::MatchWidth(float width)
+{
+	if (m_Texture == nullptr) return;
+
+	const float original = m_Texture->GetSize().x;
+
+	m_UniformScale = width / original;
+}
+
+void minigin::RenderComponent::MatchHeight(float height)
+{
+	if (m_Texture == nullptr) return;
+
+	const float original = m_Texture->GetSize().y;
+
+	m_UniformScale = height / original;
 }
 
 glm::vec2 minigin::RenderComponent::GetSize() const

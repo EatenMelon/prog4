@@ -37,12 +37,8 @@ std::unique_ptr<digdug::EnemyBehaviorState> digdug::EnemyWanderState::Update(flo
 		switch (tryAction)
 		{
 		case digdug::EnemyWanderState::NewAction::Attack:
-
 			if (!CanAttack()) break;
-
-			GetEnemy()->DoAttack();
-
-			return std::make_unique<EnemyAttackingState>(GetEnemy(), GetGrid());
+			return std::make_unique<EnemyAttackChargingState>(GetEnemy(), GetGrid());
 			break;
 
 		case digdug::EnemyWanderState::NewAction::TurnGhost:
@@ -142,7 +138,7 @@ bool digdug::EnemyWanderState::CanAttack()
 {
 	const auto dir = GetEnemy()->GetAimComponent()->GetDirectionAsVector();
 
-	return GetGrid()->HasBeenDug(m_CurrentGridPos + dir);
+	return GetGrid()->HasBeenDug(m_CurrentGridPos + dir) && GetEnemy()->HasAttack();
 }
 
 digdug::EnemyFrozenState::EnemyFrozenState(Enemy* enemy, DirtGrid* grid)
@@ -156,10 +152,33 @@ std::unique_ptr<digdug::EnemyBehaviorState> digdug::EnemyFrozenState::OnDeflated
 	return std::make_unique<EnemyWanderState>(GetEnemy(), GetGrid());
 }
 
-digdug::EnemyAttackingState::EnemyAttackingState(Enemy* enemy, DirtGrid* grid)
+digdug::EnemyAttackChargingState::EnemyAttackChargingState(Enemy* enemy, DirtGrid* grid)
 	: EnemyBehaviorState(enemy, grid)
 {
 	GetEnemy()->BecomeDefault();
+}
+
+std::unique_ptr<digdug::EnemyBehaviorState> digdug::EnemyAttackChargingState::Update(float deltaTime)
+{
+	if (m_TimeUntilAttack <= 0.f)
+	{
+		GetEnemy()->DoAttack();
+		return std::make_unique<EnemyAttackingState>(GetEnemy(), GetGrid());;
+	}
+
+	m_TimeUntilAttack -= deltaTime;
+
+	return nullptr;
+}
+
+std::unique_ptr<digdug::EnemyBehaviorState> digdug::EnemyAttackChargingState::OnInflatedEnter(minigin::GameObject*)
+{
+	return std::make_unique<EnemyFrozenState>(GetEnemy(), GetGrid());
+}
+
+digdug::EnemyAttackingState::EnemyAttackingState(Enemy* enemy, DirtGrid* grid)
+	: EnemyBehaviorState(enemy, grid)
+{
 }
 
 std::unique_ptr<digdug::EnemyBehaviorState> digdug::EnemyAttackingState::OnAttackEnded()

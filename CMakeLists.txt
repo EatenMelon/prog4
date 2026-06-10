@@ -87,6 +87,7 @@ add_executable(${GAME_NAME} ${TARGET_PARAM}
     "${UTILITY_DIR}/HarpoonState.cpp"
     "${UTILITY_DIR}/EnemyBehaviorState.cpp"
     "${UTILITY_DIR}/Attack.cpp"
+    "${UTILITY_DIR}/LevelLoader.cpp"
 
     "${INPUT_DIR}/GridMoveCmd.cpp"
     "Game/Input/HarpoonCmd.cpp"

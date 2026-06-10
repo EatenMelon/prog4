@@ -15,18 +15,23 @@ namespace digdug
 	//
 	// 0. wandering
 	// 1. frozen
-	// 2. attacking
-	// 3. ghost
+	// 2. charging attack
+	// 3. attacking
+	// 4. ghost
 	// 
-	// 0 => 1	when pump inflates enemy
 	// 0 => 2	random choice every couple of seconds
-	// 0 => 3	random choice every couple of seconds
+	// 0 => 4	random choice every couple of seconds
+	// 
+	// 2 => 3	after a small delay
 	// 
 	// 1 => 0	when you are fully deflated
-	// 2 => 0	when you are done with your attack
-	// 3 => 0	when you enter a tunnel
+	// 3 => 0	when you are done with your attack
+	// 4 => 0	when you enter a tunnel
 	// 
+	// 0 => 1	when pump inflates enemy
 	// 2 => 1	when pump inflates enemy
+	// 3 => 1	when pump inflates enemy
+	// 4 => 1	when pump inflates enemy
 	//
 	class EnemyBehaviorState
 	{
@@ -91,11 +96,26 @@ namespace digdug
 
 		std::unique_ptr<EnemyBehaviorState> OnDeflatedEnter() override;
 		std::unique_ptr<EnemyBehaviorState> Update(float) override { return nullptr; }
-		std::unique_ptr<EnemyBehaviorState> OnInflatedEnter(minigin::GameObject*) override { return nullptr; }
 		std::unique_ptr<EnemyBehaviorState> OnAttackEnded() override { return nullptr; };
+		std::unique_ptr<EnemyBehaviorState> OnInflatedEnter(minigin::GameObject*) override { return nullptr; }
 	};
 
-	// also do nothing
+	// also do wait, and fire
+	class EnemyAttackChargingState final : public EnemyBehaviorState
+	{
+	public:
+		EnemyAttackChargingState(Enemy* enemy, DirtGrid* grid);
+
+		std::unique_ptr<EnemyBehaviorState> Update(float deltaTime) override;
+		std::unique_ptr<EnemyBehaviorState> OnInflatedEnter(minigin::GameObject*) override;
+		std::unique_ptr<EnemyBehaviorState> OnAttackEnded() override { return nullptr; };
+		std::unique_ptr<EnemyBehaviorState> OnDeflatedEnter() override { return nullptr; };
+
+	private:
+		float m_TimeUntilAttack{ 2.f };
+	};
+
+	// wait until attack ended
 	class EnemyAttackingState final : public EnemyBehaviorState
 	{
 	public:
@@ -103,9 +123,10 @@ namespace digdug
 
 		std::unique_ptr<EnemyBehaviorState> OnAttackEnded() override;
 		std::unique_ptr<EnemyBehaviorState> OnInflatedEnter(minigin::GameObject*) override;
+		std::unique_ptr<EnemyBehaviorState> Update(float) override { return nullptr; };
 		std::unique_ptr<EnemyBehaviorState> OnDeflatedEnter() override { return nullptr; };
-		std::unique_ptr<EnemyBehaviorState> Update(float) override { return nullptr; }
 	};
+
 
 	// be spooky
 	class EnemyGhostState final : public EnemyBehaviorState

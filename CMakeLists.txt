@@ -292,12 +292,6 @@ if(EMSCRIPTEN)
     --preload-file "${CMAKE_SOURCE_DIR}/Data@/"
   )
 
-  add_custom_command(TARGET ${GAME_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
-            "${CMAKE_CURRENT_SOURCE_DIR}/web"
-            "$<TARGET_FILE_DIR:${GAME_NAME}>/"
-  )
-
 elseif(WIN32)
   target_link_libraries("${ENGINE_NAME}" PUBLIC Xinput9_1_0)
 
@@ -333,10 +327,6 @@ elseif(WIN32)
       COMMENT "Generating steam_appid.txt"
     )
   endif()
-
-  add_custom_command(TARGET ${ENGINE_NAME} POST_BUILD
-    COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/Data" "$<TARGET_FILE_DIR:${ENGINE_NAME}>/Data"
-  )
 elseif(APPLE)
   set_target_properties(${ENGINE_NAME} PROPERTIES
     MACOSX_BUNDLE TRUE
@@ -363,10 +353,6 @@ elseif(APPLE)
     )
   endif()
 
-  # Copy Data folder to output directory after build
-  add_custom_command(TARGET ${ENGINE_NAME} POST_BUILD
-    COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/Data" "$<TARGET_FILE_DIR:${ENGINE_NAME}>/Data"
-  )
 else()
  if(Steamworks_FOUND)
     target_link_libraries("${ENGINE_NAME}" PUBLIC Steamworks::Steamworks)
@@ -380,12 +366,25 @@ else()
     )
   endif()
 
-  # Copy Data folder to output directory after build
-  add_custom_command(TARGET ${ENGINE_NAME} POST_BUILD
-    COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/Data" "$<TARGET_FILE_DIR:${ENGINE_NAME}>/Data"
-  )
 endif()
+
+include(FetchContent)
+# add nlohmann json
+FetchContent_Declare(
+	json
+	URL https://github.com/nlohmann/json/releases/download/v3.12.0/json.tar.xz
+)
+FetchContent_MakeAvailable(json)
+target_link_libraries(${GAME_NAME} PRIVATE nlohmann_json::nlohmann_json)
 
 add_dependencies(${GAME_NAME} ${ENGINE_NAME})
 
 target_link_libraries(${GAME_NAME} PRIVATE ${ENGINE_NAME})
+
+# Copy Data folder to output directory after build
+add_custom_command(TARGET ${GAME_NAME} POST_BUILD
+    COMMAND "${CMAKE_COMMAND}" -E copy_directory_if_different 
+    "${CMAKE_CURRENT_SOURCE_DIR}/Data" 
+    "$<TARGET_FILE_DIR:${GAME_NAME}>/Data" 
+    COMMAND ${CMAKE_COMMAND} -E echo "Copied content from Data folder to $<TARGET_FILE_DIR:${GAME_NAME}>/Data!"
+)

@@ -19,7 +19,6 @@ namespace digdug
 	class EnemyBehavior;
 	class Harpoon;
 	class JoinGameCmd;
-	//class DirtGrid;
 	class GameManager final : public minigin::Singleton<GameManager>, public minigin::IObserver
 	{
 	public:

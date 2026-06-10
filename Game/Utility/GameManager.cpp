@@ -144,7 +144,7 @@ void digdug::GameManager::HandleLoadedEvent(const LevelLoadedEvent& event)
 	{
 		Harpoon* harpoon{ nullptr };
 
-		for (int child{ 0 }; child < obj->GetChildCount(); ++obj)
+		for (size_t child{ 0 }; child < obj->GetChildCount(); ++obj)
 		{
 			auto harpoonObj = obj->GetChildAt(child);
 

@@ -120,6 +120,12 @@ bool digdug::LevelLoader::AddLevel(const std::string& file)
 
 void digdug::LevelLoader::LoadLevel(minigin::Scene& scene, const std::string& file, int requiredPlayers)
 {
+	if (requiredPlayers <= 0)
+	{
+		std::cerr << "ERROR: LevelLoader::LoadLevel, failed to load level for " << requiredPlayers << " players!\n";
+		return;
+	}
+
 	auto it = m_Levels.find(file);
 
 	if (it == m_Levels.end())
@@ -169,6 +175,7 @@ void digdug::LevelLoader::LoadLevel(minigin::Scene& scene, const std::string& fi
 	}
 
 	std::vector<minigin::GameObject*> players{};
+
 	for (int sp{ 0 }; sp < requiredPlayers; ++sp)
 	{
 		const auto pos = level.playerSpawnPositions[sp];
@@ -178,9 +185,9 @@ void digdug::LevelLoader::LoadLevel(minigin::Scene& scene, const std::string& fi
 		players.push_back(newObj);
 	}
 
-	if (players.empty())
+	if (static_cast<int>(players.size()) != requiredPlayers)
 	{
-		std::cerr << "ERROR: LevelLoader::LoadLevel, no player where spawned!\n";
+		std::cerr << "ERROR: LevelLoader::LoadLevel, not enough players where spawned!\n";
 		return;
 	}
 
@@ -378,7 +385,10 @@ minigin::GameObject* digdug::LevelLoader::AddPlayer(minigin::Scene& scene, DirtG
 			return nullptr;
 		}
 
-		harpoonComp->EquipOnUser(*playerObj.get());
+		auto user = playerObj.get();
+		harpoonComp->EquipOnUser(*user);
+		harpoonComp->AddDirtdGrid(grid);
+		harpoonComp->SetHarpoonSprite("Sprites/Attacks/Harpoon.png");
 
 		auto hitbox = harpoonObj->AddComponent<minigin::Hitbox>();
 		if (hitbox == nullptr)

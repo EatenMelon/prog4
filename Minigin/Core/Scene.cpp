@@ -31,6 +31,11 @@ void Scene::Remove(const GameObject& object)
 void Scene::RemoveAll()
 {
 	m_objects.clear();
+	
+	while(!m_WaitingObjects.empty())
+	{
+		m_WaitingObjects.pop();
+	}
 }
 
 void Scene::FixedUpdate(float fixedFrameTime)

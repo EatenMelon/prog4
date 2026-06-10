@@ -21,6 +21,7 @@ namespace digdug
 			: minigin::PlainEvent("PoppedEvent")
 		{
 		}
+		// TODO: pass enemy score value, pump user, and position
 	};
 
 	class Inflatable final : public minigin::Component, public minigin::IObserver

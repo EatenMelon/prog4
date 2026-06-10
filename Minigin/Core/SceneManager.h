@@ -31,6 +31,7 @@ namespace minigin
 		bool SetActiveScene(size_t index);
 		Scene& GetActiveScene();
 		size_t ActiveSceneId() const;
+		size_t GetSceneCount() const;
 
 		Subject& SceneSelectEvent() { return m_OnSelectScene; }
 

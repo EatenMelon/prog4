@@ -1,6 +1,7 @@
 #include "SceneManager.h"
 #include "SceneManager.h"
 #include "SceneManager.h"
+#include "SceneManager.h"
 #include "Scene.h"
 #include <imgui.h>
 #include <string>
@@ -107,6 +108,11 @@ minigin::Scene& minigin::SceneManager::GetActiveScene()
 size_t minigin::SceneManager::ActiveSceneId() const
 {
 	return m_ActiveSceneIdx;
+}
+
+size_t minigin::SceneManager::GetSceneCount() const
+{
+	return m_scenes.size();
 }
 
 void minigin::SceneManager::CreateScene(const std::function<void(Scene&)>& loader)

@@ -38,6 +38,7 @@
 #include <Harpoon.h>
 #include <Attack.h>
 #include <LevelLoader.h>
+#include <GameManager.h>
 
 namespace fs = std::filesystem;
 
@@ -290,37 +291,16 @@ static void LoadTestScene(minigin::Scene& scene)
 		scene.Add(std::move(TaizoHori));
 	}
 
-	minigin::Renderer::GetInstance().SetBackgroundColor(SDL_Color{ 0, 0, 50, 255 });
 }
 
 static void LoadAllScenes()
 {
 	minigin::SceneManager::GetInstance().CreateScene(LoadTestScene);
 
-	minigin::SceneManager::GetInstance().CreateScene
-	(
-		[](minigin::Scene& scene)
-		{
-			digdug::LevelLoader::GetInstance().LoadLevel(scene, "Level1.json", 2);
-		}
-	);
+	digdug::GameManager::GetInstance().Init();
+	digdug::GameManager::GetInstance().StartGame(digdug::GameManager::GameMode::Coop);
 
-	minigin::SceneManager::GetInstance().CreateScene
-	(
-		[](minigin::Scene& scene)
-		{
-			digdug::LevelLoader::GetInstance().LoadLevel(scene, "Level2.json", 2);
-		}
-	);
-
-	minigin::SceneManager::GetInstance().CreateScene
-	(
-		[](minigin::Scene& scene)
-		{
-			digdug::LevelLoader::GetInstance().LoadLevel(scene, "Level3.json", 2);
-		}
-	);
-
+	minigin::Renderer::GetInstance().SetBackgroundColor(SDL_Color{ 0, 0, 50, 255 });
 }
 
 int main(int, char*[])
@@ -349,6 +329,8 @@ int main(int, char*[])
 	digdug::LevelLoader::GetInstance().Init(data_location/"Levels");
 	minigin::Minigin engine(data_location, 1080, 820);
 	engine.Run(LoadAllScenes);
+
+	digdug::GameManager::GetInstance().Quit();
 
     return 0;
 }

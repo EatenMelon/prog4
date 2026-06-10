@@ -88,9 +88,11 @@ add_executable(${GAME_NAME} ${TARGET_PARAM}
     "${UTILITY_DIR}/EnemyBehaviorState.cpp"
     "${UTILITY_DIR}/Attack.cpp"
     "${UTILITY_DIR}/LevelLoader.cpp"
+    "${UTILITY_DIR}/GameManager.cpp"
 
     "${INPUT_DIR}/GridMoveCmd.cpp"
-    "Game/Input/HarpoonCmd.cpp"
+    "${INPUT_DIR}/HarpoonCmd.cpp"
+    "${INPUT_DIR}/JoinGameCmd.cpp"
 )
 
 target_compile_features(${GAME_NAME} PUBLIC cxx_std_20)

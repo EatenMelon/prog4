@@ -19,8 +19,6 @@ void digdug::Harpoon::Start()
 		throw std::runtime_error("Harpoon is not equiped on any game object!");
 	}
 
-	GetOwner().SetParent(m_User);
-
 	m_RenderCompUser = m_User->GetComponent<minigin::RenderComponent>();
 
 	if (m_RenderCompUser != nullptr)
@@ -149,6 +147,7 @@ void digdug::Harpoon::OnNotify(const minigin::IEvent& event)
 void digdug::Harpoon::EquipOnUser(minigin::GameObject& user)
 {
 	m_User = &user;
+	GetOwner().SetParent(m_User);
 }
 
 void digdug::Harpoon::SetHarpoonSprite(const std::string& path)

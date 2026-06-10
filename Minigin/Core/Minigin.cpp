@@ -130,8 +130,8 @@ minigin::Minigin::~Minigin()
 
 void minigin::Minigin::Run(const std::function<void()>& load)
 {
-	load();
 	SceneManager::GetInstance().SetActiveScene(0);
+	load();
 	
 	const int fps{ 60 };
 

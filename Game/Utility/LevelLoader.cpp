@@ -19,6 +19,10 @@
 #include <Inflatable.h>
 #include <EnemyBehavior.h>
 
+#include <HealthComponent.h>
+#include <ScoreComponent.h>
+#include <Harpoon.h>
+
 using Json = nlohmann::json;
 
 void digdug::LevelLoader::Init(const std::filesystem::path& root)
@@ -82,6 +86,15 @@ bool digdug::LevelLoader::AddLevel(const std::string& file)
 		newLevel.enemies.push_back(newEnemy);
 	}
 
+	for (const auto& obj : jsonFile[JsonLevelKeys::PlayerSpawnPoints])
+	{
+		glm::ivec2 pos{};
+		pos.x = obj[JsonLevelKeys::AxisX];
+		pos.y = obj[JsonLevelKeys::AxisY];
+
+		newLevel.playerSpawnPositions.push_back(pos);
+	}
+
 	if (newLevel.tunnels.empty() && newLevel.enemies.empty())
 	{
 		std::cout << "ERROR: failed to add level: " << path << " => level was empty!\n";
@@ -125,6 +138,10 @@ void digdug::LevelLoader::LoadLevel(minigin::Scene& scene, const std::string& fi
 	{
 		AddEnemy(scene, dirtGrid, enemy);
 	}
+
+	if (level.playerSpawnPositions.empty()) return;
+
+	AddPlayer(scene, dirtGrid, level.playerSpawnPositions.front());
 	
 }
 
@@ -160,7 +177,7 @@ digdug::DirtGrid* digdug::LevelLoader::AddDirtGrid(minigin::Scene& scene, float 
 	return grid;
 }
 
-void digdug::LevelLoader::AddEnemy(minigin::Scene& scene, DirtGrid* grid, const EnemyData& enemyData)
+minigin::GameObject* digdug::LevelLoader::AddEnemy(minigin::Scene& scene, DirtGrid* grid, const EnemyData& enemyData)
 {
 	auto obj = std::make_unique<minigin::GameObject>();
 
@@ -168,14 +185,14 @@ void digdug::LevelLoader::AddEnemy(minigin::Scene& scene, DirtGrid* grid, const 
 	if (renderComp == nullptr)
 	{
 		std::cout << "WARNING: LevelLoader::AddEnemy, failed to add enemy to scene, couldn't add render component!\n";
-		return;
+		return nullptr;
 	}
 
 	const auto& itr = m_SpritesMap.find(enemyData.type);
 	if (itr == m_SpritesMap.end())
 	{
 		std::cout << "WARNING: LevelLoader::AddEnemy, failed to add enemy to scene, couldn't matching sprites for enemy type!\n";
-		return;
+		return nullptr;
 	}
 
 	const auto& sprites = itr->second;
@@ -186,7 +203,7 @@ void digdug::LevelLoader::AddEnemy(minigin::Scene& scene, DirtGrid* grid, const 
 	if (aimComp == nullptr)
 	{
 		std::cout << "WARNING: LevelLoader::AddEnemy, failed to add enemy to scene, couldn't add aim component!\n";
-		return;
+		return nullptr;
 	}
 
 	aimComp->LockAxis(glm::bvec2{ false, true });
@@ -195,7 +212,7 @@ void digdug::LevelLoader::AddEnemy(minigin::Scene& scene, DirtGrid* grid, const 
 	if (hitbox == nullptr)
 	{
 		std::cout << "WARNING: LevelLoader::AddEnemy, failed to add enemy to scene, couldn't add hitbox component!\n";
-		return;
+		return nullptr;
 	}
 
 	hitbox->SetBounds(renderComp->GetSize());
@@ -204,7 +221,7 @@ void digdug::LevelLoader::AddEnemy(minigin::Scene& scene, DirtGrid* grid, const 
 	if (inflatable == nullptr)
 	{
 		std::cout << "WARNING: LevelLoader::AddEnemy, failed to add enemy to scene, couldn't add render component!\n";
-		return;
+		return nullptr;
 	}
 
 	inflatable->SetSpriteSheet(sprites.inflatingSpite);
@@ -213,11 +230,14 @@ void digdug::LevelLoader::AddEnemy(minigin::Scene& scene, DirtGrid* grid, const 
 	if (enemy == nullptr)
 	{
 		std::cout << "WARNING: LevelLoader::AddEnemy, failed to add enemy to scene, couldn't add enemy component!\n";
-		return;
+		return nullptr;
 	}
 
 	enemy->SetDefaultSprite(sprites.solidSprite);
 	enemy->SetGhostSprite(sprites.ghostSprite);
+
+	// TODO
+	//enemy->AddPossibleTarget();
 
 	switch (enemyData.type)
 	{
@@ -235,11 +255,88 @@ void digdug::LevelLoader::AddEnemy(minigin::Scene& scene, DirtGrid* grid, const 
 	if (enemyBehavior == nullptr)
 	{
 		std::cout << "WARNING: LevelLoader::AddEnemy, failed to add enemy to scene, couldn't add enemy behavior component!\n";
-		return;
+		return nullptr;
 	}
 
 	enemyBehavior->SetGrid(grid);
 	enemyBehavior->SetPositionInGrid(enemyData.position);
 
+	auto ref = obj.get();
 	scene.Add(std::move(obj));
+
+	return ref;
+}
+
+minigin::GameObject* digdug::LevelLoader::AddPlayer(minigin::Scene& scene, DirtGrid* grid, const glm::ivec2 position)
+{
+	auto playerObj = std::make_unique<minigin::GameObject>();
+	{
+		auto renderComp = playerObj->AddComponent<minigin::RenderComponent>();
+		if (renderComp == nullptr)
+		{
+			std::cout << "WARNING: LevelLoader::AddPlayer, failed to add player to scene, couldn't add render component!\n";
+			return nullptr;
+		}
+
+		renderComp->SetTexture("Sprites/Characters/TaizoHori.png");
+		renderComp->MatchWidth(grid->GetCellSize());
+
+		auto aimComp = playerObj->AddComponent<digdug::AimComponent>();
+		if (aimComp == nullptr)
+		{
+			std::cout << "WARNING: LevelLoader::AddPlayer, failed to add player to scene, couldn't add aim component to player!\n";
+			return nullptr;
+		}
+
+		auto hitbox = playerObj->AddComponent<minigin::Hitbox>();
+		if (hitbox == nullptr)
+		{
+			std::cout << "WARNING: LevelLoader::AddPlayer, failed to add player to scene, couldn't add hitbox component to player!\n";
+			return nullptr;
+		}
+
+		hitbox->SetBounds(renderComp->GetSize());
+
+		auto healthComp = playerObj->AddComponent<digdug::HealthComponent>();
+		if (healthComp == nullptr)
+		{
+			std::cout << "WARNING: LevelLoader::AddPlayer, failed to add player to scene, couldn't add hitbox component to player!\n";
+			return nullptr;
+		}
+
+		auto scoreComp = playerObj->AddComponent<digdug::ScoreComponent>();
+		if (scoreComp == nullptr)
+		{
+			std::cout << "WARNING: LevelLoader::AddPlayer, failed to add player to scene, couldn't add hitbox component to player!\n";
+			return nullptr;
+		}
+	}
+
+	const auto localPos = grid->GetCellLocalPos(position);
+	playerObj->SetLocalPosition(localPos);
+
+	auto harpoonObj = std::make_unique<minigin::GameObject>();
+	{
+		auto harpoonComp = harpoonObj->AddComponent<digdug::Harpoon>();
+		if (harpoonComp == nullptr)
+		{
+			std::cout << "WARNING: LevelLoader::AddPlayer, failed to add player to scene, couldn't add harpoon component to harpoon!\n";
+			return nullptr;
+		}
+
+		harpoonComp->EquipOnUser(*playerObj.get());
+
+		auto hitbox = harpoonObj->AddComponent<minigin::Hitbox>();
+		if (hitbox == nullptr)
+		{
+			std::cout << "WARNING: LevelLoader::AddPlayer, failed to add player to scene, couldn't add hitbox component to harpoon!\n";
+			return nullptr;
+		}
+	}
+
+	auto ref = playerObj.get();
+	scene.Add(std::move(harpoonObj));
+	scene.Add(std::move(playerObj));
+
+	return ref;
 }

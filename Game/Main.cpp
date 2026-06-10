@@ -295,10 +295,6 @@ static void LoadTestScene(minigin::Scene& scene)
 
 static void LoadAllScenes()
 {
-	digdug::LevelLoader::GetInstance().AddLevel("Level1.json");
-	digdug::LevelLoader::GetInstance().AddLevel("Level2.json");
-	digdug::LevelLoader::GetInstance().AddLevel("Level3.json");
-
 	minigin::SceneManager::GetInstance().CreateScene(LoadTestScene);
 
 	minigin::SceneManager::GetInstance().CreateScene

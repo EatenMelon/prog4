@@ -137,8 +137,9 @@ void digdug::EnemyWanderState::SelectTarget()
 bool digdug::EnemyWanderState::CanAttack()
 {
 	const auto dir = GetEnemy()->GetAimComponent()->GetDirectionAsVector();
+	const auto gridPos = GetEnemyGridPos();
 
-	return GetGrid()->HasBeenDug(m_CurrentGridPos + dir) && GetEnemy()->HasAttack();
+	return GetGrid()->HasBeenDug(gridPos + dir) && GetEnemy()->HasAttack();
 }
 
 digdug::EnemyFrozenState::EnemyFrozenState(Enemy* enemy, DirtGrid* grid)

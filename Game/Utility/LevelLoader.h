@@ -23,7 +23,12 @@ namespace digdug::JsonLevelKeys
 	constexpr std::string_view Fygar{ "Fygar" };
 	constexpr std::string_view Pooka{ "Pooka" };
 
-	constexpr std::string_view PlayerSpawnPoints{ "SpawnPoints" };
+	constexpr std::string_view PlayerSpawnPoints{ "spawn_points" };
+}
+
+namespace mingin
+{
+	class GameObject;
 }
 
 namespace digdug
@@ -56,7 +61,7 @@ namespace digdug
 		{
 			std::vector<TunnelData> tunnels{};
 			std::vector<EnemyData> enemies{};
-			//std::vector<glm::ivec2> playerSpawnPositions{};
+			std::vector<glm::ivec2> playerSpawnPositions{};
 		};
 
 		struct SpritePack
@@ -64,8 +69,8 @@ namespace digdug
 			SpritePack(const std::string& solid, const std::string& ghost, const std::string& inflating)
 				: solidSprite{ solid }, ghostSprite{ ghost }, inflatingSpite{ inflating } { }
 
-			std::string ghostSprite{};
 			std::string solidSprite{};
+			std::string ghostSprite{};
 			std::string inflatingSpite{};
 		};
 
@@ -92,7 +97,8 @@ namespace digdug
 		};
 
 		DirtGrid* AddDirtGrid(minigin::Scene& scene, float cellSize);
-		void AddEnemy(minigin::Scene& scene, DirtGrid* grid, const EnemyData& enemyData);
+		minigin::GameObject* AddEnemy(minigin::Scene& scene, DirtGrid* grid, const EnemyData& enemyData);
+		minigin::GameObject* AddPlayer(minigin::Scene& scene, DirtGrid* grid, const glm::ivec2 position);
 
 		std::filesystem::path m_Root{};
 		std::unordered_map<std::string, LevelData> m_Levels{};

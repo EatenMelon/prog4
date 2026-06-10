@@ -37,6 +37,10 @@ namespace minigin
 namespace digdug
 {
 	class DirtGrid;
+
+	// An event that is called when everything from a level has been successfully loaded into a scene.
+	// Passing the grid as well as all the players and enemies that have been spawned,
+	// this mostly ensures that GetComponent will be safe to use on anything enemy/player specific.
 	class LevelLoadedEvent final : public minigin::PlainEvent
 	{
 	public:
@@ -48,6 +52,8 @@ namespace digdug
 		);
 
 		DirtGrid* GetDirtGrid() const { return m_Grid; }
+		const std::vector<minigin::GameObject*>& GetPlayers() const { return m_Players; }
+		const std::vector<minigin::GameObject*>& GetEnemies() const { return m_Enemies; }
 
 	private:
 		DirtGrid* m_Grid{ nullptr };

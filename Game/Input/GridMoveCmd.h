@@ -3,15 +3,19 @@
 #include <Command.h>
 #include <DirtGrid.h>
 #include <glm/glm.hpp>
+#include <Observer.h>
 
 namespace digdug
 {
 	class AimComponent;
-	class GridMoveCmd final : public minigin::ActorCommand
+	class GridMoveCmd final : public minigin::ActorCommand, public minigin::IObserver
 	{
 	public:
 		GridMoveCmd(minigin::GameObject* pActor, int playerID, DirtGrid& grid, float speed, bool canDig = true);
-		void SetGridPosition(const glm::ivec2& gridPos);
+		void SetGridPosition(const glm::ivec2& gridPos, bool isStartPos = true);
+		void Respawn();
+
+		void OnNotify(const minigin::IEvent& event) override;
 
 	protected:
 		void ActorExecute(const minigin::InputContext& context, float deltaTime) override;
@@ -21,11 +25,15 @@ namespace digdug
 		void SelectNewTarget(const glm::vec2& axis);
 		void UpdateAimComponent(const glm::vec2& axis);
 
+		unsigned int m_TookDamageHash{ 0 };
+
 		DirtGrid* m_Grid{ nullptr };
 		AimComponent* m_AimComp{ nullptr };
 
 		float m_MovementSpeed{ 1.f };
 		bool m_CanDig{ false };
+
+		glm::ivec2 m_StartPos{ 0, 0 };
 
 		glm::ivec2 m_PosInGrid{ 0, 0 };
 		glm::ivec2 m_TargetGridPos{ 0, 0 };

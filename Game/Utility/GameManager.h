@@ -8,6 +8,7 @@
 
 #include <LevelLoader.h>
 #include <DirtGrid.h>
+#include <HealthComponent.h>
 
 namespace minigin
 {
@@ -38,16 +39,22 @@ namespace digdug
 		void JoinPlayer(int playerId);
 
 	private:
+		void WipeGameData();
+
 		void LoadStartMenu(minigin::Scene& scene);
 		Button* AddButton(minigin::Scene& scene, const std::string& text, std::function<void()> onSubmit);
 		
 		void NextLevel();
 		void HandleLoadedEvent(const LevelLoadedEvent& event);
+		void HandleDamageEvent(const ReceivedDamageEvent& event);
+		void EvaluateLivingPlayers();
 
 		void AssignCommandsToPlayers();
 
 		void PossessPlayer(int playerId, size_t objIdx);
 		void PossessEnemy(int playerId);
+
+		void StartWatchingPlayers();
 
 		void AddDisplays(minigin::Scene& scene);
 		minigin::GameObject* AddScoreDisplay(minigin::Scene& scene, minigin::GameObject* obj, size_t index, int score);
@@ -63,10 +70,12 @@ namespace digdug
 
 		unsigned int m_LevelLoadedHash{ 0 };
 		unsigned int m_EnemyPoppedHash{ 0 };
+		unsigned int m_PlayerTookDamageHash{ 0 };
 
 		DirtGrid* m_Gird{ nullptr };
-		std::vector<EnemyBehavior*> m_Enemies{};
 		EnemyBehavior* m_EnemyPlayer{ nullptr };
+		std::vector<EnemyBehavior*> m_Enemies{};
+		int m_PlayersAlive{ 0 };
 
 		std::unordered_map<int, size_t> m_Players{};
 		std::unordered_map<int, int> m_PlayerScores{};

@@ -3,6 +3,7 @@
 #include <Observer.h>
 #include "Events.h"
 #include <string>
+#include <Subject.h>
 
 namespace minigin
 {
@@ -20,15 +21,35 @@ namespace digdug
 		void OnNotify(const minigin::IEvent& event) override;
 
 		void LinkTextComponent(minigin::TextComponent* comp, const std::string& message);
+
 		int GetHealth() const { return m_Health; }
+
+		minigin::Subject& TookDamageEvent() { return m_TookDamageEvent; };
 
 	private:
 		void UpdateDisplay();
 
+		minigin::Subject m_TookDamageEvent{};
+
 		minigin::TextComponent* m_Display{ nullptr };
 		std::string m_Message{};
 
-		int m_Health{ 3 };
+		int m_Health{ 0 };
+		const int m_MaxHealth{ 3 };
 		unsigned int m_HitEventHash{ 0 };
+	};
+
+	class ReceivedDamageEvent final : public minigin::PlainEvent
+	{
+	public:
+		ReceivedDamageEvent(digdug::HealthComponent* victim)
+			: minigin::PlainEvent("ReceivedDamage")
+			, m_Victim{ victim }
+		{  }
+
+		digdug::HealthComponent* GetVictim() const { return m_Victim; }
+
+	private:
+		digdug::HealthComponent* m_Victim{};
 	};
 }

@@ -1,7 +1,9 @@
 #include "GridMoveCmd.h"
 #include <algorithm>
 #include <RenderComponent.h>
+
 #include <AimComponent.h>
+#include <HealthComponent.h>
 
 digdug::GridMoveCmd::GridMoveCmd(minigin::GameObject* pActor, int playerID, DirtGrid& grid, float speed, bool canDig)
 	: ActorCommand(pActor, playerID)
@@ -29,13 +31,36 @@ digdug::GridMoveCmd::GridMoveCmd(minigin::GameObject* pActor, int playerID, Dirt
 	{
 		std::cout << "INFO: GridMoveCmd::GridMoveCmd couldn't find AimComponent.\n";
 	}
+
+	ReceivedDamageEvent event{ nullptr };
+	m_TookDamageHash = event.GetEventHash();
+
+	auto healthComp = GetActor().GetComponent<digdug::HealthComponent>();
+	if (healthComp == nullptr) return;
+
+	healthComp->TookDamageEvent().Subscribe(this);
 }
 
-void digdug::GridMoveCmd::SetGridPosition(const glm::ivec2& gridPos)
+void digdug::GridMoveCmd::SetGridPosition(const glm::ivec2& gridPos, bool isStartPos)
 {
 	m_PosInGrid = gridPos;
 	m_TargetGridPos = m_PosInGrid;
 	GetActor().SetLocalPosition(m_Grid->GetCellLocalPos(m_PosInGrid));
+
+	if (!isStartPos) return;
+	m_StartPos = gridPos;
+}
+
+void digdug::GridMoveCmd::Respawn()
+{
+	SetGridPosition(m_StartPos, false);
+}
+
+void digdug::GridMoveCmd::OnNotify(const minigin::IEvent& event)
+{
+	if (event.GetEventHash() != m_TookDamageHash) return;
+
+	Respawn();
 }
 
 void digdug::GridMoveCmd::ActorExecute(const minigin::InputContext& context, float deltaTime)

@@ -4,30 +4,42 @@
 #include <iostream>
 
 #include <TextComponent.h>
+#include <GameObject.h>
 #include <Events.h>
+#include <Hitbox.h>
 
-#include <ServiceLocator.h>
+#include <KillingComponent.h>
 
 void digdug::HealthComponent::Start()
 {
 	minigin::HitEvent event{ nullptr };
 	m_HitEventHash = minigin::PlainEvent::CreateHashSDBM(event.GetEventName());
 
+	auto hitbox = GetOwner().GetComponent<minigin::Hitbox>();
+	if (hitbox != nullptr)
+	{
+		hitbox->HitEnterEvent().Subscribe(this);
+	}
+
+	m_Health = m_MaxHealth;
 	UpdateDisplay();
 }
 
 void digdug::HealthComponent::OnNotify(const minigin::IEvent& event)
 {
-	if (event.GetEventHash() != m_HitEventHash)
-	{
-		return;
-	}
+	if (event.GetEventHash() != m_HitEventHash) return;
+
+	auto hitEvent = static_cast<const minigin::HitEvent*>(&event);
+
+	auto killComp = hitEvent->Who()->GetOwner().GetComponent<digdug::KillingComponent>();
+	if (killComp == nullptr) return;
+	if (!killComp->IsTarget(KillingComponent::Target::Player)) return;
 
 	--m_Health;
-
-	minigin::ServiceLocator::GetSoundSystem()->Play("Sound/GameOver.mp3", 0.01f);
-
 	UpdateDisplay();
+
+	ReceivedDamageEvent tookDmgEvent{ this };
+	m_TookDamageEvent.Notify(tookDmgEvent);
 }
 
 void digdug::HealthComponent::LinkTextComponent(minigin::TextComponent* comp, const std::string& message)
@@ -42,10 +54,7 @@ void digdug::HealthComponent::LinkTextComponent(minigin::TextComponent* comp, co
 
 void digdug::HealthComponent::UpdateDisplay()
 {
-	if (m_Display == nullptr)
-	{
-		return;
-	}
+	if (m_Display == nullptr) return;
 
 	try
 	{

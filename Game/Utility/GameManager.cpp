@@ -15,7 +15,6 @@
 #include <Harpoon.h>
 #include <Inflatable.h>
 #include <ScoreComponent.h>
-#include <HealthComponent.h>
 
 #include <JoinGameCmd.h>
 #include <GridMoveCmd.h>
@@ -27,10 +26,7 @@
 
 void digdug::GameManager::Init()
 {
-	m_Gird = nullptr;
-	m_PlayerObjects.clear();
-	m_Players.clear();
-	m_Enemies.clear();
+	WipeGameData();
 
 	m_SceneIds.clear();
 
@@ -58,6 +54,9 @@ void digdug::GameManager::Init()
 	InflatablePoppedEvent poppedEvent{ nullptr };
 	m_EnemyPoppedHash = poppedEvent.GetEventHash();
 
+	ReceivedDamageEvent damagedEvent{ nullptr };
+	m_PlayerTookDamageHash = damagedEvent.GetEventHash();
+
 	LevelLoader::GetInstance().OnLevelLoadedEvent().Subscribe(this);
 
 	m_JoinCommand = std::make_shared<JoinGameCmd>();
@@ -78,10 +77,7 @@ void digdug::GameManager::ToMainMenu()
 
 void digdug::GameManager::StartGame(GameMode gameMode)
 {
-	m_Gird = nullptr;
-	m_PlayerObjects.clear();
-	m_Players.clear();
-	m_Enemies.clear();
+	WipeGameData();
 
 	if (gameMode == GameMode::None)
 	{
@@ -89,7 +85,6 @@ void digdug::GameManager::StartGame(GameMode gameMode)
 		return;
 	}
 
-	m_CurrentLevel = -1;
 	m_CurrentMode = gameMode;
 	NextLevel();
 }
@@ -163,6 +158,13 @@ void digdug::GameManager::OnNotify(const minigin::IEvent& event)
 
 		return;
 	}
+
+	if (event.GetEventHash() == m_PlayerTookDamageHash)
+	{
+		const auto& dmgEvent = static_cast<const digdug::ReceivedDamageEvent&>(event);
+		HandleDamageEvent(dmgEvent);
+		return;
+	}
 }
 
 void digdug::GameManager::JoinPlayer(int playerId)
@@ -193,6 +195,21 @@ void digdug::GameManager::JoinPlayer(int playerId)
 	m_JoinCommand->Enable(false);
 	AssignCommandsToPlayers();
 	AddDisplays(minigin::SceneManager::GetInstance().GetActiveScene());
+	StartWatchingPlayers();
+}
+
+void digdug::GameManager::WipeGameData()
+{
+	m_Gird = nullptr;
+	m_EnemyPlayer = nullptr;
+	m_PlayersAlive = 0;
+	m_CurrentMode = GameMode::None;
+	m_CurrentLevel = -1;
+
+	m_PlayerScores.clear();
+	m_PlayerObjects.clear();
+	m_Players.clear();
+	m_Enemies.clear();
 }
 
 void digdug::GameManager::LoadStartMenu(minigin::Scene& scene)
@@ -294,10 +311,12 @@ void digdug::GameManager::NextLevel()
 
 	if (m_CurrentLevel >= m_LastLevel)
 	{
+		WipeGameData();
 		minigin::SceneManager::GetInstance().SetActiveScene(m_MainMenuScene);
 		return;
 	}
 
+	m_PlayersAlive = GetRequiredPlayerCount();
 	minigin::SceneManager::GetInstance().SetActiveScene(m_SceneIds[m_CurrentLevel]);
 }
 
@@ -362,6 +381,47 @@ void digdug::GameManager::HandleLoadedEvent(const LevelLoadedEvent& event)
 
 	AssignCommandsToPlayers();
 	AddDisplays(minigin::SceneManager::GetInstance().GetActiveScene());
+	StartWatchingPlayers();
+}
+
+void digdug::GameManager::HandleDamageEvent(const ReceivedDamageEvent& event)
+{
+	auto healthComp = event.GetVictim();
+
+	if (healthComp == nullptr) return;
+	if (healthComp->GetHealth() >= 0) return;
+
+	for (auto [id, idx] : m_Players)
+	{
+		if (m_PlayerObjects[idx].first != &healthComp->GetOwner()) continue;
+		
+		m_PlayerObjects[idx].first->Enable(false);
+		m_PlayerObjects[idx].second->Enable(false);
+		--m_PlayersAlive;
+		EvaluateLivingPlayers();
+		return;
+	}
+
+	if (&m_EnemyPlayer->GetOwner() != &healthComp->GetOwner()) return;
+
+	--m_PlayersAlive;
+	EvaluateLivingPlayers();
+}
+
+void digdug::GameManager::EvaluateLivingPlayers()
+{
+	switch (m_CurrentMode)
+	{
+	case digdug::GameManager::GameMode::Versus:
+		if (m_PlayersAlive > 1) return;
+		break;
+	default:
+		if (m_PlayersAlive > 0) return;
+		break;
+	}
+
+	WipeGameData();
+	minigin::SceneManager::GetInstance().SetActiveScene(m_MainMenuScene);
 }
 
 void digdug::GameManager::AssignCommandsToPlayers()
@@ -427,14 +487,14 @@ void digdug::GameManager::PossessPlayer(int playerId, size_t objIdx)
 		minigin::InputManager::GetInstance().BindInput("move", SDLK_S, minigin::KeyState::Pressed, moveCmd, playerId, minigin::Direction::Down);
 		minigin::InputManager::GetInstance().BindInput("move", SDLK_D, minigin::KeyState::Pressed, moveCmd, playerId, minigin::Direction::Right);
 
-		minigin::InputManager::GetInstance().BindInput("Move", SDLK_SPACE, minigin::KeyState::OnDown, launchCmd, playerId);
-		minigin::InputManager::GetInstance().BindInput("Move", SDLK_SPACE, minigin::KeyState::OnRelease, retractCmd, playerId);
+		minigin::InputManager::GetInstance().BindInput("launch", SDLK_SPACE, minigin::KeyState::OnDown, launchCmd, playerId);
+		minigin::InputManager::GetInstance().BindInput("retract", SDLK_SPACE, minigin::KeyState::OnRelease, retractCmd, playerId);
 		return;
 	}
 
 	minigin::InputManager::GetInstance().BindInput("move", minigin::GamepadJoystick::LEFT_JOYSTICK, 0.5f, moveCmd, playerId);
-	minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::SOUTH, minigin::KeyState::OnDown, launchCmd, playerId);
-	minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::SOUTH, minigin::KeyState::OnRelease, retractCmd, playerId);
+	minigin::InputManager::GetInstance().BindInput("launch", minigin::GamepadButton::SOUTH, minigin::KeyState::OnDown, launchCmd, playerId);
+	minigin::InputManager::GetInstance().BindInput("retract", minigin::GamepadButton::SOUTH, minigin::KeyState::OnRelease, retractCmd, playerId);
 }
 
 void digdug::GameManager::PossessEnemy(int playerId)
@@ -490,6 +550,18 @@ void digdug::GameManager::PossessEnemy(int playerId)
 	}
 
 	minigin::InputManager::GetInstance().BindInput("move", minigin::GamepadJoystick::LEFT_JOYSTICK, 0.5f, moveCmd, playerId);
+}
+
+void digdug::GameManager::StartWatchingPlayers()
+{
+	for (auto [player, harpoon] : m_PlayerObjects)
+	{
+		auto healthComp = player->GetComponent<digdug::HealthComponent>();
+
+		if (healthComp == nullptr) continue;
+
+		healthComp->TookDamageEvent().Subscribe(this);
+	}
 }
 
 void digdug::GameManager::AddDisplays(minigin::Scene& scene)

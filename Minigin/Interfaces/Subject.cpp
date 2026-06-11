@@ -2,6 +2,7 @@
 #include "Observer.h"
 #include "Events.h"
 #include <algorithm>
+#include <iostream>
 
 bool minigin::Subject::Subscribe(minigin::IObserver* subscriber)
 {
@@ -33,6 +34,13 @@ void minigin::Subject::Notify(const IEvent& event)
 {
 	for (auto& observer : m_Observers)
 	{
-		observer->OnNotify(event);
+		try
+		{
+			observer->OnNotify(event);
+		}
+		catch (const std::exception& e)
+		{
+			std::cout << "ERROR: Subject::Notify, " << e.what() << "\n";
+		}
 	}
 }

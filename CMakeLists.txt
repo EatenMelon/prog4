@@ -84,6 +84,7 @@ add_executable(${GAME_NAME} ${TARGET_PARAM}
     "${COMPONENTS_DIR}/FireBreath.cpp"
     "${COMPONENTS_DIR}/ObjectSelector.cpp"
     "${COMPONENTS_DIR}/Button.cpp"
+    "${COMPONENTS_DIR}/KillingComponent.cpp"
 
     "${UTILITY_DIR}/DirtCell.cpp"
     "${UTILITY_DIR}/HarpoonState.cpp"

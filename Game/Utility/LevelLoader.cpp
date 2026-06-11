@@ -18,6 +18,7 @@
 #include <Attack.h>
 #include <Inflatable.h>
 #include <EnemyBehavior.h>
+#include <KillingComponent.h>
 
 #include <HealthComponent.h>
 #include <ScoreComponent.h>
@@ -275,6 +276,15 @@ minigin::GameObject* digdug::LevelLoader::AddEnemy(minigin::Scene& scene, DirtGr
 		std::cout << "WARNING: LevelLoader::AddEnemy, failed to add enemy to scene, couldn't add hitbox component!\n";
 		return nullptr;
 	}
+
+	auto killComp = obj->AddComponent<digdug::KillingComponent>();
+	if (killComp == nullptr)
+	{
+		std::cout << "WARNING: LevelLoader::AddEnemy, failed to add enemy to scene, couldn't add killing component!\n";
+		return nullptr;
+	}
+
+	killComp->AddTarget(KillingComponent::Target::Player);
 
 	hitbox->SetBounds(renderComp->GetSize());
 

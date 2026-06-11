@@ -68,6 +68,7 @@ bool minigin::Hitbox::IsColliding(const Hitbox& other) const
 
 void minigin::Hitbox::CheckCollision(Hitbox& other)
 {
+	if (!GetOwner().Enabled()) return;
 	if (!Enabled()) return;
 
 	bool isColliding = IsColliding(other);

@@ -266,7 +266,7 @@ void digdug::GameManager::AssignCommandsToPlayers()
 		return;
 	}
 
-	int possessedPlayers{ 0 };
+	size_t possessedPlayers{ 0 };
 	for (const auto [id, objIndex] : m_Players)
 	{
 		if (possessedPlayers >= m_PlayerObjects.size())

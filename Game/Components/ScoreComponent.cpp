@@ -26,11 +26,21 @@ void digdug::ScoreComponent::OnNotify(const minigin::IEvent& event)
 	UpdateDisplay();
 }
 
-void digdug::ScoreComponent::LinkTextComponent(minigin::TextComponent* comp)
+void digdug::ScoreComponent::LinkTextComponent(minigin::TextComponent* comp, const std::string& message)
 {
 	if (comp == nullptr) return;
 
 	m_Display = comp;
+	m_Message = message;
+
+	UpdateDisplay();
+}
+
+void digdug::ScoreComponent::SetScore(int score)
+{
+	m_Score = score;
+	
+	UpdateDisplay();	
 }
 
 void digdug::ScoreComponent::UpdateDisplay()
@@ -43,13 +53,13 @@ void digdug::ScoreComponent::UpdateDisplay()
 	try
 	{
 		std::stringstream ss{};
-		ss << "Score: " << m_Score;
+		ss << m_Message << m_Score;
 
 		m_Display->SetText(ss.str());
 	}
 	catch (const std::exception& e)
 	{
-		std::cerr << "Score component: " << e.what() << "\n";
+		std::cerr << m_Message << e.what() << "\n";
 	}
 
 }

@@ -49,14 +49,13 @@ namespace digdug
 		void PossessPlayer(int playerId, size_t objIdx);
 		void PossessEnemy(int playerId);
 
-		//void AddDisplays(minigin::Scene& scene);
-		//void AddScoreDisplay(minigin::Scene& scene, minigin::GameObject* obj);
-		//void AddHealthDisplay(minigin::Scene& scene, minigin::GameObject* obj);
+		void AddDisplays(minigin::Scene& scene);
+		minigin::GameObject* AddScoreDisplay(minigin::Scene& scene, minigin::GameObject* obj, size_t index, int score);
+		minigin::GameObject* AddHealthDisplay(minigin::Scene& scene, minigin::GameObject* obj, size_t index);
 
 		GameMode m_CurrentMode{ GameMode::None };
 
 		size_t m_MainMenuScene{ 0 };
-		//size_t m_ScoreboardScene{ 0 };
 
 		int m_CurrentLevel{ -1 };
 		const int m_LastLevel{ 3 };
@@ -70,6 +69,7 @@ namespace digdug
 		EnemyBehavior* m_EnemyPlayer{ nullptr };
 
 		std::unordered_map<int, size_t> m_Players{};
+		std::unordered_map<int, int> m_PlayerScores{};
 		std::vector<std::pair<minigin::GameObject*, Harpoon*>> m_PlayerObjects{};
 
 		std::shared_ptr<JoinGameCmd> m_JoinCommand{};

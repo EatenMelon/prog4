@@ -18,13 +18,15 @@ namespace digdug
 		void Start() override;
 		void OnNotify(const minigin::IEvent& event) override;
 
-		void LinkTextComponent(minigin::TextComponent* comp);
+		void LinkTextComponent(minigin::TextComponent* comp, const std::string& message);
 		int GetScore() const { return m_Score; }
+		void SetScore(int score);
 
 	private:
 		void UpdateDisplay();
 
 		minigin::TextComponent* m_Display{ nullptr };
+		std::string m_Message{};
 
 		int m_Score{ 0 };
 		unsigned int m_HitEventHash{ 0 };

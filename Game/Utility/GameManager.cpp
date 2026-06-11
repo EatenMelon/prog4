@@ -14,14 +14,16 @@
 #include <Enemy.h>
 #include <Harpoon.h>
 #include <Inflatable.h>
+#include <ScoreComponent.h>
+#include <HealthComponent.h>
 
 #include <JoinGameCmd.h>
 #include <GridMoveCmd.h>
 #include <HarpoonCmd.h>
+#include <SelectorCmds.h>
 
 #include <ObjectSelector.h>
 #include <Button.h>
-#include <SelectorCmds.h>
 
 void digdug::GameManager::Init()
 {
@@ -39,12 +41,11 @@ void digdug::GameManager::Init()
 	{
 		minigin::SceneManager::GetInstance().CreateScene
 		(
-			[level/*, this*/](minigin::Scene& scene)
+			[level, this](minigin::Scene& scene)
 			{
 				const std::string file{ "Level" + std::to_string(level) + ".json" };
 				const int requiredPlayers{ GetInstance().GetRequiredPlayersObjects() };
 				digdug::LevelLoader::GetInstance().LoadLevel(scene, file, requiredPlayers);
-				//AddDisplays(scene);
 			}
 		);
 
@@ -191,6 +192,7 @@ void digdug::GameManager::JoinPlayer(int playerId)
 
 	m_JoinCommand->Enable(false);
 	AssignCommandsToPlayers();
+	AddDisplays(minigin::SceneManager::GetInstance().GetActiveScene());
 }
 
 void digdug::GameManager::LoadStartMenu(minigin::Scene& scene)
@@ -359,6 +361,7 @@ void digdug::GameManager::HandleLoadedEvent(const LevelLoadedEvent& event)
 	}
 
 	AssignCommandsToPlayers();
+	AddDisplays(minigin::SceneManager::GetInstance().GetActiveScene());
 }
 
 void digdug::GameManager::AssignCommandsToPlayers()
@@ -469,6 +472,8 @@ void digdug::GameManager::PossessEnemy(int playerId)
 		enemyPlayer = &m_Enemies.front()->GetOwner();
 	}
 
+	m_EnemyPlayer->GetOwner().AddComponent<digdug::HealthComponent>();
+
 	auto renderComp = enemyPlayer->GetComponent<minigin::RenderComponent>();
 	auto pos = enemyPlayer->GetLocalPosition() + glm::vec3(renderComp->GetSize() / 2.f, 0);
 
@@ -487,16 +492,112 @@ void digdug::GameManager::PossessEnemy(int playerId)
 	minigin::InputManager::GetInstance().BindInput("move", minigin::GamepadJoystick::LEFT_JOYSTICK, 0.5f, moveCmd, playerId);
 }
 
-//void digdug::GameManager::AddDisplays(minigin::Scene& scene)
-//{
-//	//for(auto player)
-//
-//}
-//
-//void digdug::GameManager::AddScoreDisplay(minigin::Scene& scene, minigin::GameObject* obj)
-//{
-//}
-//
-//void digdug::GameManager::AddHealthDisplay(minigin::Scene& scene, minigin::GameObject* obj)
-//{
-//}
+void digdug::GameManager::AddDisplays(minigin::Scene& scene)
+{
+	std::vector<minigin::GameObject*> displays{};
+
+	size_t spawned{ 0 };
+	for (auto [id, objIdx] : m_Players)
+	{
+		if (spawned >= m_PlayerObjects.size())
+		{
+			auto health = AddHealthDisplay(scene, &m_EnemyPlayer->GetOwner(), spawned);
+
+			if (health == nullptr) continue;
+			displays.push_back(health);
+
+			continue;
+		}
+
+		auto itr = m_PlayerScores.find(id);
+		if (itr == m_PlayerScores.end())
+		{
+			m_PlayerScores.emplace(id, 0);
+			itr = m_PlayerScores.find(id);
+		}
+		auto obj = m_PlayerObjects[objIdx].first;
+
+		auto health = AddHealthDisplay(scene, obj, spawned);
+		if (health == nullptr) continue;
+		displays.push_back(health);
+
+		auto score = AddScoreDisplay(scene, obj, spawned, itr->second);
+		if (score == nullptr) continue;
+		displays.push_back(score);
+
+		++spawned;
+	}
+
+	auto board = std::make_unique<minigin::GameObject>();
+	for (auto display : displays)
+	{
+		display->SetParent(board.get());
+	}
+
+	const float x{ m_Gird->GetSize().x + 50.f };
+
+	board->SetLocalPosition(x, 100.f, 0.f);
+	scene.Add(std::move(board));
+}
+
+minigin::GameObject* digdug::GameManager::AddScoreDisplay(minigin::Scene& scene, minigin::GameObject* obj, size_t index, int score)
+{
+	constexpr uint8_t textSize{ 24 };
+	auto font = minigin::ResourceManager::GetInstance().LoadFont("Fonts/Lingua.otf", textSize);
+
+	auto scoreComp = obj->GetComponent<digdug::ScoreComponent>();
+	if (scoreComp == nullptr) return nullptr;
+
+	scoreComp->SetScore(score);
+
+	constexpr float gap{ 100.f };
+	const float y{ index * gap + textSize };
+	
+	auto display = std::make_unique<minigin::GameObject>();
+	display->AddComponent<minigin::RenderComponent>();
+	display->SetLocalPosition(0.f, y, 0.f);
+
+	auto textComp = display->AddComponent<minigin::TextComponent>();
+	textComp->SetFont(font);
+	textComp->SetText("...");
+
+	if (textComp == nullptr) return nullptr;
+
+	scoreComp->LinkTextComponent(textComp, "Score P" + std::to_string(index) + ":   ");
+	index;
+
+	auto ref = display.get();
+	scene.Add(std::move(display));
+	return ref;
+}
+
+minigin::GameObject* digdug::GameManager::AddHealthDisplay(minigin::Scene& scene, minigin::GameObject* obj, size_t index)
+{
+	constexpr uint8_t textSize{ 24 };
+	auto font = minigin::ResourceManager::GetInstance().LoadFont("Fonts/Lingua.otf", textSize);
+
+	auto healthComp = obj->GetComponent<digdug::HealthComponent>();
+	if (healthComp == nullptr) return nullptr;
+
+	constexpr float gap{ 100.f };
+	const float y{ index * gap };
+
+	auto display = std::make_unique<minigin::GameObject>();
+	display->AddComponent<minigin::RenderComponent>();
+	display->SetLocalPosition(0.f, y, 0.f);
+
+	auto textComp = display->AddComponent<minigin::TextComponent>();
+	textComp->SetFont(font);
+	textComp->SetText("...");
+
+	if (textComp == nullptr) return nullptr;
+
+	const std::string& message{ "Lives P" + std::to_string(index) + ":   "};
+	healthComp->LinkTextComponent(textComp, message);
+	index;
+
+	auto ref = display.get();
+	scene.Add(std::move(display));
+	return ref;
+	return nullptr;
+}

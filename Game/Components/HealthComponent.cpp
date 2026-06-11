@@ -30,11 +30,14 @@ void digdug::HealthComponent::OnNotify(const minigin::IEvent& event)
 	UpdateDisplay();
 }
 
-void digdug::HealthComponent::LinkTextComponent(minigin::TextComponent* comp)
+void digdug::HealthComponent::LinkTextComponent(minigin::TextComponent* comp, const std::string& message)
 {
 	if (comp == nullptr) return;
 
+	m_Message = message;
 	m_Display = comp;
+
+	UpdateDisplay();
 }
 
 void digdug::HealthComponent::UpdateDisplay()
@@ -47,7 +50,7 @@ void digdug::HealthComponent::UpdateDisplay()
 	try
 	{
 		std::stringstream ss{};
-		ss << "Health: " << m_Health;
+		ss << m_Message << m_Health;
 
 		m_Display->SetText(ss.str());
 	}

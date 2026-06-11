@@ -155,7 +155,7 @@ digdug::HarpoonPumpingState::HarpoonPumpingState(Harpoon* harpoon, float extend,
 	m_Inflatable->PoppedEvent().Subscribe(this);
 	m_PumpEvent.Subscribe(m_Inflatable);
 
-	InflatablePoppedEvent event{};
+	InflatablePoppedEvent event{ nullptr };
 	m_PoppedEventHash = event.GetEventHash();
 }
 
@@ -192,10 +192,10 @@ std::unique_ptr<digdug::HarpoonState> digdug::HarpoonPumpingState::Update(float 
 	if (m_TimeUntilNextPump <= 0.f)
 	{
 		// pump
+		m_TimeUntilNextPump = m_PumpDelay;
+
 		PumpInflatableEvent event{ GetHarpoon()->GetUser() };
 		m_PumpEvent.Notify(event);
-
-		m_TimeUntilNextPump = m_PumpDelay;
 	}
 
 	return nullptr;

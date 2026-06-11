@@ -1,7 +1,4 @@
 #include "SceneManager.h"
-#include "SceneManager.h"
-#include "SceneManager.h"
-#include "SceneManager.h"
 #include "Scene.h"
 #include <imgui.h>
 #include <string>
@@ -67,10 +64,10 @@ void minigin::SceneManager::Render() const
 
 void minigin::SceneManager::Cleanup()
 {
-	if (m_ChangedScene) return;
-	if (m_ActiveSceneIdx >= m_scenes.size()) return;
-
-	m_scenes[m_ActiveSceneIdx]->Cleanup();
+	for (auto& scene : m_scenes)
+	{
+		scene->Cleanup();
+	}
 }
 
 bool minigin::SceneManager::SetActiveScene(size_t index)
@@ -80,7 +77,7 @@ bool minigin::SceneManager::SetActiveScene(size_t index)
 
 	if (m_ActiveSceneIdx < m_scenes.size())
 	{
-		m_scenes[m_ActiveSceneIdx]->RemoveAll();
+		m_scenes[m_ActiveSceneIdx]->DestroyAll();
 	}
 
 	m_ActiveSceneIdx = index;

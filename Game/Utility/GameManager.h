@@ -28,6 +28,7 @@ namespace digdug
 		void Quit();
 		void StartGame(GameMode gameMode);
 		int GetRequiredPlayerCount();
+		int GetRequiredPlayersObjects();
 
 		void OnNotify(const minigin::IEvent& event) override;
 		void JoinPlayer(int playerId);
@@ -35,7 +36,11 @@ namespace digdug
 	private:
 		void NextLevel();
 		void HandleLoadedEvent(const LevelLoadedEvent& event);
+
 		void AssignCommandsToPlayers();
+
+		void PossessPlayer(int playerId, size_t objIdx);
+		void PossessEnemy(int playerId);
 
 		GameMode m_CurrentMode{ GameMode::None };
 
@@ -44,9 +49,12 @@ namespace digdug
 		std::vector<size_t> m_SceneIds{};
 
 		unsigned int m_LevelLoadedHash{ 0 };
+		unsigned int m_EnemyPoppedHash{ 0 };
 
 		DirtGrid* m_Gird{ nullptr };
 		std::vector<EnemyBehavior*> m_Enemies{};
+		EnemyBehavior* m_EnemyPlayer{ nullptr };
+
 		std::unordered_map<int, size_t> m_Players{};
 		std::vector<std::pair<minigin::GameObject*, Harpoon*>> m_PlayerObjects{};
 

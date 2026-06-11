@@ -1,5 +1,4 @@
 #include "GameObject.h"
-#include "GameObject.h"
 
 void minigin::GameObject::FixedUpdate(float fixedFrameTime)
 {
@@ -197,10 +196,9 @@ void minigin::GameObject::HandleStartEvents()
 
 		if (it == m_Components.end())
 		{
-			std::cerr << "ERROR: GameObject::Update, unknown object among components!\n";
-			std::cout << "INFO: GameObject::Update, removing unknown object mentioned in previous error!\n";
-			m_Components.erase(it);
+			// in case of instant destroy
 			m_StartQueue.pop();
+			return;
 		}
 
 		if (it->second->Enabled())

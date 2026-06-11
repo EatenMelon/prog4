@@ -1,4 +1,6 @@
 #include "GameManager.h"
+#include <algorithm>
+#include <limits>
 
 #include <SceneManager.h>
 #include <InputManager.h>
@@ -6,7 +8,9 @@
 #include <SDL3/SDL.h>
 
 #include <EnemyBehavior.h>
+#include <Enemy.h>
 #include <Harpoon.h>
+#include <Inflatable.h>
 
 #include <JoinGameCmd.h>
 #include <GridMoveCmd.h>
@@ -29,7 +33,7 @@ void digdug::GameManager::Init()
 			[level](minigin::Scene& scene)
 			{
 				const std::string file{ "Level" + std::to_string(level) + ".json" };
-				const int requiredPlayers{ GetInstance().GetRequiredPlayerCount() };
+				const int requiredPlayers{ GetInstance().GetRequiredPlayersObjects() };
 				digdug::LevelLoader::GetInstance().LoadLevel(scene, file, requiredPlayers);
 			}
 		);
@@ -37,8 +41,11 @@ void digdug::GameManager::Init()
 		m_SceneIds.push_back(minigin::SceneManager::GetInstance().GetSceneCount() - 1);
 	}
 
-	LevelLoadedEvent event{ nullptr, std::vector<minigin::GameObject*>(), std::vector<minigin::GameObject*>() };
-	m_LevelLoadedHash = event.GetEventHash();
+	LevelLoadedEvent loadedEvent{ nullptr, std::vector<minigin::GameObject*>(), std::vector<minigin::GameObject*>() };
+	m_LevelLoadedHash = loadedEvent.GetEventHash();
+
+	InflatablePoppedEvent poppedEvent{ nullptr };
+	m_EnemyPoppedHash = poppedEvent.GetEventHash();
 
 	LevelLoader::GetInstance().OnLevelLoadedEvent().Subscribe(this);
 
@@ -91,12 +98,50 @@ int digdug::GameManager::GetRequiredPlayerCount()
 	}
 }
 
+int digdug::GameManager::GetRequiredPlayersObjects()
+{
+	int count = GetRequiredPlayerCount();
+
+	if (m_CurrentMode == GameMode::Versus)
+	{
+		count /= 2;
+	}
+
+	return count;
+}
+
 void digdug::GameManager::OnNotify(const minigin::IEvent& event)
 {
 	if (event.GetEventHash() == m_LevelLoadedHash)
 	{
 		const auto& loadedEvent = static_cast<const digdug::LevelLoadedEvent&>(event);
 		HandleLoadedEvent(loadedEvent);
+		return;
+	}
+
+	if (event.GetEventHash() == m_EnemyPoppedHash)
+	{
+		const auto& loadedEvent = static_cast<const digdug::InflatablePoppedEvent&>(event);
+		
+		auto itrEnemy = std::find_if
+		(
+			m_Enemies.begin(),
+			m_Enemies.end(),
+			[&](auto e)
+			{
+				return (&e->GetOwner() == loadedEvent.GetPoppedObj());
+			}
+		);
+
+		if (itrEnemy == m_Enemies.end()) return;
+		m_Enemies.erase(itrEnemy);
+
+		std::cout << "enemies: " << m_Enemies.size() << "\n";
+		if (m_Enemies.empty())
+		{
+			NextLevel();
+		}
+
 		return;
 	}
 }
@@ -110,10 +155,19 @@ void digdug::GameManager::JoinPlayer(int playerId)
 	auto itr = m_Players.find(playerId);
 	if (itr != m_Players.end()) return;
 
-	if (m_Players.size() >= m_PlayerObjects.size()) return;
+	if (m_Players.size() >= m_PlayerObjects.size())
+	{
+		// add a enemy player
+		if (m_CurrentMode != GameMode::Versus) return;
 
-	const auto slot = m_Players.size();
-	m_Players.emplace(playerId, slot);
+		constexpr size_t exceedingLimit{ 100 };
+		m_Players.emplace(playerId, exceedingLimit);
+	}
+	else
+	{
+		const auto slot = m_Players.size();
+		m_Players.emplace(playerId, slot);
+	}
 
 	if (static_cast<int>(m_Players.size()) != playersRequired) return;
 
@@ -124,6 +178,12 @@ void digdug::GameManager::JoinPlayer(int playerId)
 void digdug::GameManager::NextLevel()
 {
 	++m_CurrentLevel;
+
+	if (m_CurrentLevel >= m_LastLevel)
+	{
+		m_CurrentLevel = 0;
+	}
+
 	minigin::SceneManager::GetInstance().SetActiveScene(m_SceneIds[m_CurrentLevel]);
 }
 
@@ -192,6 +252,7 @@ void digdug::GameManager::HandleLoadedEvent(const LevelLoadedEvent& event)
 void digdug::GameManager::AssignCommandsToPlayers()
 {
 	const int playersRequired = GetRequiredPlayerCount();
+	const int playerObjectsRequired = GetRequiredPlayersObjects();
 	if (playersRequired <= 0) return;
 	if (m_Players.size() > static_cast<size_t>(playersRequired))
 	{
@@ -199,47 +260,117 @@ void digdug::GameManager::AssignCommandsToPlayers()
 		return;
 	}
 
-	if (m_PlayerObjects.size() < static_cast<size_t>(playersRequired))
+	if (m_PlayerObjects.size() < static_cast<size_t>(playerObjectsRequired))
 	{
 		std::cerr << "ERROR: GameManager::AssignCommandsToPlayers, not enough player objects!\n";
 		return;
 	}
 
+	int possessedPlayers{ 0 };
 	for (const auto [id, objIndex] : m_Players)
 	{
-		auto player = m_PlayerObjects[objIndex].first;
-		auto harpoon = m_PlayerObjects[objIndex].second;
-
-		auto renderComp = player->GetComponent<minigin::RenderComponent>();
-		auto pos = player->GetLocalPosition() + glm::vec3(renderComp->GetSize() / 2.f, 0);
-
-		auto moveCmd = std::make_shared<GridMoveCmd>(player, id, *m_Gird, 250.f, true);
-		moveCmd->SetGridPosition(m_Gird->GetPosInGrid(pos));
-
-		auto launchCmd = std::make_shared<digdug::HarpoonCmd>(id, harpoon, [](digdug::Harpoon* h) { h->Shoot(); });
-		auto retractCmd = std::make_shared<digdug::HarpoonCmd>(id, harpoon, [](digdug::Harpoon* h) { h->Retract(); });
-
-		harpoon->DisableDuringUse(moveCmd.get());
-
-		if (id == minigin::InputManager::GetKeyboardID())
+		if (possessedPlayers >= m_PlayerObjects.size())
 		{
-			minigin::InputManager::GetInstance().BindInput("move", SDLK_W, minigin::KeyState::Pressed, moveCmd, id, minigin::Direction::Up);
-			minigin::InputManager::GetInstance().BindInput("move", SDLK_A, minigin::KeyState::Pressed, moveCmd, id, minigin::Direction::Left);
-			minigin::InputManager::GetInstance().BindInput("move", SDLK_S, minigin::KeyState::Pressed, moveCmd, id, minigin::Direction::Down);
-			minigin::InputManager::GetInstance().BindInput("move", SDLK_D, minigin::KeyState::Pressed, moveCmd, id, minigin::Direction::Right);
-
-			minigin::InputManager::GetInstance().BindInput("Move", SDLK_SPACE, minigin::KeyState::OnDown, launchCmd, id);
-			minigin::InputManager::GetInstance().BindInput("Move", SDLK_SPACE, minigin::KeyState::OnRelease, retractCmd, id);
+			PossessEnemy(id);
 			continue;
 		}
 
-		minigin::InputManager::GetInstance().BindInput("move", minigin::GamepadJoystick::LEFT_JOYSTICK, 0.5f, moveCmd, id);
-		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::SOUTH, minigin::KeyState::OnDown, launchCmd, id);
-		minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::SOUTH, minigin::KeyState::OnRelease, retractCmd, id);
+		PossessPlayer(id, objIndex);
+		++possessedPlayers;
 	}
 
 	for (auto enemy : m_Enemies)
 	{
+		auto inflatable = enemy->GetOwner().GetComponent<Inflatable>();
+		inflatable->PoppedEvent().Subscribe(this);
+
+		if (enemy == m_EnemyPlayer) continue;
 		enemy->Enable(true);
 	}
+}
+
+void digdug::GameManager::PossessPlayer(int playerId, size_t objIdx)
+{
+	auto player = m_PlayerObjects[objIdx].first;
+	auto harpoon = m_PlayerObjects[objIdx].second;
+
+	auto renderComp = player->GetComponent<minigin::RenderComponent>();
+	auto pos = player->GetLocalPosition() + glm::vec3(renderComp->GetSize() / 2.f, 0);
+
+	auto moveCmd = std::make_shared<GridMoveCmd>(player, playerId, *m_Gird, 250.f, true);
+	moveCmd->SetGridPosition(m_Gird->GetPosInGrid(pos));
+
+	auto launchCmd = std::make_shared<digdug::HarpoonCmd>(playerId, harpoon, [](digdug::Harpoon* h) { h->Shoot(); });
+	auto retractCmd = std::make_shared<digdug::HarpoonCmd>(playerId, harpoon, [](digdug::Harpoon* h) { h->Retract(); });
+
+	harpoon->DisableDuringUse(moveCmd.get());
+
+	if (playerId == minigin::InputManager::GetKeyboardID())
+	{
+		minigin::InputManager::GetInstance().BindInput("move", SDLK_W, minigin::KeyState::Pressed, moveCmd, playerId, minigin::Direction::Up);
+		minigin::InputManager::GetInstance().BindInput("move", SDLK_A, minigin::KeyState::Pressed, moveCmd, playerId, minigin::Direction::Left);
+		minigin::InputManager::GetInstance().BindInput("move", SDLK_S, minigin::KeyState::Pressed, moveCmd, playerId, minigin::Direction::Down);
+		minigin::InputManager::GetInstance().BindInput("move", SDLK_D, minigin::KeyState::Pressed, moveCmd, playerId, minigin::Direction::Right);
+
+		minigin::InputManager::GetInstance().BindInput("Move", SDLK_SPACE, minigin::KeyState::OnDown, launchCmd, playerId);
+		minigin::InputManager::GetInstance().BindInput("Move", SDLK_SPACE, minigin::KeyState::OnRelease, retractCmd, playerId);
+		return;
+	}
+
+	minigin::InputManager::GetInstance().BindInput("move", minigin::GamepadJoystick::LEFT_JOYSTICK, 0.5f, moveCmd, playerId);
+	minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::SOUTH, minigin::KeyState::OnDown, launchCmd, playerId);
+	minigin::InputManager::GetInstance().BindInput("Move", minigin::GamepadButton::SOUTH, minigin::KeyState::OnRelease, retractCmd, playerId);
+}
+
+void digdug::GameManager::PossessEnemy(int playerId)
+{
+	if (m_Enemies.size() <= 0)
+	{
+		std::cerr << "ERROR: GameManager::JoinPlayer, enemy player cannot join since there are no enemies!\n";
+		return;
+	}
+
+	minigin::GameObject* enemyPlayer{ nullptr };
+
+	for (size_t idx{ 0 }; idx < m_Enemies.size(); ++idx)
+	{
+		auto& obj = m_Enemies[idx]->GetOwner();
+		auto enemy = obj.GetComponent<Enemy>();
+
+		if (enemy == nullptr) continue;
+		if (!enemy->HasAttack()) continue;
+
+		enemyPlayer = &enemy->GetOwner();
+
+		m_EnemyPlayer = m_Enemies[idx];
+		m_EnemyPlayer->Enable(false);
+
+		m_Players.emplace(playerId, idx);
+		break;
+	}
+
+	if (enemyPlayer == nullptr)
+	{
+		m_EnemyPlayer = m_Enemies[0];
+		m_EnemyPlayer->Enable(false);
+
+		enemyPlayer = &m_Enemies.front()->GetOwner();
+	}
+
+	auto renderComp = enemyPlayer->GetComponent<minigin::RenderComponent>();
+	auto pos = enemyPlayer->GetLocalPosition() + glm::vec3(renderComp->GetSize() / 2.f, 0);
+
+	auto moveCmd = std::make_shared<GridMoveCmd>(enemyPlayer, playerId, *m_Gird, 250.f, false);
+	moveCmd->SetGridPosition(m_Gird->GetPosInGrid(pos));
+
+	if (playerId == minigin::InputManager::GetKeyboardID())
+	{
+		minigin::InputManager::GetInstance().BindInput("move", SDLK_W, minigin::KeyState::Pressed, moveCmd, playerId, minigin::Direction::Up);
+		minigin::InputManager::GetInstance().BindInput("move", SDLK_A, minigin::KeyState::Pressed, moveCmd, playerId, minigin::Direction::Left);
+		minigin::InputManager::GetInstance().BindInput("move", SDLK_S, minigin::KeyState::Pressed, moveCmd, playerId, minigin::Direction::Down);
+		minigin::InputManager::GetInstance().BindInput("move", SDLK_D, minigin::KeyState::Pressed, moveCmd, playerId, minigin::Direction::Right);
+		return;
+	}
+
+	minigin::InputManager::GetInstance().BindInput("move", minigin::GamepadJoystick::LEFT_JOYSTICK, 0.5f, moveCmd, playerId);
 }

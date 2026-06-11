@@ -14,6 +14,7 @@ namespace digdug
 	{
 	public:
 		using minigin::Component::Component;
+		~EnemyBehavior() override;
 
 		void Start() override;
 		void Update(float deltaTime) override;

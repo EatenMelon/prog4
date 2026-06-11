@@ -297,9 +297,6 @@ minigin::GameObject* digdug::LevelLoader::AddEnemy(minigin::Scene& scene, DirtGr
 	enemy->SetDefaultSprite(sprites.solidSprite);
 	enemy->SetGhostSprite(sprites.ghostSprite);
 
-	// TODO
-	//enemy->AddPossibleTarget();
-
 	switch (enemyData.type)
 	{
 	case digdug::LevelLoader::EnemyData::Type::Fygar:

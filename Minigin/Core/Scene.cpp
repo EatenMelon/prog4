@@ -1,4 +1,5 @@
 #include "Scene.h"
+#include "Scene.h"
 #include <algorithm>
 #include <cassert>
 
@@ -95,6 +96,19 @@ void Scene::Cleanup()
 	for (auto& object : m_objects)
 	{
 		object->Cleanup();
+	}
+}
+
+void minigin::Scene::DestroyAll()
+{
+	for (auto& object : m_objects)
+	{
+		object->Destroy();
+	}
+
+	while (!m_WaitingObjects.empty())
+	{
+		m_WaitingObjects.pop();
 	}
 }
 

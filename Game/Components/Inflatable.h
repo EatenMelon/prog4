@@ -17,11 +17,15 @@ namespace digdug
 	class InflatablePoppedEvent final : public minigin::PlainEvent
 	{
 	public:
-		InflatablePoppedEvent()
+		InflatablePoppedEvent(minigin::GameObject* obj)
 			: minigin::PlainEvent("PoppedEvent")
-		{
-		}
-		// TODO: pass enemy score value, pump user, and position
+			, m_PoppedObj{ obj }
+		{ }
+
+		minigin::GameObject* GetPoppedObj() const { return m_PoppedObj; }
+
+	private:
+		minigin::GameObject* m_PoppedObj{ nullptr };
 	};
 
 	class Inflatable final : public minigin::Component, public minigin::IObserver

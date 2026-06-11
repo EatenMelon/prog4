@@ -19,6 +19,7 @@ namespace minigin
 		void GuiRender() const;
 		void Render() const;
 		void Cleanup();
+		void DestroyAll();
 
 		size_t GetSceneId() { return m_Id; }
 

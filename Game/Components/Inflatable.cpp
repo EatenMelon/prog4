@@ -97,15 +97,15 @@ void digdug::Inflatable::OnNotify(const minigin::IEvent& event)
 
 	if (m_Inflation < m_MaxInflation - 1) return;
 
-	InflatablePoppedEvent popEvent{};
-	m_OnPopEvent.Notify(popEvent);
-
 	auto hitbox = GetOwner().GetComponent<minigin::Hitbox>();
-	
+
 	if (hitbox != nullptr)
 	{
 		hitbox->Enable(false);
 	}
+
+	InflatablePoppedEvent popEvent{ &GetOwner()};
+	m_OnPopEvent.Notify(popEvent);
 }
 
 void digdug::Inflatable::SetSpriteSheet(const std::string& path)

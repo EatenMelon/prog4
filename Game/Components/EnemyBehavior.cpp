@@ -4,6 +4,22 @@
 #include <Enemy.h>
 #include <DirtGrid.h>
 
+digdug::EnemyBehavior::~EnemyBehavior()
+{
+	if (m_Enemy == nullptr) return;
+
+	try
+	{
+		m_Enemy->OnInflatedEnter().UnSubscribe(this);
+		m_Enemy->OnDeflatedEnter().UnSubscribe(this);
+		m_Enemy->OnAttackEnded().UnSubscribe(this);
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << "ERROR: EnemyBehavior::~EnemyBehavior, failed to unsubscribe from enemy events: " << e.what() << "\n";
+	}
+}
+
 void digdug::EnemyBehavior::Start()
 {
 	m_Enemy = GetOwner().GetComponent<Enemy>();

@@ -39,14 +39,21 @@ namespace minigin
 
 		void Execute(const InputContext& context, float deltaTime) override final
 		{
-			if (!m_Actor->Enabled())
+			try 
 			{
-				return;
-			}
+				if (!m_Actor->Enabled())
+				{
+					return;
+				}
 
-			if (SceneManager::GetInstance().ActiveSceneId() != m_Actor->GetSceneId())
+				if (SceneManager::GetInstance().ActiveSceneId() != m_Actor->GetSceneId())
+				{
+					return;
+				}
+			}
+			catch (const std::exception& e)
 			{
-				return;
+				std::cout << "ERROR: Actor::Execute, " << e.what() << "\n";
 			}
 
 			if (context.playerID != m_playerID)

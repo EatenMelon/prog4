@@ -13,7 +13,6 @@
 #include <EnemyBehavior.h>
 #include <Enemy.h>
 #include <Harpoon.h>
-#include <Inflatable.h>
 #include <ScoreComponent.h>
 
 #include <JoinGameCmd.h>
@@ -136,26 +135,7 @@ void digdug::GameManager::OnNotify(const minigin::IEvent& event)
 	if (event.GetEventHash() == m_EnemyPoppedHash)
 	{
 		const auto& loadedEvent = static_cast<const digdug::InflatablePoppedEvent&>(event);
-		
-		auto itrEnemy = std::find_if
-		(
-			m_Enemies.begin(),
-			m_Enemies.end(),
-			[&](auto e)
-			{
-				return (&e->GetOwner() == loadedEvent.GetPoppedObj());
-			}
-		);
-
-		if (itrEnemy == m_Enemies.end()) return;
-		m_Enemies.erase(itrEnemy);
-
-		std::cout << "enemies: " << m_Enemies.size() << "\n";
-		if (m_Enemies.empty())
-		{
-			NextLevel();
-		}
-
+		HandleEnemyPoppedEvent(loadedEvent);
 		return;
 	}
 
@@ -384,6 +364,39 @@ void digdug::GameManager::HandleLoadedEvent(const LevelLoadedEvent& event)
 	StartWatchingPlayers();
 }
 
+void digdug::GameManager::HandleEnemyPoppedEvent(const InflatablePoppedEvent& event)
+{
+	if (m_CurrentMode == GameMode::Versus)
+	{
+		if(&m_EnemyPlayer->GetOwner() == event.GetPoppedObj())
+		{
+			auto healthComp = m_EnemyPlayer->GetOwner().GetComponent<digdug::HealthComponent>();
+
+			if (healthComp->GetHealth() >= 0) return;
+		}
+	}
+
+	auto itrEnemy = std::find_if
+	(
+		m_Enemies.begin(),
+		m_Enemies.end(),
+		[&](auto e)
+		{
+			return (&e->GetOwner() == event.GetPoppedObj());
+		}
+	);
+
+	if (itrEnemy == m_Enemies.end()) return;
+	m_Enemies.erase(itrEnemy);
+
+	if (m_Enemies.empty())
+	{
+		NextLevel();
+	}
+
+	return;
+}
+
 void digdug::GameManager::HandleDamageEvent(const ReceivedDamageEvent& event)
 {
 	auto healthComp = event.GetVictim();
@@ -402,10 +415,10 @@ void digdug::GameManager::HandleDamageEvent(const ReceivedDamageEvent& event)
 		return;
 	}
 
-	if (&m_EnemyPlayer->GetOwner() != &healthComp->GetOwner()) return;
+	//if (&m_EnemyPlayer->GetOwner() != &healthComp->GetOwner()) return;
 
-	--m_PlayersAlive;
-	EvaluateLivingPlayers();
+	//--m_PlayersAlive;
+	//EvaluateLivingPlayers();
 }
 
 void digdug::GameManager::EvaluateLivingPlayers()

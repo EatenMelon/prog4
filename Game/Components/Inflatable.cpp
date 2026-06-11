@@ -1,10 +1,13 @@
 #include "Inflatable.h"
+
 #include <ResourceManager.h>
 #include <Renderer.h>
 #include <RenderComponent.h>
 #include <GameObject.h>
-#include <HarpoonState.h>
 #include <Hitbox.h>
+
+#include <HarpoonState.h>
+#include <HealthComponent.h>
 
 void digdug::Inflatable::Start()
 {
@@ -102,6 +105,13 @@ void digdug::Inflatable::OnNotify(const minigin::IEvent& event)
 	if (hitbox != nullptr)
 	{
 		hitbox->Enable(false);
+	}
+
+	auto healthComp = GetOwner().GetComponent<digdug::HealthComponent>();
+	if (healthComp != nullptr)
+	{
+		healthComp->TakeDamage();
+		std::cout << "pop\n";
 	}
 
 	InflatablePoppedEvent popEvent{ &GetOwner()};

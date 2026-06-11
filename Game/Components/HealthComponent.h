@@ -21,6 +21,7 @@ namespace digdug
 		void OnNotify(const minigin::IEvent& event) override;
 
 		void LinkTextComponent(minigin::TextComponent* comp, const std::string& message);
+		void TakeDamage();
 
 		int GetHealth() const { return m_Health; }
 
@@ -37,6 +38,8 @@ namespace digdug
 		int m_Health{ 0 };
 		const int m_MaxHealth{ 3 };
 		unsigned int m_HitEventHash{ 0 };
+
+		// TODO add grace periode, and reset harpoon on respawn
 	};
 
 	class ReceivedDamageEvent final : public minigin::PlainEvent

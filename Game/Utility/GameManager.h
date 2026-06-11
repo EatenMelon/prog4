@@ -9,6 +9,7 @@
 #include <LevelLoader.h>
 #include <DirtGrid.h>
 #include <HealthComponent.h>
+#include <Inflatable.h>
 
 namespace minigin
 {
@@ -46,6 +47,7 @@ namespace digdug
 		
 		void NextLevel();
 		void HandleLoadedEvent(const LevelLoadedEvent& event);
+		void HandleEnemyPoppedEvent(const InflatablePoppedEvent& event);
 		void HandleDamageEvent(const ReceivedDamageEvent& event);
 		void EvaluateLivingPlayers();
 

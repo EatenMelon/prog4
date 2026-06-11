@@ -90,7 +90,7 @@ namespace digdug
 		minigin::Subject m_OnDeflatedEnter{};
 		minigin::Subject m_OnEndAttack{};
 
-		float m_MovementSpeed{ 100.f };
+		float m_MovementSpeed{ 75.f };
 
 		std::vector<minigin::GameObject*> m_PossibleTargets{};
 	};

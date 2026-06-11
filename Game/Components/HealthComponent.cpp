@@ -35,11 +35,7 @@ void digdug::HealthComponent::OnNotify(const minigin::IEvent& event)
 	if (killComp == nullptr) return;
 	if (!killComp->IsTarget(KillingComponent::Target::Player)) return;
 
-	--m_Health;
-	UpdateDisplay();
-
-	ReceivedDamageEvent tookDmgEvent{ this };
-	m_TookDamageEvent.Notify(tookDmgEvent);
+	TakeDamage();
 }
 
 void digdug::HealthComponent::LinkTextComponent(minigin::TextComponent* comp, const std::string& message)
@@ -50,6 +46,15 @@ void digdug::HealthComponent::LinkTextComponent(minigin::TextComponent* comp, co
 	m_Display = comp;
 
 	UpdateDisplay();
+}
+
+void digdug::HealthComponent::TakeDamage()
+{
+	--m_Health;
+	UpdateDisplay();
+
+	ReceivedDamageEvent tookDmgEvent{ this };
+	m_TookDamageEvent.Notify(tookDmgEvent);
 }
 
 void digdug::HealthComponent::UpdateDisplay()

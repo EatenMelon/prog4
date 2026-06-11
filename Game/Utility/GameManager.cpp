@@ -41,7 +41,7 @@ void digdug::GameManager::Init()
 	{
 		minigin::SceneManager::GetInstance().CreateScene
 		(
-			[level, this](minigin::Scene& scene)
+			[level](minigin::Scene& scene)
 			{
 				const std::string file{ "Level" + std::to_string(level) + ".json" };
 				const int requiredPlayers{ GetInstance().GetRequiredPlayersObjects() };
@@ -563,8 +563,8 @@ minigin::GameObject* digdug::GameManager::AddScoreDisplay(minigin::Scene& scene,
 
 	if (textComp == nullptr) return nullptr;
 
-	scoreComp->LinkTextComponent(textComp, "Score P" + std::to_string(index) + ":   ");
-	index;
+	const std::string& message{ "Score P" + std::to_string(index) + ":   " };
+	scoreComp->LinkTextComponent(textComp, message);
 
 	auto ref = display.get();
 	scene.Add(std::move(display));
@@ -594,10 +594,8 @@ minigin::GameObject* digdug::GameManager::AddHealthDisplay(minigin::Scene& scene
 
 	const std::string& message{ "Lives P" + std::to_string(index) + ":   "};
 	healthComp->LinkTextComponent(textComp, message);
-	index;
 
 	auto ref = display.get();
 	scene.Add(std::move(display));
 	return ref;
-	return nullptr;
 }

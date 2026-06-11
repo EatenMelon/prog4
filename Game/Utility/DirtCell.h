@@ -17,7 +17,7 @@ namespace digdug
 		void Render(const glm::vec2& pos, float cellSize) const;
 
 		void Dig(const glm::ivec2& entryPoint);
-		void Refill() { m_SubCells = std::numeric_limits<uint8_t>::max(); }
+		void Refill() { m_SubCells = (std::numeric_limits<uint8_t>::max)(); }
 		bool HasBeenDug() const { return !GetSubCell(1, 1); }
 
 		enum class Side{ Top, Bottom, Left, Right };
@@ -38,7 +38,7 @@ namespace digdug
 		const int m_RowSideTile{};
 		const int m_RowCornerTile{};
 		
-		uint8_t m_SubCells{ std::numeric_limits<uint8_t>::max() };
+		uint8_t m_SubCells{ (std::numeric_limits<uint8_t>::max)() };
 
 		static constexpr uint8_t m_Size{ 3 };
 		static constexpr int m_BitMap[m_Size * m_Size]

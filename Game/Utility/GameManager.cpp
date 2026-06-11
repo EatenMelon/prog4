@@ -32,14 +32,14 @@ void digdug::GameManager::Init()
 
 	m_SceneIds.clear();
 
-	minigin::SceneManager::GetInstance().CreateScene([this](minigin::Scene& scene) { GetInstance().LoadStartMenu(scene); });
+	minigin::SceneManager::GetInstance().CreateScene([this](minigin::Scene& scene) { this->LoadStartMenu(scene); });
 	m_MainMenuScene = minigin::SceneManager::GetInstance().GetSceneCount() - 1;
 
 	for (int level{ 1 }; level <= m_LastLevel; ++level)
 	{
 		minigin::SceneManager::GetInstance().CreateScene
 		(
-			[level, this](minigin::Scene& scene)
+			[level/*, this*/](minigin::Scene& scene)
 			{
 				const std::string file{ "Level" + std::to_string(level) + ".json" };
 				const int requiredPlayers{ GetInstance().GetRequiredPlayersObjects() };

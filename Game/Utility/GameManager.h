@@ -56,7 +56,7 @@ namespace digdug
 		GameMode m_CurrentMode{ GameMode::None };
 
 		size_t m_MainMenuScene{ 0 };
-		size_t m_ScoreboardScene{ 0 };
+		//size_t m_ScoreboardScene{ 0 };
 
 		int m_CurrentLevel{ -1 };
 		const int m_LastLevel{ 3 };

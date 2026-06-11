@@ -11,7 +11,7 @@ namespace digdug
 	public:
 		using minigin::Component::Component;
 
-		void Start();
+		void Start() override;
 		void OnNotify(const minigin::IEvent& event) override;
 		void SetSubmitFunction(const std::function<void()>& f);
 

@@ -5,6 +5,7 @@
 minigin::Component::Component(GameObject* owner)
 	: m_Owner{ owner }
 	, m_Destroyed{ false }
+	, m_Enabled{ true }
 {
 }
 

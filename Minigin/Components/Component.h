@@ -30,9 +30,8 @@ namespace minigin
 		GameObject& GetOwner() const;
 
 	private:
-		bool m_Enabled{ true };
-
 		GameObject* m_Owner;
 		bool m_Destroyed;
+		bool m_Enabled{ true };
 	};
 }

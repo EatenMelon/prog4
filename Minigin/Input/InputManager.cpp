@@ -11,17 +11,12 @@ const int minigin::InputManager::m_MaxGamepads{ 4 };
 const int minigin::InputManager::m_KeyboardPlayerID{ -1 };
 int minigin::InputManager::m_FPS{ 60 };
 
-void minigin::InputManager::Init(int gamepads)
+void minigin::InputManager::Init()
 {
 	m_Gamepads.clear();
-	m_Gamepads.reserve(gamepads);
+	m_Gamepads.reserve(m_MaxGamepads);
 
-	if (gamepads > 4)
-	{
-		throw std::runtime_error("MAx limit of players is 4");
-	}
-
-	for (int p{ 0 }; p < gamepads; ++p)
+	for (int p{ 0 }; p < m_MaxGamepads; ++p)
 	{
 		m_Gamepads.push_back(std::make_unique<Gamepad>(p));
 	}

@@ -82,6 +82,8 @@ add_executable(${GAME_NAME} ${TARGET_PARAM}
     "${COMPONENTS_DIR}/Enemy.cpp"
     "${COMPONENTS_DIR}/EnemyBehavior.cpp"
     "${COMPONENTS_DIR}/FireBreath.cpp"
+    "${COMPONENTS_DIR}/ObjectSelector.cpp"
+    "${COMPONENTS_DIR}/Button.cpp"
 
     "${UTILITY_DIR}/DirtCell.cpp"
     "${UTILITY_DIR}/HarpoonState.cpp"
@@ -93,6 +95,7 @@ add_executable(${GAME_NAME} ${TARGET_PARAM}
     "${INPUT_DIR}/GridMoveCmd.cpp"
     "${INPUT_DIR}/HarpoonCmd.cpp"
     "${INPUT_DIR}/JoinGameCmd.cpp"
+    "${INPUT_DIR}/SelectorCmds.cpp"
 )
 
 target_compile_features(${GAME_NAME} PUBLIC cxx_std_20)

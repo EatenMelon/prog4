@@ -5,6 +5,9 @@
 #include <SceneManager.h>
 #include <InputManager.h>
 #include <GameObject.h>
+#include <TextComponent.h>
+#include <RenderComponent.h>
+#include <ResourceManager.h>
 #include <SDL3/SDL.h>
 
 #include <EnemyBehavior.h>
@@ -16,6 +19,10 @@
 #include <GridMoveCmd.h>
 #include <HarpoonCmd.h>
 
+#include <ObjectSelector.h>
+#include <Button.h>
+#include <SelectorCmds.h>
+
 void digdug::GameManager::Init()
 {
 	m_Gird = nullptr;
@@ -24,17 +31,20 @@ void digdug::GameManager::Init()
 	m_Enemies.clear();
 
 	m_SceneIds.clear();
-	m_CurrentLevel = 0;
+
+	minigin::SceneManager::GetInstance().CreateScene([this](minigin::Scene& scene) { GetInstance().LoadStartMenu(scene); });
+	m_MainMenuScene = minigin::SceneManager::GetInstance().GetSceneCount() - 1;
 
 	for (int level{ 1 }; level <= m_LastLevel; ++level)
 	{
 		minigin::SceneManager::GetInstance().CreateScene
 		(
-			[level](minigin::Scene& scene)
+			[level, this](minigin::Scene& scene)
 			{
 				const std::string file{ "Level" + std::to_string(level) + ".json" };
 				const int requiredPlayers{ GetInstance().GetRequiredPlayersObjects() };
 				digdug::LevelLoader::GetInstance().LoadLevel(scene, file, requiredPlayers);
+				//AddDisplays(scene);
 			}
 		);
 
@@ -50,11 +60,19 @@ void digdug::GameManager::Init()
 	LevelLoader::GetInstance().OnLevelLoadedEvent().Subscribe(this);
 
 	m_JoinCommand = std::make_shared<JoinGameCmd>();
+
+	ToMainMenu();
 }
 
 void digdug::GameManager::Quit()
 {
 	LevelLoader::GetInstance().OnLevelLoadedEvent().UnSubscribe(this);
+}
+
+void digdug::GameManager::ToMainMenu()
+{
+	m_CurrentLevel = -1;
+	minigin::SceneManager::GetInstance().SetActiveScene(m_MainMenuScene);
 }
 
 void digdug::GameManager::StartGame(GameMode gameMode)
@@ -175,13 +193,107 @@ void digdug::GameManager::JoinPlayer(int playerId)
 	AssignCommandsToPlayers();
 }
 
+void digdug::GameManager::LoadStartMenu(minigin::Scene& scene)
+{
+	auto soloButton = AddButton(scene, "Play Singleplayer", []() { GetInstance().StartGame(GameMode::SinglePlayer); });
+	auto coopButton = AddButton(scene, "Play Coop", []() { GetInstance().StartGame(GameMode::Coop); });
+	auto versusButton = AddButton(scene, "Play Versus", []() { GetInstance().StartGame(GameMode::Versus); });
+
+	if (soloButton == nullptr || coopButton == nullptr || versusButton == nullptr)
+	{
+		std::cout << "failed to add buttons to start menu!\n";
+		return;
+	}
+
+	auto parent = std::make_unique<minigin::GameObject>();
+	parent->SetLocalPosition(glm::vec3(350.f, 400.f, 0.f));
+
+	soloButton->GetOwner().SetParent(parent.get());
+	coopButton->GetOwner().SetParent(parent.get());
+	versusButton->GetOwner().SetParent(parent.get());
+
+	const glm::vec3 gaps{ 0.f, 100.f, 0.f };
+
+	soloButton->GetOwner().SetLocalPosition(gaps * 0.f);
+	coopButton->GetOwner().SetLocalPosition(gaps * 1.f);
+	versusButton->GetOwner().SetLocalPosition(gaps * 2.f);
+
+	scene.Add(std::move(parent));
+
+	auto selector = std::make_unique<minigin::GameObject>();
+	{
+		auto renderComp = selector->AddComponent<minigin::RenderComponent>();
+		if (renderComp == nullptr) return;
+
+		renderComp->SetTexture("Sprites/Characters/TaizoHori.png");
+
+		renderComp->MatchHeight(48.f);
+		selector->SetLocalPosition(glm::vec3(-renderComp->GetSize().x, 0.f, 0.f));
+
+		auto selectorComp = selector->AddComponent<digdug::ObjectSelector>();
+		if (selectorComp == nullptr) return;
+
+		selectorComp->AddSelectableObject(&soloButton->GetOwner());
+		selectorComp->AddSelectableObject(&coopButton->GetOwner());
+		selectorComp->AddSelectableObject(&versusButton->GetOwner());
+
+		auto selectCmd = std::make_shared<digdug::SelectCmd>(selectorComp);
+		auto selectCmdDelayed = std::make_shared<digdug::SelectCmd>(selectorComp, 0.25f);
+		auto submitCmd= std::make_shared<digdug::SubmitCmd>(selectorComp);
+
+		for (int id{ minigin::InputManager::GetKeyboardID() }; id < minigin::InputManager::GetGamepadLimit(); ++id)
+		{
+			if (id == minigin::InputManager::GetKeyboardID())
+			{
+				minigin::InputManager::GetInstance().BindInput("select", SDLK_W, minigin::KeyState::OnRelease, selectCmd, id, minigin::Direction::Up);
+				minigin::InputManager::GetInstance().BindInput("select", SDLK_S, minigin::KeyState::OnRelease, selectCmd, id, minigin::Direction::Down);
+				minigin::InputManager::GetInstance().BindInput("select", SDLK_SPACE, minigin::KeyState::OnDown, submitCmd, id);
+				continue;
+			}
+
+			minigin::InputManager::GetInstance().BindInput("select", minigin::GamepadJoystick::LEFT_JOYSTICK, 0.5f, selectCmdDelayed, id);
+			minigin::InputManager::GetInstance().BindInput("select", minigin::GamepadButton::SOUTH, minigin::KeyState::OnDown, submitCmd, id);
+		}
+	}
+
+	scene.Add(std::move(selector));
+}
+
+digdug::Button* digdug::GameManager::AddButton(minigin::Scene& scene, const std::string& text, std::function<void()> onSubmit)
+{
+	auto fontButtons = minigin::ResourceManager::GetInstance().LoadFont("Fonts/Lingua.otf", 48);
+	SDL_Color textColor{ 255, 255, 255, 255 };
+
+	auto obj = std::make_unique<minigin::GameObject>();
+
+	auto buttonComp = obj->AddComponent<digdug::Button>();
+	if (buttonComp == nullptr) return nullptr;
+	
+	buttonComp->SetSubmitFunction(onSubmit);
+	
+	auto renderComp = obj->AddComponent<minigin::RenderComponent>();
+	if (renderComp == nullptr) return nullptr;
+
+	auto textComp = obj->AddComponent<minigin::TextComponent>();
+	if (textComp == nullptr) return nullptr;
+	
+	textComp->SetFont(fontButtons);
+	textComp->SetColor(textColor);
+	textComp->SetText(text);
+
+	scene.Add(std::move(obj));
+
+	return buttonComp;
+}
+
 void digdug::GameManager::NextLevel()
 {
 	++m_CurrentLevel;
 
 	if (m_CurrentLevel >= m_LastLevel)
 	{
-		m_CurrentLevel = 0;
+		minigin::SceneManager::GetInstance().SetActiveScene(m_MainMenuScene);
+		return;
 	}
 
 	minigin::SceneManager::GetInstance().SetActiveScene(m_SceneIds[m_CurrentLevel]);
@@ -374,3 +486,17 @@ void digdug::GameManager::PossessEnemy(int playerId)
 
 	minigin::InputManager::GetInstance().BindInput("move", minigin::GamepadJoystick::LEFT_JOYSTICK, 0.5f, moveCmd, playerId);
 }
+
+//void digdug::GameManager::AddDisplays(minigin::Scene& scene)
+//{
+//	//for(auto player)
+//
+//}
+//
+//void digdug::GameManager::AddScoreDisplay(minigin::Scene& scene, minigin::GameObject* obj)
+//{
+//}
+//
+//void digdug::GameManager::AddHealthDisplay(minigin::Scene& scene, minigin::GameObject* obj)
+//{
+//}

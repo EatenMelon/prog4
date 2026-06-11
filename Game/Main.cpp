@@ -295,12 +295,12 @@ static void LoadTestScene(minigin::Scene& scene)
 
 static void LoadAllScenes()
 {
-	minigin::SceneManager::GetInstance().CreateScene(LoadTestScene);
 
 	digdug::GameManager::GetInstance().Init();
-	digdug::GameManager::GetInstance().StartGame(digdug::GameManager::GameMode::Coop);
+	//digdug::GameManager::GetInstance().StartGame(digdug::GameManager::GameMode::Coop);
 
 	minigin::Renderer::GetInstance().SetBackgroundColor(SDL_Color{ 0, 0, 50, 255 });
+	minigin::SceneManager::GetInstance().CreateScene(LoadTestScene);
 }
 
 int main(int, char*[])

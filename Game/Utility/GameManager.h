@@ -16,9 +16,10 @@ namespace minigin
 
 namespace digdug
 {
-	class EnemyBehavior;
 	class Harpoon;
+	class EnemyBehavior;
 	class JoinGameCmd;
+	class Button;
 	class GameManager final : public minigin::Singleton<GameManager>, public minigin::IObserver
 	{
 	public:
@@ -26,7 +27,10 @@ namespace digdug
 
 		void Init();
 		void Quit();
+
+		void ToMainMenu();
 		void StartGame(GameMode gameMode);
+
 		int GetRequiredPlayerCount();
 		int GetRequiredPlayersObjects();
 
@@ -34,6 +38,9 @@ namespace digdug
 		void JoinPlayer(int playerId);
 
 	private:
+		void LoadStartMenu(minigin::Scene& scene);
+		Button* AddButton(minigin::Scene& scene, const std::string& text, std::function<void()> onSubmit);
+		
 		void NextLevel();
 		void HandleLoadedEvent(const LevelLoadedEvent& event);
 
@@ -42,7 +49,14 @@ namespace digdug
 		void PossessPlayer(int playerId, size_t objIdx);
 		void PossessEnemy(int playerId);
 
+		//void AddDisplays(minigin::Scene& scene);
+		//void AddScoreDisplay(minigin::Scene& scene, minigin::GameObject* obj);
+		//void AddHealthDisplay(minigin::Scene& scene, minigin::GameObject* obj);
+
 		GameMode m_CurrentMode{ GameMode::None };
+
+		size_t m_MainMenuScene{ 0 };
+		size_t m_ScoreboardScene{ 0 };
 
 		int m_CurrentLevel{ -1 };
 		const int m_LastLevel{ 3 };

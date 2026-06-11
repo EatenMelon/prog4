@@ -24,7 +24,7 @@ namespace minigin
 	class InputManager final : public Singleton<InputManager>, public IObserver
 	{
 	public:
-		void Init(int gamepads);
+		void Init();
 		bool ProcessInput(float deltaTime);
 		void OnNotify(const IEvent& event) override;
 

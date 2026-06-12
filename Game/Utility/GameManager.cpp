@@ -287,6 +287,7 @@ digdug::Button* digdug::GameManager::AddButton(minigin::Scene& scene, const std:
 
 void digdug::GameManager::NextLevel()
 {
+	UpdatePlayerScores();
 	++m_CurrentLevel;
 
 	if (m_CurrentLevel >= m_LastLevel)
@@ -684,4 +685,25 @@ minigin::GameObject* digdug::GameManager::AddHealthDisplay(minigin::Scene& scene
 	auto ref = display.get();
 	scene.Add(std::move(display));
 	return ref;
+}
+
+void digdug::GameManager::UpdatePlayerScores()
+{
+	for (auto [id, objIdx] : m_Players)
+	{
+		if (objIdx >= m_PlayerObjects.size())
+		{
+			continue;
+		}
+
+		auto obj = m_PlayerObjects[objIdx].first;
+		auto scoreComp = obj->GetComponent<digdug::ScoreComponent>();
+
+		if (scoreComp == nullptr)
+		{
+			continue;
+		}
+
+		m_PlayerScores.insert_or_assign(id, scoreComp->GetScore());
+	}
 }

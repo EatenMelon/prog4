@@ -18,6 +18,7 @@ namespace minigin
 
 namespace digdug
 {
+	// should have been a state machine, but i was running short on time
 	class Harpoon;
 	class EnemyBehavior;
 	class JoinGameCmd;
@@ -61,6 +62,7 @@ namespace digdug
 		void AddDisplays(minigin::Scene& scene);
 		minigin::GameObject* AddScoreDisplay(minigin::Scene& scene, minigin::GameObject* obj, size_t index, int score);
 		minigin::GameObject* AddHealthDisplay(minigin::Scene& scene, minigin::GameObject* obj, size_t index);
+		void UpdatePlayerScores();
 
 		GameMode m_CurrentMode{ GameMode::None };
 

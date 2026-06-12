@@ -60,9 +60,6 @@ void digdug::ScoreBoard::Render() const
 	}
 
 	SDL_SetRenderScale(renderer, 1.f, 1.f);
-
-	SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-	SDL_RenderPoint(renderer, origin.y, origin.y);
 }
 
 void digdug::ScoreBoard::LoadScores(const std::string& file)

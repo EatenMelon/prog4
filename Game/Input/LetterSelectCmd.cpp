@@ -6,8 +6,8 @@
 #include <Button.h>
 
 digdug::LetterSelectCmd::LetterSelectCmd(ObjectSelector* selector, float delay)
-	: m_Delay{ delay }
-	, m_Selector{ selector }
+	: m_Selector{ selector }
+	, m_Delay{ delay }
 {
 }
 

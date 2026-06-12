@@ -7,7 +7,7 @@ namespace digdug
 	class SelectCmd final : public minigin::Command
 	{
 	public:
-		SelectCmd(ObjectSelector* selector, float delay = 0.f);
+		SelectCmd(ObjectSelector* selector, char axis, float delay = 0.f);
 
 		void Execute(const minigin::InputContext& context, float deltaTime) override;
 
@@ -16,6 +16,7 @@ namespace digdug
 		int m_LastFrame{ 0 };
 		const float m_Delay{ 0.f };
 		float m_TimeUntilSelect{ 0.f };
+		char m_Axis{ 'y' };
 	};
 
 	class SubmitCmd final : public minigin::Command

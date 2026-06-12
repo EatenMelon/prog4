@@ -34,8 +34,8 @@ void digdug::ScoreBoard::Render() const
 
 	const size_t maxVisibleScores{ 10 };
 
-	const float scale{ 2.f };
-	const float gaps{ 25.f };
+	const float scale{ 3.f };
+	const float gaps{ 10.f };
 
 	auto origin = GetOwner().GetWorldPosition();
 
@@ -44,7 +44,7 @@ void digdug::ScoreBoard::Render() const
 	for (size_t s{ 0 }; s < maxVisibleScores; ++s)
 	{
 		glm::vec2 pos = origin;
-		pos.y += gaps * s;
+		pos.y += gaps * scale * s;
 		pos /= scale;
 
 		std::string text{"--- : ---"};

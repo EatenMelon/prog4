@@ -1,9 +1,10 @@
 #include "SelectorCmds.h"
 #include <ObjectSelector.h>
 
-digdug::SelectCmd::SelectCmd(ObjectSelector* selector, float delay)
+digdug::SelectCmd::SelectCmd(ObjectSelector* selector, char axis, float delay)
 	: m_Selector{ selector }
 	, m_Delay{ delay }
+	, m_Axis{ axis }
 {
 }
 
@@ -18,12 +19,28 @@ void digdug::SelectCmd::Execute(const minigin::InputContext& context, float delt
 	if (m_TimeUntilSelect > 0.f) return;
 	m_TimeUntilSelect = m_Delay;
 
-	if (context.axis.y > 0)
+	constexpr float min{ 0.5f };
+
+	float axis{ 0.f };
+
+	switch (m_Axis)
+	{
+	case 'x':
+	case 'X':
+		axis = context.axis.x;
+		break;
+
+	default:
+		axis = context.axis.y;
+		break;
+	}
+
+	if (axis > min)
 	{
 		m_Selector->SelectForwards();
 	}
 
-	if (context.axis.y < 0)
+	if (axis < -min)
 	{
 		m_Selector->SelectBackwards();
 	}

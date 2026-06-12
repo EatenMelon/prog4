@@ -5,12 +5,9 @@
 #include <vld.h>
 #endif
 
-// engine core
 #include <Minigin.h>
 #include <SceneManager.h>
-
-// input
-#include "InputManager.h"
+#include <InputManager.h>
 
 #include <filesystem>
 #include <Renderer.h>
@@ -21,7 +18,6 @@ namespace fs = std::filesystem;
 
 static void LoadAllScenes()
 {
-
 	digdug::GameManager::GetInstance().Init();
 	minigin::Renderer::GetInstance().SetBackgroundColor(SDL_Color{ 0, 0, 50, 255 });
 }

@@ -254,20 +254,20 @@ void digdug::GameManager::LoadStartMenu(minigin::Scene& scene)
 		selectorComp->AddSelectableObject(&coopButton->GetOwner());
 		selectorComp->AddSelectableObject(&versusButton->GetOwner());
 
-		auto selectCmd = std::make_shared<digdug::SelectCmd>(selectorComp);
-		auto selectCmdDelayed = std::make_shared<digdug::SelectCmd>(selectorComp, 0.25f);
 		auto submitCmd= std::make_shared<digdug::SubmitCmd>(selectorComp);
 
 		for (int id{ minigin::InputManager::GetKeyboardID() }; id < minigin::InputManager::GetGamepadLimit(); ++id)
 		{
 			if (id == minigin::InputManager::GetKeyboardID())
 			{
+				auto selectCmd = std::make_shared<digdug::SelectCmd>(selectorComp, 'y');
 				minigin::InputManager::GetInstance().BindInput("select", SDLK_W, minigin::KeyState::OnRelease, selectCmd, id, minigin::Direction::Up);
 				minigin::InputManager::GetInstance().BindInput("select", SDLK_S, minigin::KeyState::OnRelease, selectCmd, id, minigin::Direction::Down);
 				minigin::InputManager::GetInstance().BindInput("select", SDLK_SPACE, minigin::KeyState::OnDown, submitCmd, id);
 				continue;
 			}
 
+			auto selectCmdDelayed = std::make_shared<digdug::SelectCmd>(selectorComp, 'y', 0.25f);
 			minigin::InputManager::GetInstance().BindInput("select", minigin::GamepadJoystick::LEFT_JOYSTICK, 0.5f, selectCmdDelayed, id);
 			minigin::InputManager::GetInstance().BindInput("select", minigin::GamepadButton::SOUTH, minigin::KeyState::OnDown, submitCmd, id);
 		}
@@ -281,11 +281,10 @@ void digdug::GameManager::LoadScoreBoardMenu(minigin::Scene& scene)
 	auto base = std::make_unique<minigin::GameObject>();
 	base->SetLocalPosition(250.f, 50.f, 0.f);
 	{
-
 		auto scoreBoard = std::make_unique<minigin::GameObject>();
 		auto scoreBoardComp = scoreBoard->AddComponent<digdug::ScoreBoard>();
 		{
-			scoreBoard->SetLocalPosition(0.f, 300.f, 0.f);
+			scoreBoard->SetLocalPosition(150.f, 200.f, 0.f);
 			scoreBoard->SetParent(base.get());
 
 			if (scoreBoardComp == nullptr) return;
@@ -363,21 +362,21 @@ minigin::GameObject* digdug::GameManager::AddScoreSubmitter(minigin::Scene& scen
 
 		if (id == minigin::InputManager::GetKeyboardID())
 		{
-			auto selectCmd = std::make_shared<digdug::SelectCmd>(selectorComp);
+			auto selectCmd = std::make_shared<digdug::SelectCmd>(selectorComp, 'x');
 			minigin::InputManager::GetInstance().BindInput("select", SDLK_D, minigin::KeyState::OnRelease, selectCmd, id, minigin::Direction::Down);
 			minigin::InputManager::GetInstance().BindInput("select", SDLK_A, minigin::KeyState::OnRelease, selectCmd, id, minigin::Direction::Up);
 			minigin::InputManager::GetInstance().BindInput("select", SDLK_SPACE, minigin::KeyState::OnDown, submitCmd, id);
 		}
 		else
 		{
-			auto selectCmdDelayed = std::make_shared<digdug::SelectCmd>(selectorComp, 0.25f);
+			auto selectCmdDelayed = std::make_shared<digdug::SelectCmd>(selectorComp, 'x', 0.25f);
 			minigin::InputManager::GetInstance().BindInput("select", minigin::GamepadJoystick::LEFT_JOYSTICK, 0.5f, selectCmdDelayed, id);
 			minigin::InputManager::GetInstance().BindInput("select", minigin::GamepadButton::SOUTH, minigin::KeyState::OnDown, submitCmd, id);
 		}
 	}
 	scene.Add(std::move(selector));
 
-	const float gaps{ 54.f };
+	constexpr float gaps{ 54.f };
 	std::vector<minigin::TextComponent*> textComps{};
 
 	auto base = std::make_unique<minigin::GameObject>();
@@ -414,6 +413,24 @@ minigin::GameObject* digdug::GameManager::AddScoreSubmitter(minigin::Scene& scen
 			minigin::InputManager::GetInstance().BindInput("select", minigin::GamepadJoystick::LEFT_JOYSTICK, 0.5f, letterCmdDelayed, id);
 		}
 
+		auto scoreObj = std::make_unique<minigin::GameObject>();
+		{
+			scoreObj->SetLocalPosition(350.f, 0.f, 0.f);
+			scoreObj->SetParent(base.get());
+
+			auto renderComp = scoreObj->AddComponent<minigin::RenderComponent>();
+			if (renderComp == nullptr) return nullptr;
+
+			auto textComp = scoreObj->AddComponent<minigin::TextComponent>();
+			if (textComp == nullptr) return nullptr;
+
+			textComp->SetFont(font);
+			textComp->SetText("score : " + std::to_string(m_PlayerScores[id]));
+			textComps.push_back(textComp);
+
+			scene.Add(std::move(scoreObj));
+		}
+
 		auto button = AddButton
 		(
 			scene,
@@ -425,9 +442,6 @@ minigin::GameObject* digdug::GameManager::AddScoreSubmitter(minigin::Scene& scen
 				{
 					name += comp->GetText();
 				}
-
-				std::cout << name << ": " << m_PlayerScores[id] << "\n";
-
 				if (scoreBoard == nullptr) return;
 				scoreBoard->AddScore(name, m_PlayerScores[id]);
 				++m_SubmittedScores;
@@ -444,7 +458,7 @@ minigin::GameObject* digdug::GameManager::AddScoreSubmitter(minigin::Scene& scen
 
 		button->GetOwner().SetParent(base.get());
 
-		button->GetOwner().SetLocalPosition(300.f, 0.f, 0.f);
+		button->GetOwner().SetLocalPosition(200.f, 0.f, 0.f);
 		button->GetOwner().GetComponent<minigin::TextComponent>()->SetFont(font);
 
 		selectorComp->AddSelectableObject(&button->GetOwner());

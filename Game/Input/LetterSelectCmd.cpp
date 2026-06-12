@@ -37,11 +37,12 @@ void digdug::LetterSelectCmd::Execute(const minigin::InputContext& context, floa
 		letter = original[0];
 	}
 
-	if (context.axis.y > 0)
+	constexpr float min{ 0.5f };
+	if (context.axis.y > min)
 	{
 		++letter;
 	}
-	else if (context.axis.y < 0)
+	else if (context.axis.y < -min)
 	{
 		--letter;
 	}

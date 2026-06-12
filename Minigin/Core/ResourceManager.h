@@ -15,6 +15,7 @@ namespace minigin
 		void Init(const std::filesystem::path& data);
 		std::shared_ptr<Texture2D> LoadTexture(const std::string& file);
 		std::shared_ptr<Font> LoadFont(const std::string& file, uint8_t size);
+		std::filesystem::path GetDataPath() const { return m_dataPath; }
 
 	private:
 		friend class Singleton<ResourceManager>;

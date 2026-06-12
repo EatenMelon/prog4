@@ -22,6 +22,8 @@ namespace minigin
 		void SetColor(const SDL_Color& color);
 		void SetFont(std::shared_ptr<Font> font);
 
+		const std::string& GetText() const;
+
 	private:
 
 		bool m_NeedsUpdate{};

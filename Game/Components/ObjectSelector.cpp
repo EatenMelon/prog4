@@ -29,6 +29,16 @@ void digdug::ObjectSelector::Submit()
 	m_Selectables[m_CurrentlySelected].onSubmit.Notify(submit);
 }
 
+minigin::GameObject* digdug::ObjectSelector::GetSelectedObject() const
+{
+	if (m_Selectables.empty())
+	{
+		return nullptr;
+	}
+
+	return m_Selectables[m_CurrentlySelected].object;
+}
+
 bool digdug::ObjectSelector::AddSelectableObject(minigin::GameObject* object)
 {
 	auto itr = std::find_if

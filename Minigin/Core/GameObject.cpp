@@ -1,4 +1,5 @@
 #include "GameObject.h"
+#include "GameObject.h"
 
 void minigin::GameObject::FixedUpdate(float fixedFrameTime)
 {
@@ -110,6 +111,16 @@ void minigin::GameObject::UpdateWorldPosition()
 	}
 
 	m_PositionIsDirty = false;
+}
+
+bool minigin::GameObject::Enabled() const
+{
+	if (m_Parent != nullptr)
+	{
+		return m_Parent->Enabled();
+	}
+
+	return m_Enabled;
 }
 
 void minigin::GameObject::Destroy()

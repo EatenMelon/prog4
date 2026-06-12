@@ -16,12 +16,15 @@
 #include <ScoreComponent.h>
 
 #include <JoinGameCmd.h>
+#include <SkipLevelCmd.h>
 #include <GridMoveCmd.h>
 #include <HarpoonCmd.h>
 #include <SelectorCmds.h>
+#include <LetterSelectCmd.h>
 
 #include <ObjectSelector.h>
 #include <Button.h>
+#include <ScoreBoard.h>
 
 void digdug::GameManager::Init()
 {
@@ -32,15 +35,24 @@ void digdug::GameManager::Init()
 	minigin::SceneManager::GetInstance().CreateScene([this](minigin::Scene& scene) { this->LoadStartMenu(scene); });
 	m_MainMenuScene = minigin::SceneManager::GetInstance().GetSceneCount() - 1;
 
+	minigin::SceneManager::GetInstance().CreateScene([this](minigin::Scene& scene) { this->LoadScoreBoardMenu(scene); });
+	m_ScoreBoardScene = minigin::SceneManager::GetInstance().GetSceneCount() - 1;
+
+	m_JoinCommand = std::make_shared<JoinGameCmd>();
+	m_SkipCommand = std::make_shared<SkipLevelCmd>();
+
 	for (int level{ 1 }; level <= m_LastLevel; ++level)
 	{
 		minigin::SceneManager::GetInstance().CreateScene
 		(
-			[level](minigin::Scene& scene)
+			[level, this](minigin::Scene& scene)
 			{
 				const std::string file{ "Level" + std::to_string(level) + ".json" };
 				const int requiredPlayers{ GetInstance().GetRequiredPlayersObjects() };
+
 				digdug::LevelLoader::GetInstance().LoadLevel(scene, file, requiredPlayers);
+
+				minigin::InputManager::GetInstance().BindInput("skip", SDLK_F1, minigin::KeyState::OnRelease, m_SkipCommand, minigin::InputManager::GetKeyboardID());
 			}
 		);
 
@@ -57,8 +69,6 @@ void digdug::GameManager::Init()
 	m_PlayerTookDamageHash = damagedEvent.GetEventHash();
 
 	LevelLoader::GetInstance().OnLevelLoadedEvent().Subscribe(this);
-
-	m_JoinCommand = std::make_shared<JoinGameCmd>();
 
 	ToMainMenu();
 }
@@ -178,6 +188,13 @@ void digdug::GameManager::JoinPlayer(int playerId)
 	AddDisplays(minigin::SceneManager::GetInstance().GetActiveScene());
 }
 
+void digdug::GameManager::SkipLevel()
+{
+	if (m_CurrentMode == GameMode::None) return;
+
+	NextLevel();
+}
+
 void digdug::GameManager::WipeGameData()
 {
 	m_Gird = nullptr;
@@ -185,6 +202,7 @@ void digdug::GameManager::WipeGameData()
 	m_PlayersAlive = 0;
 	m_CurrentMode = GameMode::None;
 	m_CurrentLevel = -1;
+	m_SubmittedScores = 0;
 
 	m_PlayerScores.clear();
 	m_PlayerObjects.clear();
@@ -258,6 +276,41 @@ void digdug::GameManager::LoadStartMenu(minigin::Scene& scene)
 	scene.Add(std::move(selector));
 }
 
+void digdug::GameManager::LoadScoreBoardMenu(minigin::Scene& scene)
+{
+	auto base = std::make_unique<minigin::GameObject>();
+	base->SetLocalPosition(250.f, 50.f, 0.f);
+	{
+
+		auto scoreBoard = std::make_unique<minigin::GameObject>();
+		auto scoreBoardComp = scoreBoard->AddComponent<digdug::ScoreBoard>();
+		{
+			scoreBoard->SetLocalPosition(0.f, 300.f, 0.f);
+			scoreBoard->SetParent(base.get());
+
+			if (scoreBoardComp == nullptr) return;
+			scoreBoardComp->LoadScores("Scores");
+		}
+		scene.Add(std::move(scoreBoard));
+
+		int added{ 0 };
+		float gaps{ 100.f };
+
+		for (auto [id, score] : m_PlayerScores)
+		{
+			auto obj = AddScoreSubmitter(scene, scoreBoardComp, id);
+			if (obj == nullptr) continue;
+
+			obj->SetLocalPosition(0.f, gaps * added, 0.f);
+			obj->SetParent(base.get());
+
+			++added;
+		}
+	}
+
+	scene.Add(std::move(base));
+}
+
 digdug::Button* digdug::GameManager::AddButton(minigin::Scene& scene, const std::string& text, std::function<void()> onSubmit)
 {
 	auto fontButtons = minigin::ResourceManager::GetInstance().LoadFont("Fonts/Lingua.otf", 48);
@@ -285,6 +338,124 @@ digdug::Button* digdug::GameManager::AddButton(minigin::Scene& scene, const std:
 	return buttonComp;
 }
 
+minigin::GameObject* digdug::GameManager::AddScoreSubmitter(minigin::Scene& scene, ScoreBoard* scoreBoard, int id)
+{
+	if (!m_PlayerScores.contains(id)) return nullptr;
+
+	auto font = minigin::ResourceManager::GetInstance().LoadFont("Fonts/Lingua.otf", 24);
+	constexpr int nameLength{ 3 };
+
+	digdug::ObjectSelector* selectorComp{ nullptr };
+	auto selector = std::make_unique<minigin::GameObject>();
+	{
+		auto renderComp = selector->AddComponent<minigin::RenderComponent>();
+		if (renderComp == nullptr) return nullptr;
+
+		renderComp->SetTexture("Sprites/Characters/TaizoHori.png");
+
+		renderComp->MatchHeight(24.f);
+		selector->SetLocalPosition(glm::vec3(-renderComp->GetSize().x, 0.f, 0.f));
+
+		selectorComp = selector->AddComponent<digdug::ObjectSelector>();
+		if (selectorComp == nullptr) return nullptr;
+
+		auto submitCmd = std::make_shared<digdug::SubmitCmd>(selectorComp);
+
+		if (id == minigin::InputManager::GetKeyboardID())
+		{
+			auto selectCmd = std::make_shared<digdug::SelectCmd>(selectorComp);
+			minigin::InputManager::GetInstance().BindInput("select", SDLK_D, minigin::KeyState::OnRelease, selectCmd, id, minigin::Direction::Down);
+			minigin::InputManager::GetInstance().BindInput("select", SDLK_A, minigin::KeyState::OnRelease, selectCmd, id, minigin::Direction::Up);
+			minigin::InputManager::GetInstance().BindInput("select", SDLK_SPACE, minigin::KeyState::OnDown, submitCmd, id);
+		}
+		else
+		{
+			auto selectCmdDelayed = std::make_shared<digdug::SelectCmd>(selectorComp, 0.25f);
+			minigin::InputManager::GetInstance().BindInput("select", minigin::GamepadJoystick::LEFT_JOYSTICK, 0.5f, selectCmdDelayed, id);
+			minigin::InputManager::GetInstance().BindInput("select", minigin::GamepadButton::SOUTH, minigin::KeyState::OnDown, submitCmd, id);
+		}
+	}
+	scene.Add(std::move(selector));
+
+	const float gaps{ 54.f };
+	std::vector<minigin::TextComponent*> textComps{};
+
+	auto base = std::make_unique<minigin::GameObject>();
+	{
+		for (int c{ 0 }; c < nameLength; ++c)
+		{
+			auto obj = std::make_unique<minigin::GameObject>();
+			obj->SetLocalPosition(gaps * c, 0.f, 0.f);
+			obj->SetParent(base.get());
+
+			auto renderComp = obj->AddComponent<minigin::RenderComponent>();
+			if (renderComp == nullptr) return nullptr;
+
+			auto textComp = obj->AddComponent<minigin::TextComponent>();
+			if (textComp == nullptr) return nullptr;
+
+			textComp->SetFont(font);
+			textComp->SetText("A");
+			textComps.push_back(textComp);
+
+			selectorComp->AddSelectableObject(obj.get());
+			scene.Add(std::move(obj));
+		}
+
+		if (id == minigin::InputManager::GetKeyboardID())
+		{
+			auto letterCmd = std::make_shared<digdug::LetterSelectCmd>(selectorComp);
+			minigin::InputManager::GetInstance().BindInput("select", SDLK_W, minigin::KeyState::OnRelease, letterCmd, id, minigin::Direction::Up);
+			minigin::InputManager::GetInstance().BindInput("select", SDLK_S, minigin::KeyState::OnRelease, letterCmd, id, minigin::Direction::Down);
+		}
+		else
+		{
+			auto letterCmdDelayed = std::make_shared<digdug::LetterSelectCmd>(selectorComp, 0.2f);
+			minigin::InputManager::GetInstance().BindInput("select", minigin::GamepadJoystick::LEFT_JOYSTICK, 0.5f, letterCmdDelayed, id);
+		}
+
+		auto button = AddButton
+		(
+			scene,
+			"submit",
+			[this, id, textComps, scoreBoard]()
+			{
+				std::string name{};
+				for (auto& comp : textComps)
+				{
+					name += comp->GetText();
+				}
+
+				std::cout << name << ": " << m_PlayerScores[id] << "\n";
+
+				if (scoreBoard == nullptr) return;
+				scoreBoard->AddScore(name, m_PlayerScores[id]);
+				++m_SubmittedScores;
+
+				if (m_SubmittedScores < m_PlayerObjects.size()) return;
+				scoreBoard->SaveScores();
+
+				WipeGameData();
+				minigin::SceneManager::GetInstance().SetActiveScene(m_MainMenuScene);
+			}
+		);
+
+		if (button == nullptr) return nullptr;
+
+		button->GetOwner().SetParent(base.get());
+
+		button->GetOwner().SetLocalPosition(300.f, 0.f, 0.f);
+		button->GetOwner().GetComponent<minigin::TextComponent>()->SetFont(font);
+
+		selectorComp->AddSelectableObject(&button->GetOwner());
+	}
+
+	auto ref = base.get();
+	scene.Add(std::move(base));
+
+	return ref;
+}
+
 void digdug::GameManager::NextLevel()
 {
 	UpdatePlayerScores();
@@ -292,8 +463,7 @@ void digdug::GameManager::NextLevel()
 
 	if (m_CurrentLevel >= m_LastLevel)
 	{
-		WipeGameData();
-		minigin::SceneManager::GetInstance().SetActiveScene(m_MainMenuScene);
+		minigin::SceneManager::GetInstance().SetActiveScene(m_ScoreBoardScene);
 		return;
 	}
 

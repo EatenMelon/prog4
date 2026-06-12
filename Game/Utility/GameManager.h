@@ -21,8 +21,10 @@ namespace digdug
 	// should have been a state machine, but i was running short on time
 	class Harpoon;
 	class EnemyBehavior;
-	class JoinGameCmd;
 	class Button;
+	class JoinGameCmd;
+	class SkipLevelCmd;
+	class ScoreBoard;
 	class GameManager final : public minigin::Singleton<GameManager>, public minigin::IObserver
 	{
 	public:
@@ -39,12 +41,15 @@ namespace digdug
 
 		void OnNotify(const minigin::IEvent& event) override;
 		void JoinPlayer(int playerId);
+		void SkipLevel();
 
 	private:
 		void WipeGameData();
 
 		void LoadStartMenu(minigin::Scene& scene);
+		void LoadScoreBoardMenu(minigin::Scene& scene);
 		Button* AddButton(minigin::Scene& scene, const std::string& text, std::function<void()> onSubmit);
+		minigin::GameObject* AddScoreSubmitter(minigin::Scene& scene, ScoreBoard* scoreBoard, int id);
 		
 		void NextLevel();
 		void HandleLoadedEvent(const LevelLoadedEvent& event);
@@ -67,6 +72,7 @@ namespace digdug
 		GameMode m_CurrentMode{ GameMode::None };
 
 		size_t m_MainMenuScene{ 0 };
+		size_t m_ScoreBoardScene{ 0 };
 
 		int m_CurrentLevel{ -1 };
 		const int m_LastLevel{ 3 };
@@ -82,9 +88,12 @@ namespace digdug
 		int m_PlayersAlive{ 0 };
 
 		std::unordered_map<int, size_t> m_Players{};
-		std::unordered_map<int, int> m_PlayerScores{};
 		std::vector<std::pair<minigin::GameObject*, Harpoon*>> m_PlayerObjects{};
 
+		std::unordered_map<int, int> m_PlayerScores{};
+		size_t m_SubmittedScores{ 0 };
+
 		std::shared_ptr<JoinGameCmd> m_JoinCommand{};
+		std::shared_ptr<SkipLevelCmd> m_SkipCommand{};
 	};
 }

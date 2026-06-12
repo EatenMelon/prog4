@@ -85,6 +85,7 @@ add_executable(${GAME_NAME} ${TARGET_PARAM}
     "${COMPONENTS_DIR}/ObjectSelector.cpp"
     "${COMPONENTS_DIR}/Button.cpp"
     "${COMPONENTS_DIR}/KillingComponent.cpp"
+    "${COMPONENTS_DIR}/ScoreBoard.cpp"
 
     "${UTILITY_DIR}/DirtCell.cpp"
     "${UTILITY_DIR}/HarpoonState.cpp"
@@ -97,6 +98,8 @@ add_executable(${GAME_NAME} ${TARGET_PARAM}
     "${INPUT_DIR}/HarpoonCmd.cpp"
     "${INPUT_DIR}/JoinGameCmd.cpp"
     "${INPUT_DIR}/SelectorCmds.cpp"
+    "${INPUT_DIR}/LetterSelectCmd.cpp"
+    "${INPUT_DIR}/SkipLevelCmd.cpp"
 )
 
 target_compile_features(${GAME_NAME} PUBLIC cxx_std_20)

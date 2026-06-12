@@ -22,6 +22,8 @@ namespace digdug
 		void SelectBackwards();
 		void Submit();
 
+		minigin::GameObject* GetSelectedObject() const;
+
 		bool AddSelectableObject(minigin::GameObject* object);
 		bool RemoveSelectableObject(minigin::GameObject* object);
 

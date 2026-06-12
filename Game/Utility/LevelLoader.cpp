@@ -49,8 +49,10 @@ bool digdug::LevelLoader::AddLevel(const std::string& file)
 	const auto path{ m_Root / file };
 
 	std::ifstream fs{ path.string() };
-	Json jsonFile = Json::parse(fs);
 
+	if (fs.fail()) return false;
+
+	Json jsonFile = Json::parse(fs);
 	if (m_Levels.contains(path.string()))
 	{
 		std::cout << "WARNING: failed to add level: " << path << " => has already been loaded!\n";

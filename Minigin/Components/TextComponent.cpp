@@ -1,4 +1,5 @@
 #include "TextComponent.h"
+#include "TextComponent.h"
 
 #include <stdexcept>
 #include <SDL3_ttf/SDL_ttf.h>
@@ -54,4 +55,9 @@ void minigin::TextComponent::SetColor(const SDL_Color& color)
 void minigin::TextComponent::SetFont(std::shared_ptr<Font> font)
 {
 	m_font = std::move(font);
+}
+
+const std::string& minigin::TextComponent::GetText() const
+{
+	return m_Text;
 }

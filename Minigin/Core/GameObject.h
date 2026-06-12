@@ -33,7 +33,7 @@ namespace minigin
 		void SetPositionDirty();
 		void UpdateWorldPosition();
 
-		bool Enabled() const { return m_Enabled; }
+		bool Enabled() const;
 		void Enable(bool enable) { m_Enabled = enable; }
 
 		void Destroy();

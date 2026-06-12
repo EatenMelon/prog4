@@ -28,6 +28,7 @@ namespace digdug
 		minigin::GameObject* m_PoppedObj{ nullptr };
 	};
 
+	class DirtGrid;
 	class Inflatable final : public minigin::Component, public minigin::IObserver
 	{
 	public:
@@ -48,7 +49,13 @@ namespace digdug
 		// get the gameobject that is pumping the inflatable
 		minigin::GameObject* GetPumpUser() { return m_PumpUser; }
 
+		void SetScoreValue(int value) { m_BaseScoreValue = value; }
+
 	private:
+		void UpdateScoreOfPumper(minigin::GameObject* obj, DirtGrid* grid);
+
+		int m_BaseScoreValue{};
+
 		minigin::Subject m_OnPopEvent{};
 		unsigned int m_PumpEventHash{ 0 };
 

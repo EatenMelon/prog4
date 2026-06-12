@@ -8,6 +8,8 @@
 
 #include <HarpoonState.h>
 #include <HealthComponent.h>
+#include <DirtGrid.h>
+#include <ScoreComponent.h>
 
 void digdug::Inflatable::Start()
 {
@@ -18,7 +20,7 @@ void digdug::Inflatable::Start()
 		std::cerr << "WARNING: InflatableComponent doesn't have a sprite sheet!\n";
 	}
 
-	PumpInflatableEvent pumpEvent{ nullptr };
+	PumpInflatableEvent pumpEvent{ nullptr, nullptr };
 	m_PumpEventHash = pumpEvent.GetEventHash();
 
 	PumpDetachEvent detachEvent{};
@@ -100,6 +102,8 @@ void digdug::Inflatable::OnNotify(const minigin::IEvent& event)
 
 	if (m_Inflation < m_MaxInflation - 1) return;
 
+	UpdateScoreOfPumper(m_PumpUser, pumpEvent.GetGrid());
+
 	auto hitbox = GetOwner().GetComponent<minigin::Hitbox>();
 
 	if (hitbox != nullptr)
@@ -111,7 +115,7 @@ void digdug::Inflatable::OnNotify(const minigin::IEvent& event)
 	if (healthComp != nullptr)
 	{
 		healthComp->TakeDamage();
-		std::cout << "pop\n";
+		std::cout << "pop" << healthComp->GetHealth() << "\n";
 	}
 
 	InflatablePoppedEvent popEvent{ &GetOwner()};
@@ -126,4 +130,35 @@ void digdug::Inflatable::SetSpriteSheet(const std::string& path)
 	frame.x /= m_MaxInflation;
 
 	m_SpriteSheet = std::make_unique<minigin::SpriteSheet>(texture, frame);
+}
+
+void digdug::Inflatable::UpdateScoreOfPumper(minigin::GameObject* obj, DirtGrid* grid)
+{
+	if (grid == nullptr) return;
+	if (obj == nullptr) return;
+
+	auto scoreComp = obj->GetComponent<digdug::ScoreComponent>();
+	if (scoreComp == nullptr) return;
+
+	glm::vec2 size{ 0 };
+
+	auto renderComp = GetOwner().GetComponent<minigin::RenderComponent>();
+	if (renderComp != nullptr)
+	{
+		size = renderComp->GetSize();
+	}
+
+	const auto center = GetOwner().GetLocalPosition() + glm::vec3(size / 2.f, 0.f);
+	auto gridPos = grid->GetPosInGrid(center);
+
+	const int level = static_cast<int>(grid->GetDepthLevel(gridPos));
+
+	int addedScore = m_BaseScoreValue;
+
+	if (level > 0)
+	{
+		addedScore += static_cast<int>(addedScore * (level - 1.f) / 2.f);
+	}
+
+	scoreComp->AddScore(addedScore);
 }

@@ -103,15 +103,18 @@ namespace digdug
 	class PumpInflatableEvent final : public minigin::PlainEvent
 	{
 	public:
-		PumpInflatableEvent(minigin::GameObject* pumpUser)
+		PumpInflatableEvent(minigin::GameObject* pumpUser, DirtGrid* grid)
 			: minigin::PlainEvent("PumpEvent")
 			, m_PumpUser{ pumpUser }
+			, m_Grid{ grid }
 		{}
 
 		minigin::GameObject* GetPumpUser() const { return m_PumpUser; }
+		DirtGrid* GetGrid() const { return m_Grid; }
 
 	private:
 		minigin::GameObject* m_PumpUser{ nullptr };
+		DirtGrid* m_Grid{ nullptr };
 	};
 
 	class PumpDetachEvent final : public minigin::PlainEvent
@@ -129,7 +132,7 @@ namespace digdug
 
 		bool UsingHarpoon() override { return true; }
 
-		std::unique_ptr<HarpoonState> Update(float deltaTime, DirtGrid*) override;
+		std::unique_ptr<HarpoonState> Update(float deltaTime, DirtGrid* grid) override;
 		void OnNotify(const minigin::IEvent& event) override;
 		std::unique_ptr<HarpoonState> StartShoot() override;
 		std::unique_ptr<HarpoonState> StartRetract() override;
@@ -138,6 +141,7 @@ namespace digdug
 
 	private:
 		Inflatable* m_Inflatable{ nullptr };
+		DirtGrid* m_grid{ nullptr };
 
 		const float m_PumpDelay{ 1.f };
 		float m_TimeUntilNextPump{ 0.f };

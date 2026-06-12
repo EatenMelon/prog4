@@ -49,6 +49,7 @@ void digdug::Harpoon::Start()
 	m_HitEventHash = event.GetEventHash();
 
 	m_Hitbox->HitEnterEvent().Subscribe(this);
+	m_Hitbox->SetShrink(m_RenderCompUser->GetSize().x / 10.f);
 }
 
 void digdug::Harpoon::Update(float deltaTime)

@@ -250,14 +250,14 @@ minigin::GameObject* digdug::LevelLoader::AddEnemy(minigin::Scene& scene, DirtGr
 		return nullptr;
 	}
 
-	const auto& itr = m_SpritesMap.find(enemyData.type);
-	if (itr == m_SpritesMap.end())
+	const auto& itrSprites = m_SpritesMap.find(enemyData.type);
+	if (itrSprites == m_SpritesMap.end())
 	{
-		std::cout << "WARNING: LevelLoader::AddEnemy, failed to add enemy to scene, couldn't matching sprites for enemy type!\n";
+		std::cout << "WARNING: LevelLoader::AddEnemy, failed to add enemy to scene, couldn't find matching sprites for enemy type!\n";
 		return nullptr;
 	}
 
-	const auto& sprites = itr->second;
+	const auto& sprites = itrSprites->second;
 	renderComp->SetTexture(sprites.solidSprite);
 	renderComp->MatchWidth(grid->GetCellSize());
 
@@ -287,6 +287,7 @@ minigin::GameObject* digdug::LevelLoader::AddEnemy(minigin::Scene& scene, DirtGr
 	killComp->AddTarget(KillingComponent::Target::Player);
 
 	hitbox->SetBounds(renderComp->GetSize());
+	hitbox->SetShrink(renderComp->GetSize().x / 10.f);
 
 	auto inflatable = obj->AddComponent<digdug::Inflatable>();
 	if (inflatable == nullptr)
@@ -294,6 +295,15 @@ minigin::GameObject* digdug::LevelLoader::AddEnemy(minigin::Scene& scene, DirtGr
 		std::cout << "WARNING: LevelLoader::AddEnemy, failed to add enemy to scene, couldn't add render component!\n";
 		return nullptr;
 	}
+
+	const auto& itrScores = m_ScoreValues.find(enemyData.type);
+	if (itrScores == m_ScoreValues.end())
+	{
+		std::cout << "WARNING: LevelLoader::AddEnemy, failed to add enemy to scene, couldn't matching score value for enemy type!\n";
+		return nullptr;
+	}
+
+	inflatable->SetScoreValue(itrScores->second);
 
 	inflatable->SetSpriteSheet(sprites.inflatingSpite);
 
@@ -364,6 +374,7 @@ minigin::GameObject* digdug::LevelLoader::AddPlayer(minigin::Scene& scene, DirtG
 		}
 
 		hitbox->SetBounds(renderComp->GetSize());
+		hitbox->SetShrink(renderComp->GetSize().x / 10.f);
 
 		auto healthComp = playerObj->AddComponent<digdug::HealthComponent>();
 		if (healthComp == nullptr)

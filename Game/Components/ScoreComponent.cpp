@@ -9,19 +9,6 @@
 void digdug::ScoreComponent::Start()
 {
 	minigin::HitEvent event{ nullptr };
-	m_HitEventHash = minigin::PlainEvent::CreateHashSDBM(event.GetEventName());
-
-	UpdateDisplay();
-}
-
-void digdug::ScoreComponent::OnNotify(const minigin::IEvent& event)
-{
-	if (event.GetEventHash() != m_HitEventHash)
-	{
-		return;
-	}
-
-	m_Score += 100;
 
 	UpdateDisplay();
 }
@@ -39,8 +26,13 @@ void digdug::ScoreComponent::LinkTextComponent(minigin::TextComponent* comp, con
 void digdug::ScoreComponent::SetScore(int score)
 {
 	m_Score = score;
-	
 	UpdateDisplay();	
+}
+
+void digdug::ScoreComponent::AddScore(int addedScore)
+{
+	m_Score += addedScore;
+	UpdateDisplay();
 }
 
 void digdug::ScoreComponent::UpdateDisplay()

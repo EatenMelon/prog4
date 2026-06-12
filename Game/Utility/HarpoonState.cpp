@@ -165,8 +165,9 @@ digdug::HarpoonPumpingState::~HarpoonPumpingState()
 	m_PumpEvent.UnSubscribe(m_Inflatable);
 }
 
-std::unique_ptr<digdug::HarpoonState> digdug::HarpoonPumpingState::Update(float deltaTime, DirtGrid*)
+std::unique_ptr<digdug::HarpoonState> digdug::HarpoonPumpingState::Update(float deltaTime, DirtGrid* grid)
 {
+	m_grid = grid;
 	UpdatePosition();
 	UpdateHitbox();
 	
@@ -194,7 +195,7 @@ std::unique_ptr<digdug::HarpoonState> digdug::HarpoonPumpingState::Update(float 
 		// pump
 		m_TimeUntilNextPump = m_PumpDelay;
 
-		PumpInflatableEvent event{ GetHarpoon()->GetUser() };
+		PumpInflatableEvent event{ GetHarpoon()->GetUser(), m_grid };
 		m_PumpEvent.Notify(event);
 	}
 
@@ -214,7 +215,7 @@ std::unique_ptr<digdug::HarpoonState> digdug::HarpoonPumpingState::StartShoot()
 {
 	m_TryRetract = false;
 
-	PumpInflatableEvent event{ GetHarpoon()->GetUser() };
+	PumpInflatableEvent event{ GetHarpoon()->GetUser(), m_grid };
 	m_PumpEvent.Notify(event);
 	m_TimeUntilNextPump = m_PumpDelay;
 

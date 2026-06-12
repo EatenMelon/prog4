@@ -16,7 +16,7 @@ namespace digdug
 	public:
 		using::minigin::Component::Component;
 
-		enum class Depth{ Surface, TopSoil, SubSoil, Stone, Bedrock };
+		enum class Depth{ Surface = 0, TopSoil = 1, SubSoil = 2, Stone = 3, Bedrock = 4 };
 
 		void Start() override;
 		void Update(float) override;

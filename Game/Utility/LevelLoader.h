@@ -126,6 +126,12 @@ namespace digdug
 			}
 		};
 
+		const std::unordered_map<EnemyData::Type, int> m_ScoreValues
+		{
+			{ EnemyData::Type::Pooka, 200 },
+			{ EnemyData::Type::Fygar, 400 }
+		};
+
 		DirtGrid* AddDirtGrid(minigin::Scene& scene, float cellSize);
 		minigin::GameObject* AddEnemy(minigin::Scene& scene, DirtGrid* grid, const EnemyData& enemyData);
 		minigin::GameObject* AddPlayer(minigin::Scene& scene, DirtGrid* grid, const glm::ivec2 position);

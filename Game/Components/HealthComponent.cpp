@@ -8,8 +8,6 @@
 #include <Events.h>
 #include <Hitbox.h>
 
-#include <KillingComponent.h>
-
 void digdug::HealthComponent::Start()
 {
 	minigin::HitEvent event{ nullptr };
@@ -33,7 +31,7 @@ void digdug::HealthComponent::OnNotify(const minigin::IEvent& event)
 
 	auto killComp = hitEvent->Who()->GetOwner().GetComponent<digdug::KillingComponent>();
 	if (killComp == nullptr) return;
-	if (!killComp->IsTarget(KillingComponent::Target::Player)) return;
+	if (!killComp->IsTarget(m_TargetType)) return;
 
 	TakeDamage();
 }

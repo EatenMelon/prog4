@@ -161,7 +161,7 @@ void digdug::GameManager::JoinPlayer(int playerId)
 		// add a enemy player
 		if (m_CurrentMode != GameMode::Versus) return;
 
-		constexpr size_t exceedingLimit{ 100 };
+		constexpr size_t exceedingLimit{ (std::numeric_limits<size_t>::max)() };
 		m_Players.emplace(playerId, exceedingLimit);
 	}
 	else
@@ -174,8 +174,8 @@ void digdug::GameManager::JoinPlayer(int playerId)
 
 	m_JoinCommand->Enable(false);
 	AssignCommandsToPlayers();
-	AddDisplays(minigin::SceneManager::GetInstance().GetActiveScene());
 	StartWatchingPlayers();
+	AddDisplays(minigin::SceneManager::GetInstance().GetActiveScene());
 }
 
 void digdug::GameManager::WipeGameData()
@@ -360,8 +360,8 @@ void digdug::GameManager::HandleLoadedEvent(const LevelLoadedEvent& event)
 	}
 
 	AssignCommandsToPlayers();
-	AddDisplays(minigin::SceneManager::GetInstance().GetActiveScene());
 	StartWatchingPlayers();
+	AddDisplays(minigin::SceneManager::GetInstance().GetActiveScene());
 }
 
 void digdug::GameManager::HandleEnemyPoppedEvent(const InflatablePoppedEvent& event)
@@ -406,7 +406,7 @@ void digdug::GameManager::HandleDamageEvent(const ReceivedDamageEvent& event)
 
 	for (auto [id, idx] : m_Players)
 	{
-		if (m_PlayerObjects[idx].first != &healthComp->GetOwner()) continue;
+		if (idx >= m_PlayerObjects.size()) continue;
 		
 		m_PlayerObjects[idx].first->Enable(false);
 		m_PlayerObjects[idx].second->Enable(false);
@@ -414,11 +414,6 @@ void digdug::GameManager::HandleDamageEvent(const ReceivedDamageEvent& event)
 		EvaluateLivingPlayers();
 		return;
 	}
-
-	//if (&m_EnemyPlayer->GetOwner() != &healthComp->GetOwner()) return;
-
-	//--m_PlayersAlive;
-	//EvaluateLivingPlayers();
 }
 
 void digdug::GameManager::EvaluateLivingPlayers()
@@ -545,8 +540,6 @@ void digdug::GameManager::PossessEnemy(int playerId)
 		enemyPlayer = &m_Enemies.front()->GetOwner();
 	}
 
-	m_EnemyPlayer->GetOwner().AddComponent<digdug::HealthComponent>();
-
 	auto renderComp = enemyPlayer->GetComponent<minigin::RenderComponent>();
 	auto pos = enemyPlayer->GetLocalPosition() + glm::vec3(renderComp->GetSize() / 2.f, 0);
 
@@ -575,6 +568,14 @@ void digdug::GameManager::StartWatchingPlayers()
 
 		healthComp->TookDamageEvent().Subscribe(this);
 	}
+
+	if (m_EnemyPlayer == nullptr) return;
+
+	auto healthComp = m_EnemyPlayer->GetOwner().AddComponent<digdug::HealthComponent>();
+	if (healthComp == nullptr) return;
+
+	healthComp->SetTargetType(KillingComponent::Target::Enemy);
+	healthComp->TookDamageEvent().Subscribe(this);
 }
 
 void digdug::GameManager::AddDisplays(minigin::Scene& scene)

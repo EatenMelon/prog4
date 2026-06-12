@@ -2,6 +2,7 @@
 
 #include <RenderComponent.h>
 #include <GameObject.h>
+#include <Hitbox.h>
 
 #include <AimComponent.h>
 #include <Enemy.h>
@@ -24,6 +25,17 @@ void digdug::FireBreath::Start()
 	else
 	{
 		throw std::runtime_error("Fire attack needs a render components!");
+	}
+
+	auto hitbox = GetOwner().GetComponent<minigin::Hitbox>();
+	if (hitbox != nullptr)
+	{
+		hitbox->SetBounds(renderComp->GetSize());
+		hitbox->SetShrink(renderComp->GetSize().x / 10.f);
+	}
+	else
+	{
+		throw std::runtime_error("Fire attack needs a aim components!");
 	}
 
 	auto aimComp = GetOwner().GetComponent<digdug::AimComponent>();

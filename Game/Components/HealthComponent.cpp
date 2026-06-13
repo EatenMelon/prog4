@@ -3,10 +3,13 @@
 #include <sstream>
 #include <iostream>
 
+#include <ServiceLocator.h>
 #include <TextComponent.h>
 #include <GameObject.h>
 #include <Events.h>
 #include <Hitbox.h>
+
+#include <ResourceLocator.h>
 
 void digdug::HealthComponent::Start()
 {
@@ -50,6 +53,9 @@ void digdug::HealthComponent::TakeDamage()
 {
 	--m_Health;
 	UpdateDisplay();
+
+	const auto location = ResourceLocator::GetInstance().GetResource(ResourceLocator::Type::Sound, "pain");
+	minigin::ServiceLocator::GetSoundSystem()->Play(location, 1.f);
 
 	ReceivedDamageEvent tookDmgEvent{ this };
 	m_TookDamageEvent.Notify(tookDmgEvent);

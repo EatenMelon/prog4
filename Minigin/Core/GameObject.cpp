@@ -117,7 +117,7 @@ bool minigin::GameObject::Enabled() const
 {
 	if (m_Parent != nullptr)
 	{
-		return m_Parent->Enabled();
+		return m_Parent->Enabled() && m_Enabled;
 	}
 
 	return m_Enabled;

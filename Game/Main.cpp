@@ -22,7 +22,6 @@ using ResourceType = digdug::ResourceLocator::Type;
 static void LoadAllScenes()
 {
 	digdug::GameManager::GetInstance().Init();
-	minigin::Renderer::GetInstance().SetBackgroundColor(SDL_Color{ 0, 0, 50, 255 });
 }
 
 int main(int, char*[])
@@ -51,7 +50,8 @@ int main(int, char*[])
 	digdug::ResourceLocator::GetInstance().LoadFromFile(data_location/"resources.json");
 	digdug::LevelLoader::GetInstance().Init(data_location/"Levels");
 
-	minigin::Minigin engine(data_location, 1080, 820);
+	const std::string title{ "Prog4 exam assignment - Igance Dewulf - DigDug" };
+	minigin::Minigin engine(data_location, title, 1080, 820);
 	engine.Run(LoadAllScenes);
 
 	digdug::GameManager::GetInstance().Quit();

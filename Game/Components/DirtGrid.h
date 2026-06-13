@@ -21,7 +21,6 @@ namespace digdug
 		void Start() override;
 		void Update(float) override;
 		void Render() const override;
-		void GuiRender() override;
 
 		void Dig(const glm::ivec2& start, const glm::ivec2& end, const char preferredAxis);
 		bool HasBeenDug(const glm::ivec2& gridPos) const;

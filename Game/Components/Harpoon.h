@@ -61,6 +61,7 @@ namespace digdug
 
 		minigin::Hitbox* m_Hitbox{ nullptr };
 		unsigned int m_HitEventHash{ 0 };
+		unsigned int m_TookDamageEvent{ 0 };
 
 		DirtGrid* m_DirtGrid{ nullptr };
 

@@ -8,7 +8,9 @@
 #include <TextComponent.h>
 #include <RenderComponent.h>
 #include <ResourceManager.h>
+#include <Renderer.h>
 #include <SDL3/SDL.h>
+#include <ServiceLocator.h>
 
 #include <EnemyBehavior.h>
 #include <Enemy.h>
@@ -21,6 +23,7 @@
 #include <HarpoonCmd.h>
 #include <SelectorCmds.h>
 #include <LetterSelectCmd.h>
+#include <MuteCmd.h>
 
 #include <ObjectSelector.h>
 #include <Button.h>
@@ -42,6 +45,7 @@ void digdug::GameManager::Init()
 
 	m_JoinCommand = std::make_shared<JoinGameCmd>();
 	m_SkipCommand = std::make_shared<SkipLevelCmd>();
+	m_MuteCommand = std::make_shared<MuteCmd>();
 
 	for (int level{ 1 }; level <= m_LastLevel; ++level)
 	{
@@ -55,6 +59,7 @@ void digdug::GameManager::Init()
 				digdug::LevelLoader::GetInstance().LoadLevel(scene, file, requiredPlayers);
 
 				minigin::InputManager::GetInstance().BindInput("skip", SDLK_F1, minigin::KeyState::OnRelease, m_SkipCommand, minigin::InputManager::GetKeyboardID());
+				minigin::InputManager::GetInstance().BindInput("mute", SDLK_F2, minigin::KeyState::OnRelease, m_MuteCommand, minigin::InputManager::GetKeyboardID());
 			}
 		);
 
@@ -266,17 +271,33 @@ void digdug::GameManager::LoadStartMenu(minigin::Scene& scene)
 				auto selectCmd = std::make_shared<digdug::SelectCmd>(selectorComp, 'y');
 				minigin::InputManager::GetInstance().BindInput("select", SDLK_W, minigin::KeyState::OnRelease, selectCmd, id, minigin::Direction::Up);
 				minigin::InputManager::GetInstance().BindInput("select", SDLK_S, minigin::KeyState::OnRelease, selectCmd, id, minigin::Direction::Down);
-				minigin::InputManager::GetInstance().BindInput("select", SDLK_SPACE, minigin::KeyState::OnDown, submitCmd, id);
+				minigin::InputManager::GetInstance().BindInput("submit", SDLK_SPACE, minigin::KeyState::OnDown, submitCmd, id);
 				continue;
 			}
 
 			auto selectCmdDelayed = std::make_shared<digdug::SelectCmd>(selectorComp, 'y', 0.25f);
 			minigin::InputManager::GetInstance().BindInput("select", minigin::GamepadJoystick::LEFT_JOYSTICK, 0.5f, selectCmdDelayed, id);
-			minigin::InputManager::GetInstance().BindInput("select", minigin::GamepadButton::SOUTH, minigin::KeyState::OnDown, submitCmd, id);
+			minigin::InputManager::GetInstance().BindInput("submit", minigin::GamepadButton::SOUTH, minigin::KeyState::OnDown, submitCmd, id);
 		}
 	}
 
+	auto title = std::make_unique<minigin::GameObject>();
+	{
+		title->SetLocalPosition(140.f, 50.f, 0.f);
+
+		auto renderComp = title->AddComponent<minigin::RenderComponent>();
+		if (renderComp != nullptr)
+		{
+			const auto location = ResourceLocator::GetInstance().GetResource(ResourceLocator::Type::Sprite, "title");
+			renderComp->SetTexture(location);
+			renderComp->SetUniformScale(5.f);
+		}
+
+		scene.Add(std::move(title));
+	}
+
 	scene.Add(std::move(selector));
+	minigin::Renderer::GetInstance().SetBackgroundColor(SDL_Color{ 0, 0, 0, 255 });
 }
 
 void digdug::GameManager::LoadScoreBoardMenu(minigin::Scene& scene)
@@ -617,6 +638,9 @@ void digdug::GameManager::EvaluateLivingPlayers()
 		if (m_PlayersAlive > 0) return;
 		break;
 	}
+
+	const auto location = ResourceLocator::GetInstance().GetResource(ResourceLocator::Type::Sound, "game_over");
+	minigin::ServiceLocator::GetSoundSystem()->Play(location, 1.f);
 
 	WipeGameData();
 	minigin::SceneManager::GetInstance().SetActiveScene(m_MainMenuScene);

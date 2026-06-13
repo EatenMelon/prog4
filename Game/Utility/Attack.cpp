@@ -2,6 +2,7 @@
 
 #include <SceneManager.h>
 #include <RenderComponent.h>
+#include <ServiceLocator.h>
 
 #include <AimComponent.h>
 #include <Enemy.h>
@@ -52,4 +53,7 @@ void digdug::FireAttack::Execute(Enemy* attacker)
 	fireBreathComp->SetCaster(attacker);
 
 	scene.Add(std::move(fireObj));
+
+	const auto locationSound = ResourceLocator::GetInstance().GetResource(ResourceLocator::Type::Sound, "fire");
+	minigin::ServiceLocator::GetSoundSystem()->Play(locationSound, 1.f);
 }

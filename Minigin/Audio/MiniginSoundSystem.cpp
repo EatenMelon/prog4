@@ -15,6 +15,9 @@ public:
 	Impl(const std::string& root) : m_Root{ root } {}
 	void Play(const std::string& file, const float volume);
 
+	void Mute(bool mute);
+	bool IsMuted() const { return m_Mute; }
+
 	void Init();
 	void Quit();
 
@@ -35,6 +38,7 @@ private:
 	std::mutex m_Mutex{};
 	std::condition_variable m_Condition{};
 	bool m_PlaySounds{ false };
+	bool m_Mute{ false };
 
 	std::queue<SoundEvent> m_SoundQueue{};
 	MIX_Mixer* m_Mixer{ nullptr };
@@ -44,10 +48,13 @@ private:
 
 void minigin::SoundSystem::Impl::Play(const std::string& file, const float volume)
 {
-	if (file.empty() || volume <= 0) return;
+	if (file.empty() || volume <= 0)
+	{
+		return;
+	}
 
 	{
-		std::scoped_lock<std::mutex> lock{ m_Mutex };
+		std::lock_guard<std::mutex> lock{ m_Mutex };
 
 		SoundEvent newSound{};
 		newSound.file = file;
@@ -57,6 +64,16 @@ void minigin::SoundSystem::Impl::Play(const std::string& file, const float volum
 	}
 
 	m_Condition.notify_one();
+}
+
+void minigin::SoundSystem::Impl::Mute(bool mute)
+{
+	m_Mute = mute;
+
+	if (m_Mute)
+	{
+		MIX_StopAllTracks(m_Mixer, 0);
+	}
 }
 
 void minigin::SoundSystem::Impl::Init()
@@ -75,7 +92,7 @@ void minigin::SoundSystem::Impl::Init()
 void minigin::SoundSystem::Impl::Quit()
 {
 	{
-		std::scoped_lock<std::mutex> lock{ m_Mutex };
+		std::lock_guard<std::mutex> lock{ m_Mutex };
 		m_PlaySounds = false;
 	}
 	m_Condition.notify_one();
@@ -115,6 +132,8 @@ void minigin::SoundSystem::Impl::PlaySoundQueue()
 
 void minigin::SoundSystem::Impl::PlaySound(const SoundEvent& sound)
 {
+	if (m_Mute) return;
+
 	std::string path{ m_Root + sound.file };
 
 	auto loadedSound = m_LoadedSounds.find(path);
@@ -126,6 +145,8 @@ void minigin::SoundSystem::Impl::PlaySound(const SoundEvent& sound)
 	}
 
 	auto track = loadedSound->second;
+
+	if (MIX_TrackPlaying(track)) return;
 
 	MIX_PlayTrack(track, 0);
 }
@@ -161,5 +182,7 @@ void minigin::SoundSystem::Impl::LoadAndPlaySound(const SoundEvent& sound)
 minigin::SoundSystem::SoundSystem(const std::string& root) : m_pImpl{ std::make_unique<minigin::SoundSystem::Impl>(root) } {}
 minigin::SoundSystem::~SoundSystem() = default;
 void minigin::SoundSystem::Play(const std::string& file, const float volume) { m_pImpl->Play(file, volume); }
+void minigin::SoundSystem::Mute(bool mute) { m_pImpl->Mute(mute); }
+bool minigin::SoundSystem::IsMuted() const { return m_pImpl->IsMuted(); }
 void minigin::SoundSystem::Init() { m_pImpl->Init(); }
 void minigin::SoundSystem::Quit() { m_pImpl->Quit(); }

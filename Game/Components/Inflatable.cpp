@@ -1,15 +1,17 @@
 #include "Inflatable.h"
 
 #include <ResourceManager.h>
-#include <Renderer.h>
+#include <ServiceLocator.h>
 #include <RenderComponent.h>
+#include <Renderer.h>
 #include <GameObject.h>
 #include <Hitbox.h>
 
 #include <HarpoonState.h>
 #include <HealthComponent.h>
-#include <DirtGrid.h>
 #include <ScoreComponent.h>
+#include <DirtGrid.h>
+#include <ResourceLocator.h>
 
 void digdug::Inflatable::Start()
 {
@@ -99,6 +101,9 @@ void digdug::Inflatable::OnNotify(const minigin::IEvent& event)
 	m_RenderComp->Enable(false);
 
 	++m_Inflation;
+
+	const auto location = ResourceLocator::GetInstance().GetResource(ResourceLocator::Type::Sound, "pump");
+	minigin::ServiceLocator::GetSoundSystem()->Play(location, 1.f);
 
 	if (m_Inflation < m_MaxInflation - 1) return;
 

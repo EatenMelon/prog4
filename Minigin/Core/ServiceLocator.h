@@ -9,6 +9,9 @@ namespace minigin
 	public:
 		void Play(const std::string&, const float ) override {};
 
+		void Mute(bool) override { };
+		bool IsMuted() const override { return false; };
+
 		void Init() override {};
 		void Quit() override {};
 

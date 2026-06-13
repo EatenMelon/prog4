@@ -15,7 +15,7 @@ namespace minigin
 		float m_Lag{ 0.f };
 
 	public:
-		explicit Minigin(const std::filesystem::path& dataPath, int windowWidth, int windowHeight);
+		explicit Minigin(const std::filesystem::path& dataPath, const std::string& title, int windowWidth, int windowHeight);
 		~Minigin();
 		void Run(const std::function<void()>& load);
 		void RunOneFrame();

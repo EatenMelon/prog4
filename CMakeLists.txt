@@ -101,6 +101,7 @@ add_executable(${GAME_NAME} ${TARGET_PARAM}
     "${INPUT_DIR}/SelectorCmds.cpp"
     "${INPUT_DIR}/LetterSelectCmd.cpp"
     "${INPUT_DIR}/SkipLevelCmd.cpp"
+    "${INPUT_DIR}/MuteCmd.cpp"
 )
 
 target_compile_features(${GAME_NAME} PUBLIC cxx_std_20)

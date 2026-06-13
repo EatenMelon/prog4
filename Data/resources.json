@@ -19,7 +19,9 @@
 	  { "name": "tiles/sand",		"location": "Tiles/SandTile.png" },
 	  { "name": "tiles/dirt",		"location": "Tiles/DirtTile.png" },
 	  { "name": "tiles/stone",		"location": "Tiles/StoneTile.png" },
-	  { "name": "tiles/bedrock",	"location": "Tiles/BedrockTile.png" }
+	  { "name": "tiles/bedrock",	"location": "Tiles/BedrockTile.png" },
+	  
+	  { "name": "title",			"location": "Title.png" }
     ]
   },
   {
@@ -30,10 +32,13 @@
     ]
   },
   {
-    "root": "Fonts/",
+    "root": "Sound/",
     "type": "sound",
     "files": [
-
+		{ "name": "fire",			"location": "Fire.mp3" },
+		{ "name": "pain",			"location": "Pain.mp3" },
+		{ "name": "pump",			"location": "Pump.mp3" },
+		{ "name": "game_over",		"location": "GameOver.mp3" }
     ]
   }
 ]

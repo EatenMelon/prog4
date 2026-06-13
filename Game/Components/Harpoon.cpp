@@ -11,6 +11,7 @@
 #include <Inflatable.h>
 #include <HarpoonState.h>
 #include <AimComponent.h>
+#include <HealthComponent.h>
 
 void digdug::Harpoon::Start()
 {
@@ -30,6 +31,13 @@ void digdug::Harpoon::Start()
 		throw std::runtime_error("Harpoons user requires a render component!");
 	}
 
+	auto healthComp = m_User->GetComponent<HealthComponent>();
+
+	if (healthComp != nullptr)
+	{
+		healthComp->TookDamageEvent().Subscribe(this);
+	}
+
 	m_AimComp = m_User->GetComponent<AimComponent>();
 
 	if (m_AimComp == nullptr)
@@ -47,6 +55,9 @@ void digdug::Harpoon::Start()
 
 	minigin::HitEvent event{ nullptr };
 	m_HitEventHash = event.GetEventHash();
+
+	ReceivedDamageEvent dmgEvent{ nullptr };
+	m_TookDamageEvent = dmgEvent.GetEventHash();
 
 	m_Hitbox->HitEnterEvent().Subscribe(this);
 	m_Hitbox->SetShrink(m_RenderCompUser->GetSize().x / 10.f);
@@ -129,20 +140,29 @@ void digdug::Harpoon::Retract()
 
 void digdug::Harpoon::OnNotify(const minigin::IEvent& event)
 {
-	if (m_HitEventHash != event.GetEventHash()) return;
+	if (m_HitEventHash == event.GetEventHash())
+	{
+		const auto& hitEvent = static_cast<const minigin::HitEvent&>(event);
 
-	const auto& hitEvent = static_cast<const minigin::HitEvent&>(event);
+		auto inflatable = hitEvent.Who()->GetOwner().GetComponent<Inflatable>();
+		if (inflatable == nullptr) return;
 
-	auto inflatable = hitEvent.Who()->GetOwner().GetComponent<Inflatable>();
+		auto newState = m_State->OnAttach(inflatable);
 
-	if (inflatable == nullptr) return;
+		if (newState == nullptr) return;
+		m_State = std::move(newState);
 
-	auto newState = m_State->OnAttach(inflatable);
+		TryEnableCommands();
+		return;
+	}
 
-	if (newState == nullptr) return;
-	m_State = std::move(newState);
+	if (m_TookDamageEvent == event.GetEventHash())
+	{
+		auto newState = m_State->OnUserTookDamage();
 
-	TryEnableCommands();
+		if (newState == nullptr) return;
+		m_State = std::move(newState);
+	}
 }
 
 void digdug::Harpoon::EquipOnUser(minigin::GameObject& user)

@@ -148,6 +148,11 @@ std::unique_ptr<digdug::HarpoonState> digdug::HarpoonShootState::StartRetract()
 	return std::make_unique<HarpoonRetractState>(GetHarpoon(), GetExtend());
 }
 
+std::unique_ptr<digdug::HarpoonState> digdug::HarpoonShootState::OnUserTookDamage()
+{
+	return std::make_unique<HarpoonIdleState>(GetHarpoon());
+}
+
 digdug::HarpoonPumpingState::HarpoonPumpingState(Harpoon* harpoon, float extend, Inflatable* inflatable)
 	: HarpoonState(harpoon, extend)
 	, m_Inflatable{ inflatable }
@@ -230,6 +235,11 @@ std::unique_ptr<digdug::HarpoonState> digdug::HarpoonPumpingState::StartRetract(
 	return nullptr;
 }
 
+std::unique_ptr<digdug::HarpoonState> digdug::HarpoonPumpingState::OnUserTookDamage()
+{
+	return std::make_unique<HarpoonIdleState>(GetHarpoon());
+}
+
 digdug::HarpoonRetractState::HarpoonRetractState(Harpoon* harpoon, float extend)
 	: HarpoonState(harpoon, extend)
 {
@@ -252,4 +262,9 @@ std::unique_ptr<digdug::HarpoonState> digdug::HarpoonRetractState::Update(float 
 	}
 
 	return nullptr;
+}
+
+std::unique_ptr<digdug::HarpoonState> digdug::HarpoonRetractState::OnUserTookDamage()
+{
+	return std::make_unique<HarpoonIdleState>(GetHarpoon());
 }

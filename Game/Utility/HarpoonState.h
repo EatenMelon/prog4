@@ -37,6 +37,9 @@ namespace digdug
 	// 2 => 3	force cancel
 	// 
 	// 3 => 0	fully retracted
+	// 3 => 0	user took damage
+	// 2 => 0	user took damage
+	// 1 => 0	user took damage
 	//
 	class HarpoonState
 	{
@@ -46,6 +49,7 @@ namespace digdug
 
 		virtual std::unique_ptr<HarpoonState> Update(float, DirtGrid*) = 0;
 		virtual std::unique_ptr<HarpoonState> StartShoot() = 0;
+		virtual std::unique_ptr<HarpoonState> OnUserTookDamage() = 0;
 		virtual std::unique_ptr<HarpoonState> StartRetract() = 0;
 		virtual std::unique_ptr<HarpoonState> OnAttach(Inflatable*) = 0;
 
@@ -78,6 +82,7 @@ namespace digdug
 
 		std::unique_ptr<HarpoonState> Update(float, DirtGrid*) override { return nullptr; }
 		std::unique_ptr<HarpoonState> StartRetract() override { return nullptr; }
+		std::unique_ptr<HarpoonState> OnUserTookDamage() override { return nullptr; }
 		std::unique_ptr<HarpoonState> OnAttach(Inflatable*) override { return nullptr; }
 	};
 
@@ -92,6 +97,7 @@ namespace digdug
 		std::unique_ptr<HarpoonState> Update(float deltaTime, DirtGrid*) override;
 		std::unique_ptr<HarpoonState> OnAttach(Inflatable* inflatable) override;
 		std::unique_ptr<HarpoonState> StartRetract() override;
+		std::unique_ptr<HarpoonState> OnUserTookDamage() override;
 
 		std::unique_ptr<HarpoonState> StartShoot() override { return nullptr; }
 
@@ -136,6 +142,7 @@ namespace digdug
 		void OnNotify(const minigin::IEvent& event) override;
 		std::unique_ptr<HarpoonState> StartShoot() override;
 		std::unique_ptr<HarpoonState> StartRetract() override;
+		std::unique_ptr<HarpoonState> OnUserTookDamage() override;
 
 		std::unique_ptr<HarpoonState> OnAttach(Inflatable*) override { return nullptr; };
 
@@ -162,6 +169,7 @@ namespace digdug
 		HarpoonRetractState(Harpoon* harpoon, float extend);
 
 		std::unique_ptr<HarpoonState> Update(float deltaTime, DirtGrid*) override;
+		std::unique_ptr<HarpoonState> OnUserTookDamage() override;
 
 		std::unique_ptr<HarpoonState> StartShoot() override { return nullptr; }
 		std::unique_ptr<HarpoonState> StartRetract() override { return nullptr; }

@@ -13,6 +13,9 @@ namespace minigin
 
 		void Play(const std::string& file, const float volume) override;
 
+		void Mute(bool mute) override;
+		bool IsMuted() const override;
+
 		void Init() override;
 		void Quit() override;
 

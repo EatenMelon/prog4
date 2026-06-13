@@ -18,13 +18,14 @@ namespace minigin
 
 namespace digdug
 {
-	// should have been a state machine, but i was running short on time
 	class Harpoon;
 	class EnemyBehavior;
 	class Button;
+	class ScoreBoard;
+
 	class JoinGameCmd;
 	class SkipLevelCmd;
-	class ScoreBoard;
+	class MuteCmd;
 	class GameManager final : public minigin::Singleton<GameManager>, public minigin::IObserver
 	{
 	public:
@@ -95,5 +96,6 @@ namespace digdug
 
 		std::shared_ptr<JoinGameCmd> m_JoinCommand{};
 		std::shared_ptr<SkipLevelCmd> m_SkipCommand{};
+		std::shared_ptr<MuteCmd> m_MuteCommand{};
 	};
 }

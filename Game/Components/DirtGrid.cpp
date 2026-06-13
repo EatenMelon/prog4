@@ -84,19 +84,6 @@ void digdug::DirtGrid::Render() const
 	}
 }
 
-void digdug::DirtGrid::GuiRender()
-{
-	bool open{ true };
-	ImGui::Begin("dirt grid", &open);
-	{
-		if (ImGui::RadioButton("Outlines", m_ShowOutlines))
-		{
-			m_ShowOutlines = !m_ShowOutlines;
-		}
-	}
-	ImGui::End();
-}
-
 void digdug::DirtGrid::Dig(const glm::ivec2& start, const glm::ivec2& end, const char preferredAxis)
 {
 	DigEvent newEvent{};

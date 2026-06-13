@@ -14,6 +14,27 @@ void minigin::LoggingSoundSystem::Play(const std::string& file, const float volu
 	m_Wrapped->Play(file, volume);
 }
 
+void minigin::LoggingSoundSystem::Mute(bool mute)
+{
+	std::cout << "Sound has been ";
+
+	if (mute)
+	{
+		std::cout << "muted!\n";
+	}
+	else
+	{
+		std::cout << "unmuted\n";
+	}
+
+	m_Wrapped->Mute(mute);
+}
+
+bool minigin::LoggingSoundSystem::IsMuted() const
+{
+	return m_Wrapped->IsMuted();
+}
+
 void minigin::LoggingSoundSystem::Init()
 {
 	m_Wrapped->Init();

@@ -16,22 +16,6 @@ void minigin::Hitbox::Init()
 	HitboxManager::GetInstance().Join(*this);
 }
 
-void minigin::Hitbox::Render() const
-{
-	auto renderer = Renderer::GetInstance().GetSDLRenderer();
-
-	const auto shrink = glm::vec2(m_Shrink, m_Shrink);
-
-	SDL_FRect rect{};
-	rect.x = GetOwner().GetWorldPosition().x + m_Shrink / 2;
-	rect.y = GetOwner().GetWorldPosition().y + m_Shrink / 2;
-	rect.w = m_Width - shrink.x;
-	rect.h = m_Height - shrink.y;
-
-	SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-	SDL_RenderRect(renderer, &rect);
-}
-
 void minigin::Hitbox::SetBounds(float width, float height)
 {
 	m_Width = width;

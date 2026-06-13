@@ -19,7 +19,6 @@ namespace minigin
 		~Hitbox() override;
 
 		void Init() override;
-		void Render() const override;
 
 		void SetBounds(float width, float height);
 		void SetBounds(const glm::vec2& size);

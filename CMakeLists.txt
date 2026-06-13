@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.26)
 project(Minigin)
 
+set(CXX_STANDARD 20)
+set(CXX_STANDARD_REQUIRED ON)
+
 if(EMSCRIPTEN)
   message("Using Emscripten!")
 endif()

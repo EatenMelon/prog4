@@ -19,6 +19,7 @@ namespace digdug
 		using Component::Component;
 
 		void Start() override;
+		void Update(float deltaTime) override;
 		void OnNotify(const minigin::IEvent& event) override;
 
 		void LinkTextComponent(minigin::TextComponent* comp, const std::string& message);
@@ -41,9 +42,10 @@ namespace digdug
 		const int m_MaxHealth{ 3 };
 		unsigned int m_HitEventHash{ 0 };
 
-		KillingComponent::Target m_TargetType{ KillingComponent::Target::Player };
+		float m_RemainingGrace{ 0.f };
+		const float m_GracePeriod{ 2.f };
 
-		// TODO add grace periode, and reset harpoon on respawn
+		KillingComponent::Target m_TargetType{ KillingComponent::Target::Player };
 	};
 
 	class ReceivedDamageEvent final : public minigin::PlainEvent

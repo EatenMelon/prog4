@@ -22,6 +22,7 @@ using ResourceType = digdug::ResourceLocator::Type;
 static void LoadAllScenes()
 {
 	digdug::GameManager::GetInstance().Init();
+	minigin::Renderer::GetInstance().SetBackgroundColor(SDL_Color{ 0, 0, 0, 255 });
 }
 
 int main(int, char*[])

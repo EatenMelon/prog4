@@ -8,7 +8,6 @@
 #include <TextComponent.h>
 #include <RenderComponent.h>
 #include <ResourceManager.h>
-#include <Renderer.h>
 #include <SDL3/SDL.h>
 #include <ServiceLocator.h>
 
@@ -297,7 +296,8 @@ void digdug::GameManager::LoadStartMenu(minigin::Scene& scene)
 	}
 
 	scene.Add(std::move(selector));
-	minigin::Renderer::GetInstance().SetBackgroundColor(SDL_Color{ 0, 0, 0, 255 });
+
+	minigin::InputManager::GetInstance().BindInput("mute", SDLK_F2, minigin::KeyState::OnRelease, m_MuteCommand, minigin::InputManager::GetKeyboardID());
 }
 
 void digdug::GameManager::LoadScoreBoardMenu(minigin::Scene& scene)
@@ -332,6 +332,7 @@ void digdug::GameManager::LoadScoreBoardMenu(minigin::Scene& scene)
 	}
 
 	scene.Add(std::move(base));
+	minigin::InputManager::GetInstance().BindInput("mute", SDLK_F2, minigin::KeyState::OnRelease, m_MuteCommand, minigin::InputManager::GetKeyboardID());
 }
 
 digdug::Button* digdug::GameManager::AddButton(minigin::Scene& scene, const std::string& text, std::function<void()> onSubmit)

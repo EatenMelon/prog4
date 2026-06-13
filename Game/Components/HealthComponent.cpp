@@ -26,8 +26,16 @@ void digdug::HealthComponent::Start()
 	UpdateDisplay();
 }
 
+void digdug::HealthComponent::Update(float deltaTime)
+{
+	if (m_RemainingGrace <= 0.f) return;
+
+	m_RemainingGrace -= deltaTime;
+}
+
 void digdug::HealthComponent::OnNotify(const minigin::IEvent& event)
 {
+	if (m_RemainingGrace > 0.f) return;
 	if (event.GetEventHash() != m_HitEventHash) return;
 
 	auto hitEvent = static_cast<const minigin::HitEvent*>(&event);
@@ -54,6 +62,8 @@ void digdug::HealthComponent::TakeDamage()
 	--m_Health;
 	UpdateDisplay();
 
+	m_RemainingGrace = m_GracePeriod;
+
 	const auto location = ResourceLocator::GetInstance().GetResource(ResourceLocator::Type::Sound, "pain");
 	minigin::ServiceLocator::GetSoundSystem()->Play(location, 1.f);
 
@@ -68,8 +78,16 @@ void digdug::HealthComponent::UpdateDisplay()
 	try
 	{
 		std::stringstream ss{};
-		ss << m_Message << m_Health;
+		ss << m_Message;
 
+		if (m_Health >= 0)
+		{
+			ss << m_Health << " / " << m_MaxHealth;
+		}
+		else
+		{
+			ss << "DEAD";
+		}
 		m_Display->SetText(ss.str());
 	}
 	catch (const std::exception& e)

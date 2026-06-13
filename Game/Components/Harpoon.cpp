@@ -162,6 +162,8 @@ void digdug::Harpoon::OnNotify(const minigin::IEvent& event)
 
 		if (newState == nullptr) return;
 		m_State = std::move(newState);
+
+		TryEnableCommands();
 	}
 }
 

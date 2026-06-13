@@ -237,6 +237,9 @@ std::unique_ptr<digdug::HarpoonState> digdug::HarpoonPumpingState::StartRetract(
 
 std::unique_ptr<digdug::HarpoonState> digdug::HarpoonPumpingState::OnUserTookDamage()
 {
+	PumpDetachEvent event{};
+	m_PumpEvent.Notify(event);
+
 	return std::make_unique<HarpoonIdleState>(GetHarpoon());
 }
 

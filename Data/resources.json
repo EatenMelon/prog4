@@ -1,0 +1,39 @@
+[
+  {
+    "type": "sprite",
+    "root": "Sprites/",
+    "files": [
+      { "name": "atk/fire",			"location": "Attacks/Fire.png" },
+      { "name": "atk/harpoon",		"location": "Attacks/Harpoon.png" },
+	  
+      { "name": "player",			"location": "Characters/TaizoHori.png" },
+	  
+      { "name": "pooka",			"location": "Characters/Pooka.png" },
+      { "name": "pooka/ghost",		"location": "Characters/SpookyPooka.png" },
+      { "name": "pooka/pumped", 	"location": "Characters/InflatingPooka.png" },
+	  
+	  { "name": "fygar",			"location": "Characters/Fygar.png" },
+      { "name": "fygar/ghost",		"location": "Characters/SpookyFygar.png" },
+      { "name": "fygar/pumped", 	"location": "Characters/InflatingFygar.png" },
+	  
+	  { "name": "tiles/sand",		"location": "Tiles/SandTile.png" },
+	  { "name": "tiles/dirt",		"location": "Tiles/DirtTile.png" },
+	  { "name": "tiles/stone",		"location": "Tiles/StoneTile.png" },
+	  { "name": "tiles/bedrock",	"location": "Tiles/BedrockTile.png" }
+    ]
+  },
+  {
+    "type": "font",
+    "root": "Fonts/",
+    "files": [
+      { "name": "main",				"location": "Perfect_DOS_VGA_437.ttf" }
+    ]
+  },
+  {
+    "root": "Fonts/",
+    "type": "sound",
+    "files": [
+
+    ]
+  }
+]

@@ -9,6 +9,8 @@
 #include <Hitbox.h>
 #include <KillingComponent.h>
 
+#include <ResourceLocator.h>
+
 void digdug::FireAttack::Execute(Enemy* attacker)
 {
 	auto& scene = minigin::SceneManager::GetInstance().GetActiveScene();
@@ -21,7 +23,8 @@ void digdug::FireAttack::Execute(Enemy* attacker)
 		return;
 	}
 
-	renderComp->SetTexture("Sprites/Attacks/Fire.png");
+	const auto location = ResourceLocator::GetInstance().GetResource(ResourceLocator::Type::Sprite, "atk/fire");
+	renderComp->SetTexture(location);
 
 	fireObj->AddComponent<digdug::AimComponent>();
 

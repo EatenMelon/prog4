@@ -24,6 +24,8 @@
 #include <ScoreComponent.h>
 #include <Harpoon.h>
 
+#include <ResourceLocator.h>
+
 using Json = nlohmann::json;
 
 digdug::LevelLoadedEvent::LevelLoadedEvent
@@ -42,6 +44,7 @@ digdug::LevelLoadedEvent::LevelLoadedEvent
 void digdug::LevelLoader::Init(const std::filesystem::path& root)
 {
 	m_Root = root;
+	LoadSpriteMap();
 }
 
 bool digdug::LevelLoader::AddLevel(const std::string& file)
@@ -209,6 +212,25 @@ void digdug::LevelLoader::LoadLevel(minigin::Scene& scene, const std::string& fi
 	m_OnLevelLoaded.Notify(event);
 }
 
+void digdug::LevelLoader::LoadSpriteMap()
+{
+	SpritePack sprites
+	{
+		ResourceLocator::GetInstance().GetResource(ResourceLocator::Type::Sprite, "pooka"),
+		ResourceLocator::GetInstance().GetResource(ResourceLocator::Type::Sprite, "pooka/ghost"),
+		ResourceLocator::GetInstance().GetResource(ResourceLocator::Type::Sprite, "pooka/pumped")
+	};
+
+	m_SpritesMap.emplace(EnemyData::Type::Pooka, sprites);
+
+	sprites.solidSprite = ResourceLocator::GetInstance().GetResource(ResourceLocator::Type::Sprite, "fygar");
+	sprites.ghostSprite = ResourceLocator::GetInstance().GetResource(ResourceLocator::Type::Sprite, "fygar/ghost");
+	sprites.inflatingSpite = ResourceLocator::GetInstance().GetResource(ResourceLocator::Type::Sprite, "fygar/pumped");
+	
+	m_SpritesMap.emplace(EnemyData::Type::Fygar, sprites);
+
+}
+
 digdug::DirtGrid* digdug::LevelLoader::AddDirtGrid(minigin::Scene& scene, float cellSize)
 {
 	auto obj = std::make_unique<minigin::GameObject>();
@@ -223,17 +245,21 @@ digdug::DirtGrid* digdug::LevelLoader::AddDirtGrid(minigin::Scene& scene, float 
 
 	grid->SetCellSize(cellSize);
 	
-	auto sandTile = minigin::ResourceManager::GetInstance().LoadTexture("Sprites/Tiles/SandTile.png");
+	const auto locationSand = ResourceLocator::GetInstance().GetResource(ResourceLocator::Type::Sprite, "tiles/sand");
+	auto sandTile = minigin::ResourceManager::GetInstance().LoadTexture(locationSand);
 	grid->SetTileTexture(digdug::DirtGrid::Depth::Surface, sandTile);
 	grid->SetTileTexture(digdug::DirtGrid::Depth::TopSoil, sandTile);
 
-	auto dirtTile = minigin::ResourceManager::GetInstance().LoadTexture("Sprites/Tiles/DirtTile.png");
+	const auto locationDirt = ResourceLocator::GetInstance().GetResource(ResourceLocator::Type::Sprite, "tiles/dirt");
+	auto dirtTile = minigin::ResourceManager::GetInstance().LoadTexture(locationDirt);
 	grid->SetTileTexture(digdug::DirtGrid::Depth::SubSoil, dirtTile);
 	
-	auto stoneTile = minigin::ResourceManager::GetInstance().LoadTexture("Sprites/Tiles/StoneTile.png");
+	const auto locationStone = ResourceLocator::GetInstance().GetResource(ResourceLocator::Type::Sprite, "tiles/stone");
+	auto stoneTile = minigin::ResourceManager::GetInstance().LoadTexture(locationStone);
 	grid->SetTileTexture(digdug::DirtGrid::Depth::Stone, stoneTile);
 	
-	auto bedrockTile = minigin::ResourceManager::GetInstance().LoadTexture("Sprites/Tiles/BedrockTile.png");
+	const auto locationBedrock = ResourceLocator::GetInstance().GetResource(ResourceLocator::Type::Sprite, "tiles/bedrock");
+	auto bedrockTile = minigin::ResourceManager::GetInstance().LoadTexture(locationBedrock);
 	grid->SetTileTexture(digdug::DirtGrid::Depth::Bedrock, bedrockTile);
 
 	scene.Add(std::move(obj));
@@ -358,7 +384,8 @@ minigin::GameObject* digdug::LevelLoader::AddPlayer(minigin::Scene& scene, DirtG
 			return nullptr;
 		}
 
-		renderComp->SetTexture("Sprites/Characters/TaizoHori.png");
+		const auto location = ResourceLocator::GetInstance().GetResource(ResourceLocator::Type::Sprite, "player");
+		renderComp->SetTexture(location);
 		renderComp->MatchWidth(grid->GetCellSize());
 
 		auto aimComp = playerObj->AddComponent<digdug::AimComponent>();
@@ -408,7 +435,9 @@ minigin::GameObject* digdug::LevelLoader::AddPlayer(minigin::Scene& scene, DirtG
 		auto user = playerObj.get();
 		harpoonComp->EquipOnUser(*user);
 		harpoonComp->AddDirtdGrid(grid);
-		harpoonComp->SetHarpoonSprite("Sprites/Attacks/Harpoon.png");
+
+		const auto location = ResourceLocator::GetInstance().GetResource(ResourceLocator::Type::Sprite, "atk/harpoon");
+		harpoonComp->SetHarpoonSprite(location);
 
 		auto hitbox = harpoonObj->AddComponent<minigin::Hitbox>();
 		if (hitbox == nullptr)

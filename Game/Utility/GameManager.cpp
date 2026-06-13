@@ -26,6 +26,8 @@
 #include <Button.h>
 #include <ScoreBoard.h>
 
+#include <ResourceLocator.h>
+
 void digdug::GameManager::Init()
 {
 	WipeGameData();
@@ -242,7 +244,8 @@ void digdug::GameManager::LoadStartMenu(minigin::Scene& scene)
 		auto renderComp = selector->AddComponent<minigin::RenderComponent>();
 		if (renderComp == nullptr) return;
 
-		renderComp->SetTexture("Sprites/Characters/TaizoHori.png");
+		const auto location = ResourceLocator::GetInstance().GetResource(ResourceLocator::Type::Sprite, "player");
+		renderComp->SetTexture(location);
 
 		renderComp->MatchHeight(48.f);
 		selector->SetLocalPosition(glm::vec3(-renderComp->GetSize().x, 0.f, 0.f));
@@ -312,7 +315,8 @@ void digdug::GameManager::LoadScoreBoardMenu(minigin::Scene& scene)
 
 digdug::Button* digdug::GameManager::AddButton(minigin::Scene& scene, const std::string& text, std::function<void()> onSubmit)
 {
-	auto fontButtons = minigin::ResourceManager::GetInstance().LoadFont("Fonts/Lingua.otf", 48);
+	const auto location = ResourceLocator::GetInstance().GetResource(ResourceLocator::Type::Font, "main");
+	auto fontButtons = minigin::ResourceManager::GetInstance().LoadFont(location, 48);
 	SDL_Color textColor{ 255, 255, 255, 255 };
 
 	auto obj = std::make_unique<minigin::GameObject>();
@@ -341,7 +345,8 @@ minigin::GameObject* digdug::GameManager::AddScoreSubmitter(minigin::Scene& scen
 {
 	if (!m_PlayerScores.contains(id)) return nullptr;
 
-	auto font = minigin::ResourceManager::GetInstance().LoadFont("Fonts/Lingua.otf", 24);
+	const auto fontLocation = ResourceLocator::GetInstance().GetResource(ResourceLocator::Type::Font, "main");
+	auto font = minigin::ResourceManager::GetInstance().LoadFont(fontLocation, 24);
 	constexpr int nameLength{ 3 };
 
 	digdug::ObjectSelector* selectorComp{ nullptr };
@@ -350,7 +355,8 @@ minigin::GameObject* digdug::GameManager::AddScoreSubmitter(minigin::Scene& scen
 		auto renderComp = selector->AddComponent<minigin::RenderComponent>();
 		if (renderComp == nullptr) return nullptr;
 
-		renderComp->SetTexture("Sprites/Characters/TaizoHori.png");
+		const auto location = ResourceLocator::GetInstance().GetResource(ResourceLocator::Type::Sprite, "player");
+		renderComp->SetTexture(location);
 
 		renderComp->MatchHeight(24.f);
 		selector->SetLocalPosition(glm::vec3(-renderComp->GetSize().x, 0.f, 0.f));
@@ -363,8 +369,8 @@ minigin::GameObject* digdug::GameManager::AddScoreSubmitter(minigin::Scene& scen
 		if (id == minigin::InputManager::GetKeyboardID())
 		{
 			auto selectCmd = std::make_shared<digdug::SelectCmd>(selectorComp, 'x');
-			minigin::InputManager::GetInstance().BindInput("select", SDLK_D, minigin::KeyState::OnRelease, selectCmd, id, minigin::Direction::Down);
-			minigin::InputManager::GetInstance().BindInput("select", SDLK_A, minigin::KeyState::OnRelease, selectCmd, id, minigin::Direction::Up);
+			minigin::InputManager::GetInstance().BindInput("select", SDLK_D, minigin::KeyState::OnRelease, selectCmd, id, minigin::Direction::Right);
+			minigin::InputManager::GetInstance().BindInput("select", SDLK_A, minigin::KeyState::OnRelease, selectCmd, id, minigin::Direction::Left);
 			minigin::InputManager::GetInstance().BindInput("select", SDLK_SPACE, minigin::KeyState::OnDown, submitCmd, id);
 		}
 		else
@@ -426,7 +432,6 @@ minigin::GameObject* digdug::GameManager::AddScoreSubmitter(minigin::Scene& scen
 
 			textComp->SetFont(font);
 			textComp->SetText("score : " + std::to_string(m_PlayerScores[id]));
-			textComps.push_back(textComp);
 
 			scene.Add(std::move(scoreObj));
 		}
@@ -814,7 +819,9 @@ void digdug::GameManager::AddDisplays(minigin::Scene& scene)
 minigin::GameObject* digdug::GameManager::AddScoreDisplay(minigin::Scene& scene, minigin::GameObject* obj, size_t index, int score)
 {
 	constexpr uint8_t textSize{ 24 };
-	auto font = minigin::ResourceManager::GetInstance().LoadFont("Fonts/Lingua.otf", textSize);
+
+	const auto location = ResourceLocator::GetInstance().GetResource(ResourceLocator::Type::Font, "main");
+	auto font = minigin::ResourceManager::GetInstance().LoadFont(location, textSize);
 
 	auto scoreComp = obj->GetComponent<digdug::ScoreComponent>();
 	if (scoreComp == nullptr) return nullptr;
@@ -845,7 +852,9 @@ minigin::GameObject* digdug::GameManager::AddScoreDisplay(minigin::Scene& scene,
 minigin::GameObject* digdug::GameManager::AddHealthDisplay(minigin::Scene& scene, minigin::GameObject* obj, size_t index)
 {
 	constexpr uint8_t textSize{ 24 };
-	auto font = minigin::ResourceManager::GetInstance().LoadFont("Fonts/Lingua.otf", textSize);
+
+	const auto location = ResourceLocator::GetInstance().GetResource(ResourceLocator::Type::Font, "main");
+	auto font = minigin::ResourceManager::GetInstance().LoadFont(location, textSize);
 
 	auto healthComp = obj->GetComponent<digdug::HealthComponent>();
 	if (healthComp == nullptr) return nullptr;

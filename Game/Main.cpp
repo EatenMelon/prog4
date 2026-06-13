@@ -11,10 +11,13 @@
 
 #include <filesystem>
 #include <Renderer.h>
+
 #include <LevelLoader.h>
+#include <ResourceLocator.h>
 #include <GameManager.h>
 
 namespace fs = std::filesystem;
+using ResourceType = digdug::ResourceLocator::Type;
 
 static void LoadAllScenes()
 {
@@ -45,7 +48,9 @@ int main(int, char*[])
 	}
 #endif
 
+	digdug::ResourceLocator::GetInstance().LoadFromFile(data_location/"resources.json");
 	digdug::LevelLoader::GetInstance().Init(data_location/"Levels");
+
 	minigin::Minigin engine(data_location, 1080, 820);
 	engine.Run(LoadAllScenes);
 

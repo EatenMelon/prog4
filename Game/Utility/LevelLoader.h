@@ -70,6 +70,8 @@ namespace digdug
 		minigin::Subject& OnLevelLoadedEvent() { return m_OnLevelLoaded; }
 
 	private:
+		void LoadSpriteMap();
+
 		minigin::Subject m_OnLevelLoaded{};
 
 		struct TunnelData
@@ -104,27 +106,7 @@ namespace digdug
 			std::string inflatingSpite{};
 		};
 
-		const std::unordered_map<EnemyData::Type, SpritePack> m_SpritesMap
-		{
-			{
-				EnemyData::Type::Pooka, 
-				SpritePack
-				(
-					"Sprites/Characters/Pooka.png",
-					"Sprites/Characters/SpookyPooka.png",
-					"Sprites/Characters/InflatingPooka.png"
-				)
-			},
-			{
-				EnemyData::Type::Fygar,
-				SpritePack
-				(
-					"Sprites/Characters/Fygar.png",
-					"Sprites/Characters/SpookyFygar.png", 
-					"Sprites/Characters/InflatingFygar.png"
-				)
-			}
-		};
+		std::unordered_map<EnemyData::Type, SpritePack> m_SpritesMap { };
 
 		const std::unordered_map<EnemyData::Type, int> m_ScoreValues
 		{

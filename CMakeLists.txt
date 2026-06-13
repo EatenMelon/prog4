@@ -93,6 +93,7 @@ add_executable(${GAME_NAME} ${TARGET_PARAM}
     "${UTILITY_DIR}/Attack.cpp"
     "${UTILITY_DIR}/LevelLoader.cpp"
     "${UTILITY_DIR}/GameManager.cpp"
+    "${UTILITY_DIR}/ResourceLocator.cpp"
 
     "${INPUT_DIR}/GridMoveCmd.cpp"
     "${INPUT_DIR}/HarpoonCmd.cpp"
